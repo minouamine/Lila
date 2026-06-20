@@ -11,8 +11,8 @@
 // const SUPABASE_ANON_KEY = 'your-anon-key-here';
 
 // بهذا:
-const SUPABASE_URL = '';
-const SUPABASE_ANON_KEY = '';
+const SUPABASE_URL = 'https://wwziobpnphffdfzhvhip.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emlvYnBucGhmZmRmemh2aGlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NjgxNjMsImV4cCI6MjA5NTU0NDE2M30.BBRL1MjPG-2bN4LDqcyfXlxIRSaLPvBEY6U3FBrDnF4';
 
 // تهيئة عميل Supabase
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
