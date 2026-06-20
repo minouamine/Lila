@@ -2,7 +2,7 @@
 // API KEYS & SUPABASE CONFIGURATION
 // ========================================
 
-/*window.MISTRAL_API_KEY = "NUs9gtvvFwvyfsaYJpuiPVos7HXS8RuE";*/
+/*window.MISTRAL_API_KEY = "";*/
 
 window.SUPABASE_CONFIG = {
  url: "",
