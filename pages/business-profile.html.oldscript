@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ملف تجاري - ليلى</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        /* أنماط صفحة الملف التجاري */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* غلاف الصفحة */
+        .profile-cover {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, var(--bg-raised), var(--bg-card));
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+        
+        .profile-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-avatar {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: -50px auto 0;
+            background: var(--bg-surface);
+            border-radius: 50%;
+            border: 3px solid var(--accent-orange);
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            text-align: center;
+            margin: 15px 0 5px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .profile-username {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        
+        /* أزرار المتابعة والمفضلة */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .btn-follow, .btn-favorite {
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-follow {
+            background: var(--accent-orange);
+            border: none;
+            color: white;
+        }
+        
+        .btn-follow.following {
+            background: transparent;
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        
+        .btn-favorite {
+            background: transparent;
+            border: 1px solid var(--border-active);
+            color: var(--text-secondary);
+        }
+        
+        .btn-favorite.favorited {
+            color: gold;
+            border-color: gold;
+        }
+        
+        /* التصنيفات */
+        .rating-badge {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .rating-stars {
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+        }
+        
+        .rating-gold { color: gold; text-shadow: 0 0 5px gold; animation: starPulse 1.5s ease-in-out infinite; }
+        .rating-green { color: #00c87a; }
+        .rating-red { color: #ef4444; }
+        
+        @keyframes starPulse {
+            0%, 100% { text-shadow: 0 0 3px gold; }
+            50% { text-shadow: 0 0 12px gold; }
+        }
+        
+        /* أقسام المعلومات */
+        .info-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .info-section h3 {
+            color: var(--accent-orange);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .services-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .service-tag {
+            background: rgba(255,140,0,0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        /* ألبوم الصور */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .gallery-grid img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        /* التبويبات الداخلية */
+        .profile-tabs {
+            display: flex;
+            gap: 5px;
+            margin: 20px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .profile-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .profile-tab.active {
+            color: var(--accent-orange);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+        
+        /* فيديو قصير */
+        .short-video {
+            position: relative;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .short-video video {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+        
+        /* التحذيرات */
+        .warning-badge {
+            display: inline-block;
+            background: var(--red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-right: 10px;
+        }
+        
+        .vacation-badge {
+            background: #f87171;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<div class="scanline-overlay"></div>
+
+<div class="app">
+    <div class="main-content">
+        <div class="profile-container" id="profileContainer">
+            <div style="text-align: center; padding: 50px;">جاري تحميل الملف التجاري...</div>
+        </div>
+    </div>
+</div>
+
+<script src="js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+    let businessId = null;
+    let businessData = null;
+    let currentUserProfile = null;
+    let isFollowing = false;
+    let isFavorited = false;
+    let activeTab = 'posts';
+    
+    // الحصول على معرف الحساب من URL
+    function getBusinessIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    
+    // تحميل بيانات الحساب التجاري
+    async function loadBusinessProfile() {
+        businessId = getBusinessIdFromUrl();
+        if (!businessId) {
+            document.getElementById('profileContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: var(--red);">❌ لم يتم تحديد الحساب</div>';
+            return;
+        }
+        
+        const data = await lilaAPI.getBusinessProfileById(businessId);
+        if (!data) {
+            document.getElementById('profileContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: var(--red);">❌ الحساب غير موجود أو لم يتم تفعيله بعد</div>';
+            return;
+        }
+        
+        businessData = data;
+        
+        // التحقق من حالة المتابعة والمفضلة للمستخدم الحالي
+        const profile = window.auth.getCurrentProfile();
+        currentUserProfile = profile;
+        
+        if (profile && profile.user_type === 'customer') {
+            isFollowing = await lilaAPI.isFollowing(profile.id, businessId);
+            // التحقق من المفضلة
+            const { data: favData } = await supabaseClient
+                .from('favorites')
+                .select('id')
+                .eq('customer_id', profile.id)
+                .eq('business_id', businessId)
+                .single();
+            isFavorited = !!favData;
+        }
+        
+        renderProfile();
+    }
+    
+    function renderProfile() {
+        const container = document.getElementById('profileContainer');
+        const ratingColor = utils.getRatingColor(businessData.avg_rating || 0, businessData.reviews_count || 0);
+        const isOnVacation = businessData.is_on_vacation;
+        const warningCount = businessData.warnings_count || 0;
+        
+        container.innerHTML = `
+            ${isOnVacation ? `<div class="vacation-badge">🚫 هذا الحساب في إجازة مؤقتة حتى ${new Date(businessData.vacation_until).toLocaleDateString()}</div>` : ''}
+            
+            <div class="profile-cover">
+                ${businessData.cover_photo_url ? `<img src="${businessData.cover_photo_url}" alt="غلاف">` : '<div style="height:100%;"></div>'}
+            </div>
+            
+            <div class="profile-avatar">
+                <img src="${businessData.logo_url || '../assets/images/default-business.png'}" alt="${businessData.business_name}">
+            </div>
+            
+            <div class="profile-name">
+                ${businessData.business_name}
+                ${businessData.has_gold_badge ? '<span style="color: gold;">⭐</span>' : ''}
+                ${warningCount >= 3 ? '<span class="warning-badge">⚠️ تحذير</span>' : ''}
+                ${businessData.reviews_count === 0 ? '<span class="warning-badge" style="background: var(--blue);">🆕 حساب جديد</span>' : ''}
+            </div>
+            <div class="profile-username">@${businessData.username}</div>
+            
+            <div class="action-buttons">
+                ${currentUserProfile?.user_type === 'customer' ? `
+                    <button class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow()">${isFollowing ? '✅ متابعة' : '➕ متابعة'}</button>
+                    <button class="btn-favorite ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite()">${isFavorited ? '⭐ مفضلة' : '☆ إضافة للمفضلة'}</button>
+                ` : `
+                    ${!currentUserProfile ? '<button class="btn-follow" onclick="window.auth.signInWithGoogle()">🔑 سجلي لتتابعي هذا الحساب</button>' : ''}
+                `}
+                <button class="btn-follow" style="background: var(--blue);" onclick="bookNow()">📅 احجزي الآن</button>
+            </div>
+            
+            <div class="rating-badge">
+                <div class="rating-stars rating-${ratingColor}">
+                    ${'★'.repeat(Math.floor(businessData.avg_rating || 0))}${'☆'.repeat(5 - Math.floor(businessData.avg_rating || 0))}
+                </div>
+                <div>${(businessData.avg_rating || 0).toFixed(1)} / 5 (${businessData.reviews_count || 0} تقييم)</div>
+                <div style="font-size: 0.8rem; margin-top: 5px;">👥 ${businessData.followers_count || 0} متابِع</div>
+            </div>
+            
+            <div class="info-section">
+                <h3>📝 نبذة عني</h3>
+                <p>${businessData.bio || 'لا يوجد وصف'}</p>
+            </div>
+            
+            <div class="info-section">
+                <h3>✨ الخدمات المقدمة</h3>
+                <div class="services-tags">
+                    ${getServicesTags(businessData.services)}
+                </div>
+            </div>
+            
+            ${businessData.short_video_url ? `
+                <div class="short-video">
+                    <video src="${businessData.short_video_url}" controls poster="${businessData.video_thumbnail_url}"></video>
+                    <div style="text-align: center; margin-top: 5px; font-size: 0.7rem; color: var(--text-dim);">🎬 فيديو تعريفي - 15 ثانية</div>
+                </div>
+            ` : ''}
+            
+            <div class="profile-tabs">
+                <div class="profile-tab ${activeTab === 'posts' ? 'active' : ''}" data-tab="posts">📝 منشورات</div>
+                <div class="profile-tab ${activeTab === 'gallery' ? 'active' : ''}" data-tab="gallery">📸 ألبوم الصور</div>
+                <div class="profile-tab ${activeTab === 'reviews' ? 'active' : ''}" data-tab="reviews">⭐ التقييمات</div>
+                <div class="profile-tab ${activeTab === 'info' ? 'active' : ''}" data-tab="info">ℹ️ معلومات</div>
+            </div>
+            
+            <div id="tabContent"></div>
+        `;
+        
+        // إضافة مستمعي التبويبات
+        document.querySelectorAll('.profile-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                activeTab = tab.dataset.tab;
+                renderTabContent();
+                document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        renderTabContent();
+    }
+    
+    function getServicesTags(services) {
+        if (!services || !services.length) return '<span class="service-tag">خدمات متعددة</span>';
+        const serviceNames = {
+            salon_hair: '💇 صالون حلاقة',
+            salon_beauty: '💅 صالون تجميل',
+            home_hair: '🏠 حلاقة في المنزل',
+            mobile_hair: '🚗 حلاقة متنقلة',
+            product_seller: '🛍️ بائعة منتجات',
+            dress_rental: '👗 تأجير أزياء',
+            home_service: '🏠 خدمات منزلية'
+        };
+        return services.map(s => `<span class="service-tag">${serviceNames[s] || s}</span>`).join('');
+    }
+    
+    async function renderTabContent() {
+        const container = document.getElementById('tabContent');
+        
+        if (activeTab === 'posts') {
+            const posts = await lilaAPI.getPostsByBusiness(businessId);
+            if (!posts.length) {
+                container.innerHTML = '<div class="info-section" style="text-align: center;">📝 لا توجد منشورات بعد</div>';
+                return;
+            }
+            container.innerHTML = posts.map(post => `
+                <div class="info-section">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>📅 ${new Date(post.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <p style="margin-top: 10px;">${post.content}</p>
+                    ${post.image_urls?.length ? `<div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">${post.image_urls.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="window.open('${url}')">`).join('')}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        else if (activeTab === 'gallery') {
+            // تحميل ألبوم الصور من API
+            container.innerHTML = `
+                <div class="info-section">
+                    <h3>📸 ألبوم الأعمال</h3>
+                    <div class="gallery-grid" id="galleryGrid">
+                        <div style="text-align: center; grid-column: 1/-1; color: var(--text-dim);">جاري تحميل الصور...</div>
+                    </div>
+                </div>
+            `;
+            // هنا سيتم جلب الصور من قاعدة البيانات
+        }
+        else if (activeTab === 'reviews') {
+            const reviews = await lilaAPI.getReviewsByBusiness(businessId);
+            if (!reviews.length) {
+                container.innerHTML = '<div class="info-section" style="text-align: center;">⭐ لا توجد تقييمات بعد. كوني أول من يقيم!</div>';
+                return;
+            }
+            container.innerHTML = reviews.map(review => `
+                <div class="info-section">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>${review.profiles?.full_name || 'مستخدمة'}</strong>
+                        <span>${'★'.repeat(review.rating_overall)}${'☆'.repeat(5-review.rating_overall)}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">جودة: ${'★'.repeat(review.rating_quality)} | سعر: ${'★'.repeat(review.rating_price)} | معاملة: ${'★'.repeat(review.rating_manners)}</div>
+                    <p style="margin-top: 8px;">${review.comment}</p>
+                    ${review.reply_from_business ? `<div style="background: rgba(255,140,0,0.1); padding: 10px; border-radius: 8px; margin-top: 10px;"><strong>رد صاحبة الحساب:</strong><br>${review.reply_from_business}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        else if (activeTab === 'info') {
+            container.innerHTML = `
+                <div class="info-section">
+                    <h3>📍 العنوان</h3>
+                    <p><strong>الولاية:</strong> ${businessData.wilaya_name || 'غير محدد'}</p>
+                    <p><strong>البلدية:</strong> ${businessData.baladiyah_name || 'غير محدد'}</p>
+                    <p><strong>الوصف:</strong> ${businessData.address_description || 'لا يوجد'}</p>
+                </div>
+                <div class="info-section">
+                    <h3>📞 التواصل</h3>
+                    <p>📱 ${businessData.phone || 'غير متوفر'}</p>
+                    <p>💬 واتساب: ${businessData.whatsapp || 'غير متوفر'}</p>
+                    ${businessData.instagram ? `<p>📷 <a href="${businessData.instagram}" target="_blank" style="color: var(--accent-orange);">Instagram</a></p>` : ''}
+                    ${businessData.tiktok ? `<p>🎵 <a href="${businessData.tiktok}" target="_blank" style="color: var(--accent-orange);">TikTok</a></p>` : ''}
+                </div>
+                <div class="info-section">
+                    <h3>⏰ مواعيد العمل</h3>
+                    <p>${businessData.working_hours ? JSON.stringify(businessData.working_hours) : 'غير محدد'}</p>
+                </div>
+            `;
+        }
+    }
+    
+    window.toggleFollow = async () => {
+        if (!currentUserProfile) {
+            window.auth.signInWithGoogle();
+            return;
+        }
+        if (isFollowing) {
+            await lilaAPI.unfollowBusiness(currentUserProfile.id, businessId);
+            isFollowing = false;
+            utils.showToast('تم إلغاء المتابعة', 'info');
+        } else {
+            await lilaAPI.followBusiness(currentUserProfile.id, businessId);
+            isFollowing = true;
+            utils.showToast('تمت المتابعة بنجاح', 'success');
+        }
+        renderProfile();
+    };
+    
+    window.toggleFavorite = async () => {
+        if (!currentUserProfile) {
+            window.auth.signInWithGoogle();
+            return;
+        }
+        if (isFavorited) {
+            await lilaAPI.removeFromFavorites(currentUserProfile.id, businessId);
+            isFavorited = false;
+            utils.showToast('تمت الإزالة من المفضلة', 'info');
+        } else {
+            await lilaAPI.addToFavorites(currentUserProfile.id, businessId);
+            isFavorited = true;
+            utils.showToast('تمت الإضافة إلى المفضلة', 'success');
+        }
+        renderProfile();
+    };
+    
+    window.bookNow = () => {
+        if (!currentUserProfile) {
+            if (confirm('للحجز، يرجى تسجيل الدخول أولاً. هل تريدين تسجيل الدخول الآن؟')) {
+                window.auth.signInWithGoogle();
+            }
+            return;
+        }
+        window.location.href = `booking.html?business=${businessId}`;
+    };
+    
+    // التهيئة
+    document.addEventListener('DOMContentLoaded', async () => {
+        await window.auth.getCurrentSession();
+        await loadBusinessProfile();
+        if (typeof particles !== 'undefined') particles.init();
+    });
+</script>
+</body>
+</html>

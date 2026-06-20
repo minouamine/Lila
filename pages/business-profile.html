@@ -3,234 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ملف تجاري - ليلى</title>
-    <link rel="stylesheet" href="../css/main.css">
+    <title>الملف التجاري</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        /* أنماط صفحة الملف التجاري */
-        .profile-container {
-            max-width: 800px;
+        /* =============================================
+           LILA — business_profile.html
+           Inherits theme from index via localStorage
+           ============================================= */
+
+        /* ===== CSS VARIABLES (mirrored from main.css) ===== */
+        :root {
+            --c-primary:       #32CD32;
+            --c-primary-light: #7FFF00;
+            --c-primary-dark:  #228B22;
+            --c-glow:          rgba(50,205,50,0.32);
+            --c-glow-soft:     rgba(50,205,50,0.10);
+
+            --ig-a: #f09433; --ig-b: #e6683c; --ig-c: #dc2743;
+            --ig-d: #cc2366; --ig-e: #bc1888;
+            --ig-grad: linear-gradient(45deg, var(--ig-a), var(--ig-b), var(--ig-c), var(--ig-d), var(--ig-e));
+
+            --c-bg:         #040810;
+            --c-surface:    #080f1c;
+            --c-card:       #0d1628;
+            --c-card-h:     #111d35;
+            --c-border:     rgba(50,205,50,0.12);
+            --c-border-act: rgba(50,205,50,0.50);
+            --c-text:       #d8e4f0;
+            --c-text-2:     #7a9ab8;
+            --c-text-3:     #3d5a78;
+
+            --c-red:  #ef4444;
+            --c-blue: #3b82f6;
+            --c-gold: gold;
+
+            --ease-snap:   cubic-bezier(0.34,1.56,0.64,1);
+            --ease-smooth: cubic-bezier(0.4,0,0.2,1);
+            --t:           0.26s var(--ease-smooth);
+        }
+
+        /* ===== LIGHT MODE ===== */
+        .light-mode {
+            --c-bg:         #f0f4f0;
+            --c-surface:    #ffffff;
+            --c-card:       #e8f5e8;
+            --c-card-h:     #d4edd4;
+            --c-border:     rgba(34,139,34,0.15);
+            --c-border-act: rgba(34,139,34,0.45);
+            --c-text:       #000000;
+            --c-text-2:     #1a4a1a;
+            --c-text-3:     #5a8a5a;
+        }
+
+        /* ===== COLOR THEMES ===== */
+        .theme-lime    { --c-primary:#32CD32; --c-primary-light:#7FFF00; --c-primary-dark:#228B22; --c-glow:rgba(50,205,50,0.32); --c-glow-soft:rgba(50,205,50,0.10); --c-border:rgba(50,205,50,0.12); --c-border-act:rgba(50,205,50,0.50); }
+        .theme-magenta { --c-primary:#CC00CC; --c-primary-light:#FF00FF; --c-primary-dark:#8800AA; --c-glow:rgba(204,0,204,0.30); --c-glow-soft:rgba(204,0,204,0.10); --c-border:rgba(204,0,204,0.12); --c-border-act:rgba(204,0,204,0.50); }
+        .theme-rose    { --c-primary:#E11D78; --c-primary-light:#FB7185; --c-primary-dark:#9D174D; --c-glow:rgba(225,29,120,0.30); --c-glow-soft:rgba(225,29,120,0.10); --c-border:rgba(225,29,120,0.12); --c-border-act:rgba(225,29,120,0.50); }
+        .theme-violet  { --c-primary:#7C3AED; --c-primary-light:#A78BFA; --c-primary-dark:#4C1D95; --c-glow:rgba(124,58,237,0.30); --c-glow-soft:rgba(124,58,237,0.10); --c-border:rgba(124,58,237,0.12); --c-border-act:rgba(124,58,237,0.50); }
+        .theme-teal    { --c-primary:#0D9488; --c-primary-light:#2DD4BF; --c-primary-dark:#115E59; --c-glow:rgba(13,148,136,0.30); --c-glow-soft:rgba(13,148,136,0.10); --c-border:rgba(13,148,136,0.12); --c-border-act:rgba(13,148,136,0.50); }
+        .theme-gold    { --c-primary:#B45309; --c-primary-light:#F59E0B; --c-primary-dark:#78350F; --c-glow:rgba(180,83,9,0.30); --c-glow-soft:rgba(180,83,9,0.10); --c-border:rgba(180,83,9,0.12); --c-border-act:rgba(180,83,9,0.50); }
+
+        /* ===== RESET ===== */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        button { cursor:pointer; font-family:inherit; border:none; outline:none; }
+        a { text-decoration:none; color:inherit; }
+
+        /* ===== BODY — fills iframe fully ===== */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--c-bg);
+            color: var(--c-text);
+            min-height: 100%;
+            transition: background var(--t), color var(--t);
+            position: relative;
+        }
+
+        /* ambient glow */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 40% at 50% 0%, var(--c-glow-soft) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 25% at 90% 80%, var(--c-glow-soft) 0%, transparent 55%);
+            transition: background var(--t);
+        }
+
+        /* scanline */
+        .scanline-overlay {
+            position: fixed; top:0; left:0;
+            width:100%; height:100%;
+            z-index:0; pointer-events:none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            animation: scanlineScroll 8s linear infinite;
+        }
+        @keyframes scanlineScroll {
+            0%   { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        /* ===== WRAPPER ===== */
+        .profile-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
             margin: 0 auto;
+            padding: 16px 12px 32px;
         }
-        
-        /* غلاف الصفحة */
+
+        /* ===== VACATION BANNER ===== */
+        .vacation-banner {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            color: #fca5a5;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* ===== COVER ===== */
         .profile-cover {
-            position: relative;
-            height: 180px;
-            background: linear-gradient(135deg, var(--bg-raised), var(--bg-card));
-            border-radius: 20px 20px 0 0;
+            width: 100%;
+            height: 160px;
+            border-radius: 18px 18px 0 0;
             overflow: hidden;
+            background: linear-gradient(135deg, var(--c-card), var(--c-card-h));
+            position: relative;
         }
-        
         .profile-cover img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
         }
-        
-        .profile-avatar {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: -50px auto 0;
-            background: var(--bg-surface);
-            border-radius: 50%;
-            border: 3px solid var(--accent-orange);
-            overflow: hidden;
+        .cover-placeholder {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; opacity: 0.3;
         }
-        
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-name {
-            text-align: center;
-            margin: 15px 0 5px;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        .profile-username {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-        
-        /* أزرار المتابعة والمفضلة */
-        .action-buttons {
+
+        /* ===== AVATAR ===== */
+        .avatar-wrap {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
+            margin-top: -48px;
+            position: relative;
+            z-index: 2;
         }
-        
-        .btn-follow, .btn-favorite {
-            padding: 8px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
+        .avatar-ring {
+            width: 96px; height: 96px;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--ig-grad);
+            box-shadow: 0 0 20px var(--c-glow);
         }
-        
-        .btn-follow {
-            background: var(--accent-orange);
-            border: none;
-            color: white;
+        .avatar-inner {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--c-card);
+            border: 3px solid var(--c-bg);
         }
-        
-        .btn-follow.following {
-            background: transparent;
-            border: 1px solid var(--accent-orange);
-            color: var(--accent-orange);
+        .avatar-inner img {
+            width: 100%; height: 100%;
+            object-fit: cover;
         }
-        
-        .btn-favorite {
-            background: transparent;
-            border: 1px solid var(--border-active);
-            color: var(--text-secondary);
-        }
-        
-        .btn-favorite.favorited {
-            color: gold;
-            border-color: gold;
-        }
-        
-        /* التصنيفات */
-        .rating-badge {
+
+        /* ===== IDENTITY ===== */
+        .profile-name {
             text-align: center;
-            margin: 10px 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin: 12px 0 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        
-        .rating-stars {
-            font-size: 1.3rem;
+        .badge-gold { color: gold; font-size: 1rem; }
+        .badge-warning {
+            display: inline-block;
+            background: var(--c-red);
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .badge-new {
+            display: inline-block;
+            background: var(--c-blue);
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .profile-username {
+            text-align: center;
+            color: var(--c-text-2);
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        /* ===== RATING ===== */
+        .rating-block {
+            text-align: center;
+            margin: 10px 0 16px;
+        }
+        .stars {
+            font-size: 1.25rem;
             letter-spacing: 2px;
         }
-        
-        .rating-gold { color: gold; text-shadow: 0 0 5px gold; animation: starPulse 1.5s ease-in-out infinite; }
-        .rating-green { color: #00c87a; }
-        .rating-red { color: #ef4444; }
-        
+        .stars-gold    { color: gold; text-shadow: 0 0 8px gold; animation: starPulse 1.5s ease-in-out infinite; }
+        .stars-green   { color: #00c87a; }
+        .stars-red     { color: var(--c-red); }
+        .stars-default { color: var(--c-text-3); }
         @keyframes starPulse {
-            0%, 100% { text-shadow: 0 0 3px gold; }
-            50% { text-shadow: 0 0 12px gold; }
+            0%,100% { text-shadow: 0 0 4px gold; }
+            50%      { text-shadow: 0 0 14px gold; }
         }
-        
-        /* أقسام المعلومات */
-        .info-section {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 20px;
+        .rating-meta {
+            font-size: 0.78rem;
+            color: var(--c-text-2);
+            margin-top: 4px;
         }
-        
-        .info-section h3 {
-            color: var(--accent-orange);
-            margin-bottom: 12px;
-            font-size: 1.1rem;
+        .followers-count {
+            font-size: 0.75rem;
+            color: var(--c-text-3);
+            margin-top: 3px;
         }
-        
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 14px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 9px 22px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            font-family: 'Cairo', sans-serif;
+            transition: all var(--t);
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--c-primary);
+            color: #fff;
+            box-shadow: 0 4px 14px var(--c-glow);
+        }
+        .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--c-border-act);
+            color: var(--c-text-2);
+        }
+        .btn-outline:hover { border-color: var(--c-primary); color: var(--c-primary); }
+        .btn-outline.active-follow {
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+        }
+        .btn-outline.active-fav {
+            border-color: gold;
+            color: gold;
+        }
+        .btn-book {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+        }
+        .btn-book:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        /* ===== CARDS / SECTIONS ===== */
+        .card {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            transition: background var(--t), border-color var(--t);
+        }
+        .card-title {
+            color: var(--c-primary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card p {
+            color: var(--c-text);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        /* ===== SERVICES TAGS ===== */
         .services-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
-        
         .service-tag {
-            background: rgba(255,140,0,0.15);
-            padding: 5px 12px;
+            background: var(--c-glow-soft);
+            border: 1px solid var(--c-border-act);
+            color: var(--c-primary);
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-        
-        /* ألبوم الصور */
+
+        /* ===== TABS ===== */
+        .tabs-bar {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--c-border);
+            margin-bottom: 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tabs-bar::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: 'Cairo', sans-serif;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--c-text-2);
+            cursor: pointer;
+            transition: all var(--t);
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: var(--c-primary);
+            border-bottom-color: var(--c-primary);
+        }
+        .tab-btn:hover:not(.active) { color: var(--c-text); }
+
+        /* ===== TAB CONTENT ===== */
+        #tabContent { min-height: 200px; }
+
+        /* Post card */
+        .post-card {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            transition: background var(--t);
+        }
+        .post-date {
+            font-size: 0.70rem;
+            color: var(--c-text-3);
+            margin-bottom: 8px;
+        }
+        .post-text {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--c-text);
+        }
+        .post-images {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .post-images img {
+            width: 76px; height: 76px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--c-border);
+            transition: transform 0.2s var(--ease-snap);
+        }
+        .post-images img:hover { transform: scale(1.06); }
+
+        /* Gallery */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
-        
         .gallery-grid img {
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
             border-radius: 10px;
             cursor: pointer;
+            border: 1px solid var(--c-border);
+            transition: transform 0.2s var(--ease-snap), box-shadow 0.2s;
         }
-        
-        /* التبويبات الداخلية */
-        .profile-tabs {
+        .gallery-grid img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 16px var(--c-glow);
+        }
+
+        /* Review card */
+        .review-card {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            transition: background var(--t);
+        }
+        .review-header {
             display: flex;
-            gap: 5px;
-            margin: 20px 0;
-            border-bottom: 1px solid var(--border-subtle);
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
         }
-        
-        .profile-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            color: var(--text-secondary);
+        .review-author { font-weight: 700; font-size: 0.88rem; }
+        .review-stars  { font-size: 1rem; color: gold; }
+        .review-sub {
+            font-size: 0.70rem;
+            color: var(--c-text-3);
+            margin-bottom: 8px;
         }
-        
-        .profile-tab.active {
-            color: var(--accent-orange);
-            border-bottom: 2px solid var(--accent-orange);
-        }
-        
-        /* فيديو قصير */
-        .short-video {
-            position: relative;
-            width: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .short-video video {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-        }
-        
-        /* التحذيرات */
-        .warning-badge {
-            display: inline-block;
-            background: var(--red);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            margin-right: 10px;
-        }
-        
-        .vacation-badge {
-            background: #f87171;
-            color: white;
-            padding: 8px;
-            text-align: center;
+        .review-text { font-size: 0.84rem; line-height: 1.65; }
+        .review-reply {
+            margin-top: 10px;
+            background: var(--c-glow-soft);
+            border-right: 3px solid var(--c-primary);
             border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 10px 12px;
+            font-size: 0.80rem;
+            color: var(--c-text-2);
         }
-        
-        @media (max-width: 600px) {
+        .review-reply strong {
+            display: block;
+            color: var(--c-primary);
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        /* Info tab */
+        .info-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--c-border);
+            font-size: 0.83rem;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label {
+            color: var(--c-text-3);
+            min-width: 90px;
+            font-size: 0.76rem;
+            padding-top: 2px;
+        }
+        .info-value { color: var(--c-text); }
+        .info-value a { color: var(--c-primary); }
+        .info-value a:hover { text-decoration: underline; }
+
+        /* Video */
+        .video-wrap {
+            width: 100%;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background: #000;
+            border: 1px solid var(--c-border);
+        }
+        .video-wrap video {
+            width: 100%;
+            max-height: 360px;
+            object-fit: cover;
+            display: block;
+        }
+        .video-label {
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--c-text-3);
+            padding: 6px;
+        }
+
+        /* Working hours table */
+        .hours-table { width: 100%; font-size: 0.80rem; }
+        .hours-table td { padding: 4px 0; }
+        .hours-table td:first-child { color: var(--c-text-2); width: 110px; }
+        .hours-table .closed { color: var(--c-red); }
+        .hours-table .open   { color: var(--c-primary); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--c-text-3);
+            font-size: 0.88rem;
+        }
+        .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+        /* Loading */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--c-text-3);
+        }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--c-border);
+            border-top-color: var(--c-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error state */
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--c-red);
+            font-size: 0.9rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--c-card);
+            border: 1px solid var(--c-border-act);
+            border-radius: 30px;
+            padding: 10px 22px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--c-text);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            z-index: 999;
+            opacity: 0;
+            transition: all 0.3s var(--ease-smooth);
+            white-space: nowrap;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success { border-color: var(--c-primary); color: var(--c-primary); }
+        .toast.info    { border-color: var(--c-blue); color: var(--c-blue); }
+        .toast.error   { border-color: var(--c-red); color: var(--c-red); }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            height: 1px;
+            background: var(--c-border);
+            margin: 16px 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .profile-cover { height: 130px; }
+            .avatar-ring { width: 80px; height: 80px; }
+            .avatar-wrap { margin-top: -40px; }
+            .profile-name { font-size: 1.15rem; }
             .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .btn { padding: 8px 16px; font-size: 0.78rem; }
+            .tab-btn { padding: 10px 12px; font-size: 0.73rem; }
         }
     </style>
 </head>
-<body>
 
-<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<body id="bodyEl" class="dark-mode theme-lime">
+
 <div class="scanline-overlay"></div>
 
-<div class="app">
-    <div class="main-content">
-        <div class="profile-container" id="profileContainer">
-            <div style="text-align: center; padding: 50px;">جاري تحميل الملف التجاري...</div>
+<!-- ===== MAIN PROFILE WRAPPER ===== -->
+<div class="profile-wrapper">
+    <div id="profileContainer">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <div>جاري تحميل الملف التجاري...</div>
         </div>
     </div>
 </div>
 
-<script>src="js/debug.js"</script>
+<!-- Toast -->
+<div class="toast" id="toastEl"></div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="js/debug.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
@@ -239,275 +610,594 @@
 <script src="../js/lang.js"></script>
 
 <script>
-    let businessId = null;
-    let businessData = null;
-    let currentUserProfile = null;
-    let isFollowing = false;
-    let isFavorited = false;
-    let activeTab = 'posts';
-    
-    // الحصول على معرف الحساب من URL
-    function getBusinessIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('id');
+'use strict';
+
+/* ============================================================
+   1. APPLY THEME / MODE / LANG FROM localStorage (index settings)
+   ============================================================ */
+(function applyStoredPreferences() {
+    console.log('[THEME] Applying stored preferences from localStorage...');
+
+    const body    = document.getElementById('bodyEl');
+    const lang    = localStorage.getItem('lila_lang')  || 'ar';
+    const mode    = localStorage.getItem('lila_mode')  || 'dark';
+    const theme   = localStorage.getItem('lila_theme') || 'theme-lime';
+
+    // Mode
+    const isDark = mode === 'dark';
+    body.classList.toggle('dark-mode',  isDark);
+    body.classList.toggle('light-mode', !isDark);
+    console.log('[THEME] Mode:', mode);
+
+    // Theme
+    const allThemes = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
+    allThemes.forEach(t => body.classList.remove(t));
+    body.classList.add(theme);
+    console.log('[THEME] Theme:', theme);
+
+    // Lang
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+    console.log('[LANG] Language:', lang);
+})();
+
+/* ============================================================
+   2. STATE
+   ============================================================ */
+let businessId          = null;
+let businessData        = null;
+let currentUserProfile  = null;
+let isFollowing         = false;
+let isFavorited         = false;
+let activeTab           = 'posts';
+
+const lang = localStorage.getItem('lila_lang') || 'ar';
+
+/* ============================================================
+   3. HELPERS
+   ============================================================ */
+function t(ar, fr) {
+    return lang === 'ar' ? ar : fr;
+}
+
+function showToast(msg, type = 'info') {
+    const el = document.getElementById('toastEl');
+    el.textContent = msg;
+    el.className   = `toast ${type} show`;
+    setTimeout(() => { el.classList.remove('show'); }, 2800);
+}
+
+function getRatingClass(avg, count) {
+    if (count === 0)   return 'stars-default';
+    if (avg >= 4.5)    return 'stars-gold';
+    if (avg >= 3)      return 'stars-green';
+    return 'stars-red';
+}
+
+function starsHTML(n, cls) {
+    const full  = Math.floor(n);
+    const empty = 5 - full;
+    return `<span class="stars ${cls}">${'★'.repeat(full)}${'☆'.repeat(empty)}</span>`;
+}
+
+function sanitize(html) {
+    if (typeof DOMPurify !== 'undefined') return DOMPurify.sanitize(html);
+    return html; // fallback (DOMPurify not loaded yet)
+}
+
+/* ============================================================
+   4. GET BUSINESS ID FROM URL
+   ============================================================ */
+function getBusinessIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    console.log('[URL] businessId from query param:', id);
+    return id;
+}
+
+/* ============================================================
+   5. LOAD BUSINESS PROFILE
+   ============================================================ */
+async function loadBusinessProfile() {
+    console.log('[LOAD] Starting loadBusinessProfile()...');
+
+    businessId = getBusinessIdFromUrl();
+
+    if (!businessId) {
+        console.error('[LOAD] No businessId in URL params.');
+        renderError(t('❌ لم يتم تحديد الحساب', '❌ Aucun compte spécifié'));
+        return;
     }
-    
-    // تحميل بيانات الحساب التجاري
-    async function loadBusinessProfile() {
-        businessId = getBusinessIdFromUrl();
-        if (!businessId) {
-            document.getElementById('profileContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: var(--red);">❌ لم يتم تحديد الحساب</div>';
-            return;
-        }
-        
+
+    try {
+        console.log('[LOAD] Calling lilaAPI.getBusinessProfileById with id:', businessId);
         const data = await lilaAPI.getBusinessProfileById(businessId);
+        console.log('[LOAD] API response:', data);
+
         if (!data) {
-            document.getElementById('profileContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: var(--red);">❌ الحساب غير موجود أو لم يتم تفعيله بعد</div>';
+            console.warn('[LOAD] No data returned — account not found or not activated.');
+            renderError(t('❌ الحساب غير موجود أو لم يتم تفعيله بعد', '❌ Compte introuvable ou non activé'));
             return;
         }
-        
+
         businessData = data;
-        
-        // التحقق من حالة المتابعة والمفضلة للمستخدم الحالي
-        const profile = window.auth.getCurrentProfile();
-        currentUserProfile = profile;
-        
-        if (profile && profile.user_type === 'customer') {
-            isFollowing = await lilaAPI.isFollowing(profile.id, businessId);
-            // التحقق من المفضلة
-            const { data: favData } = await supabaseClient
+        console.log('[LOAD] businessData set:', businessData);
+
+    } catch (err) {
+        console.error('[LOAD] Exception in getBusinessProfileById:', err);
+        renderError(t('❌ حدث خطأ أثناء تحميل البيانات', '❌ Erreur lors du chargement'));
+        return;
+    }
+
+    // Current user session
+    try {
+        console.log('[AUTH] Fetching current session...');
+        await window.auth.getCurrentSession();
+        currentUserProfile = window.auth.getCurrentProfile();
+        console.log('[AUTH] currentUserProfile:', currentUserProfile);
+    } catch (err) {
+        console.warn('[AUTH] Could not get session:', err);
+        currentUserProfile = null;
+    }
+
+    // Follow & favorite status
+    if (currentUserProfile && currentUserProfile.user_type === 'customer') {
+        try {
+            console.log('[FOLLOW] Checking follow status...');
+            isFollowing = await lilaAPI.isFollowing(currentUserProfile.id, businessId);
+            console.log('[FOLLOW] isFollowing:', isFollowing);
+        } catch (err) {
+            console.warn('[FOLLOW] Error checking follow status:', err);
+            isFollowing = false;
+        }
+
+        try {
+            console.log('[FAV] Checking favorite status...');
+            const { data: favData, error: favErr } = await supabaseClient
                 .from('favorites')
                 .select('id')
-                .eq('customer_id', profile.id)
+                .eq('customer_id', currentUserProfile.id)
                 .eq('business_id', businessId)
                 .single();
-            isFavorited = !!favData;
+
+            if (favErr) {
+                console.warn('[FAV] Favorite check error (may be normal if not favorited):', favErr.message);
+                isFavorited = false;
+            } else {
+                isFavorited = !!favData;
+                console.log('[FAV] isFavorited:', isFavorited);
+            }
+        } catch (err) {
+            console.warn('[FAV] Exception checking favorites:', err);
+            isFavorited = false;
         }
-        
-        renderProfile();
     }
-    
-    function renderProfile() {
-        const container = document.getElementById('profileContainer');
-        const ratingColor = utils.getRatingColor(businessData.avg_rating || 0, businessData.reviews_count || 0);
-        const isOnVacation = businessData.is_on_vacation;
-        const warningCount = businessData.warnings_count || 0;
-        
+
+    renderProfile();
+}
+
+/* ============================================================
+   6. RENDER ERROR
+   ============================================================ */
+function renderError(msg) {
+    document.getElementById('profileContainer').innerHTML = `
+        <div class="error-state">
+            <div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>
+            <div>${msg}</div>
+        </div>
+    `;
+}
+
+/* ============================================================
+   7. RENDER PROFILE
+   ============================================================ */
+function renderProfile() {
+    console.log('[RENDER] Rendering profile...');
+    const container  = document.getElementById('profileContainer');
+    const avg        = businessData.avg_rating   || 0;
+    const cnt        = businessData.reviews_count || 0;
+    const warnings   = businessData.warnings_count || 0;
+    const onVacation = businessData.is_on_vacation;
+    const ratingCls  = getRatingClass(avg, cnt);
+
+    const isCustomer = currentUserProfile?.user_type === 'customer';
+    const notLoggedIn = !currentUserProfile;
+
+    /* ---- action buttons ---- */
+    let actionBtns = '';
+    if (isCustomer) {
+        actionBtns = `
+            <button class="btn btn-outline ${isFollowing ? 'active-follow' : ''}" onclick="toggleFollow()">
+                ${isFollowing ? '✅ ' + t('متابعة','Suivi') : '➕ ' + t('متابعة','Suivre')}
+            </button>
+            <button class="btn btn-outline ${isFavorited ? 'active-fav' : ''}" onclick="toggleFavorite()">
+                ${isFavorited ? '⭐ ' + t('مفضلة','Favori') : '☆ ' + t('إضافة للمفضلة','Ajouter')}
+            </button>
+        `;
+    } else if (notLoggedIn) {
+        actionBtns = `
+            <button class="btn btn-outline" onclick="window.auth.signInWithGoogle()">
+                🔑 ${t('سجلي للمتابعة','Connectez-vous')}
+            </button>
+        `;
+    }
+    actionBtns += `
+        <button class="btn btn-book" onclick="bookNow()">
+            📅 ${t('احجزي الآن','Réserver')}
+        </button>
+    `;
+
+    /* ---- vacation banner ---- */
+    const vacationHTML = onVacation ? `
+        <div class="vacation-banner">
+            🚫 ${t('هذا الحساب في إجازة مؤقتة حتى','Ce compte est en vacances jusqu\'au')}
+            ${businessData.vacation_until ? new Date(businessData.vacation_until).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'fr-DZ') : ''}
+        </div>
+    ` : '';
+
+    /* ---- cover ---- */
+    const coverHTML = businessData.cover_photo_url
+        ? `<img src="${businessData.cover_photo_url}" alt="${t('غلاف','Couverture')}">`
+        : `<div class="cover-placeholder">🏪</div>`;
+
+    /* ---- badges ---- */
+    const goldBadge    = businessData.has_gold_badge ? `<span class="badge-gold">⭐</span>` : '';
+    const warnBadge    = warnings >= 3 ? `<span class="badge-warning">⚠️ ${t('تحذير','Avert.')}</span>` : '';
+    const newBadge     = cnt === 0 ? `<span class="badge-new">🆕 ${t('جديد','Nouveau')}</span>` : '';
+
+    /* ---- inject HTML ---- */
+    container.innerHTML = sanitize(`
+        ${vacationHTML}
+
+        <div class="profile-cover">${coverHTML}</div>
+
+        <div class="avatar-wrap">
+            <div class="avatar-ring">
+                <div class="avatar-inner">
+                    <img src="${businessData.logo_url || '../assets/images/default-business.png'}"
+                         alt="${businessData.business_name || ''}"
+                         onerror="this.src='../assets/images/default-business.png'">
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-name">
+            ${businessData.business_name || t('حساب تجاري','Compte commercial')}
+            ${goldBadge}${warnBadge}${newBadge}
+        </div>
+        <div class="profile-username">@${businessData.username || ''}</div>
+
+        <div class="rating-block">
+            ${starsHTML(avg, ratingCls)}
+            <div class="rating-meta">
+                ${avg.toFixed(1)} / 5 &nbsp;·&nbsp; ${cnt} ${t('تقييم','avis')}
+            </div>
+            <div class="followers-count">
+                👥 ${businessData.followers_count || 0} ${t('متابِع','abonné(e)s')}
+            </div>
+        </div>
+
+        <div class="action-row">${actionBtns}</div>
+
+        <div class="divider"></div>
+
+        <div class="card">
+            <div class="card-title">📝 ${t('نبذة عني','À propos')}</div>
+            <p>${businessData.bio || t('لا يوجد وصف','Aucune description')}</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">✨ ${t('الخدمات المقدمة','Services')}</div>
+            <div class="services-tags">${getServicesTags(businessData.services)}</div>
+        </div>
+
+        ${businessData.short_video_url ? `
+            <div class="video-wrap">
+                <video src="${businessData.short_video_url}" controls
+                    poster="${businessData.video_thumbnail_url || ''}"></video>
+                <div class="video-label">🎬 ${t('فيديو تعريفي','Vidéo de présentation')}</div>
+            </div>
+        ` : ''}
+
+        <div class="tabs-bar" id="tabsBar">
+            <button class="tab-btn active" data-tab="posts">📝 ${t('منشورات','Posts')}</button>
+            <button class="tab-btn" data-tab="gallery">📸 ${t('ألبوم الصور','Galerie')}</button>
+            <button class="tab-btn" data-tab="reviews">⭐ ${t('التقييمات','Avis')}</button>
+            <button class="tab-btn" data-tab="info">ℹ️ ${t('معلومات','Infos')}</button>
+        </div>
+
+        <div id="tabContent"></div>
+    `);
+
+    // tab listeners
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            activeTab = btn.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTabContent();
+        });
+    });
+
+    renderTabContent();
+    console.log('[RENDER] Profile rendered successfully.');
+}
+
+/* ============================================================
+   8. SERVICES TAGS
+   ============================================================ */
+function getServicesTags(services) {
+    if (!services || !services.length) {
+        return `<span class="service-tag">${t('خدمات متعددة','Services variés')}</span>`;
+    }
+    const map = {
+        salon_hair:     t('💇 صالون حلاقة',   '💇 Salon coiffure'),
+        salon_beauty:   t('💅 صالون تجميل',   '💅 Salon beauté'),
+        home_hair:      t('🏠 حلاقة في المنزل','🏠 Coiffure domicile'),
+        mobile_hair:    t('🚗 حلاقة متنقلة',   '🚗 Coiffure mobile'),
+        product_seller: t('🛍️ بائعة منتجات',   '🛍️ Vente produits'),
+        dress_rental:   t('👗 تأجير أزياء',    '👗 Location robes'),
+        home_service:   t('🏠 خدمات منزلية',   '🏠 Services domicile'),
+    };
+    return services.map(s => `<span class="service-tag">${map[s] || s}</span>`).join('');
+}
+
+/* ============================================================
+   9. RENDER TAB CONTENT
+   ============================================================ */
+async function renderTabContent() {
+    const container = document.getElementById('tabContent');
+    if (!container) return;
+
+    container.innerHTML = `<div class="loading-state"><div class="spinner"></div></div>`;
+    console.log('[TAB] Loading tab:', activeTab);
+
+    try {
+        if (activeTab === 'posts') {
+            await renderPostsTab(container);
+        } else if (activeTab === 'gallery') {
+            await renderGalleryTab(container);
+        } else if (activeTab === 'reviews') {
+            await renderReviewsTab(container);
+        } else if (activeTab === 'info') {
+            renderInfoTab(container);
+        }
+    } catch (err) {
+        console.error('[TAB] Error rendering tab', activeTab, ':', err);
+        container.innerHTML = `<div class="error-state">❌ ${t('حدث خطأ أثناء التحميل','Erreur de chargement')}</div>`;
+    }
+}
+
+/* ---- Posts ---- */
+async function renderPostsTab(container) {
+    console.log('[TAB:POSTS] Fetching posts for businessId:', businessId);
+    const posts = await lilaAPI.getPostsByBusiness(businessId);
+    console.log('[TAB:POSTS] Posts received:', posts?.length ?? 0);
+
+    if (!posts || !posts.length) {
         container.innerHTML = `
-            ${isOnVacation ? `<div class="vacation-badge">🚫 هذا الحساب في إجازة مؤقتة حتى ${new Date(businessData.vacation_until).toLocaleDateString()}</div>` : ''}
-            
-            <div class="profile-cover">
-                ${businessData.cover_photo_url ? `<img src="${businessData.cover_photo_url}" alt="غلاف">` : '<div style="height:100%;"></div>'}
-            </div>
-            
-            <div class="profile-avatar">
-                <img src="${businessData.logo_url || '../assets/images/default-business.png'}" alt="${businessData.business_name}">
-            </div>
-            
-            <div class="profile-name">
-                ${businessData.business_name}
-                ${businessData.has_gold_badge ? '<span style="color: gold;">⭐</span>' : ''}
-                ${warningCount >= 3 ? '<span class="warning-badge">⚠️ تحذير</span>' : ''}
-                ${businessData.reviews_count === 0 ? '<span class="warning-badge" style="background: var(--blue);">🆕 حساب جديد</span>' : ''}
-            </div>
-            <div class="profile-username">@${businessData.username}</div>
-            
-            <div class="action-buttons">
-                ${currentUserProfile?.user_type === 'customer' ? `
-                    <button class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow()">${isFollowing ? '✅ متابعة' : '➕ متابعة'}</button>
-                    <button class="btn-favorite ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite()">${isFavorited ? '⭐ مفضلة' : '☆ إضافة للمفضلة'}</button>
-                ` : `
-                    ${!currentUserProfile ? '<button class="btn-follow" onclick="window.auth.signInWithGoogle()">🔑 سجلي لتتابعي هذا الحساب</button>' : ''}
-                `}
-                <button class="btn-follow" style="background: var(--blue);" onclick="bookNow()">📅 احجزي الآن</button>
-            </div>
-            
-            <div class="rating-badge">
-                <div class="rating-stars rating-${ratingColor}">
-                    ${'★'.repeat(Math.floor(businessData.avg_rating || 0))}${'☆'.repeat(5 - Math.floor(businessData.avg_rating || 0))}
-                </div>
-                <div>${(businessData.avg_rating || 0).toFixed(1)} / 5 (${businessData.reviews_count || 0} تقييم)</div>
-                <div style="font-size: 0.8rem; margin-top: 5px;">👥 ${businessData.followers_count || 0} متابِع</div>
-            </div>
-            
-            <div class="info-section">
-                <h3>📝 نبذة عني</h3>
-                <p>${businessData.bio || 'لا يوجد وصف'}</p>
-            </div>
-            
-            <div class="info-section">
-                <h3>✨ الخدمات المقدمة</h3>
-                <div class="services-tags">
-                    ${getServicesTags(businessData.services)}
-                </div>
-            </div>
-            
-            ${businessData.short_video_url ? `
-                <div class="short-video">
-                    <video src="${businessData.short_video_url}" controls poster="${businessData.video_thumbnail_url}"></video>
-                    <div style="text-align: center; margin-top: 5px; font-size: 0.7rem; color: var(--text-dim);">🎬 فيديو تعريفي - 15 ثانية</div>
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                ${t('لا توجد منشورات بعد','Aucune publication pour l\'instant')}
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = posts.map(post => `
+        <div class="post-card">
+            <div class="post-date">📅 ${new Date(post.created_at).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'fr-DZ')}</div>
+            <div class="post-text">${post.content || ''}</div>
+            ${post.image_urls?.length ? `
+                <div class="post-images">
+                    ${post.image_urls.map(url => `
+                        <img src="${url}" alt="" onclick="window.open('${url}', '_blank')" loading="lazy">
+                    `).join('')}
                 </div>
             ` : ''}
-            
-            <div class="profile-tabs">
-                <div class="profile-tab ${activeTab === 'posts' ? 'active' : ''}" data-tab="posts">📝 منشورات</div>
-                <div class="profile-tab ${activeTab === 'gallery' ? 'active' : ''}" data-tab="gallery">📸 ألبوم الصور</div>
-                <div class="profile-tab ${activeTab === 'reviews' ? 'active' : ''}" data-tab="reviews">⭐ التقييمات</div>
-                <div class="profile-tab ${activeTab === 'info' ? 'active' : ''}" data-tab="info">ℹ️ معلومات</div>
+        </div>
+    `).join('');
+}
+
+/* ---- Gallery ---- */
+async function renderGalleryTab(container) {
+    console.log('[TAB:GALLERY] Loading gallery for businessId:', businessId);
+    // Fetch gallery images — adapt if lilaAPI has a gallery method
+    let images = [];
+    if (typeof lilaAPI.getGalleryByBusiness === 'function') {
+        try {
+            images = await lilaAPI.getGalleryByBusiness(businessId);
+            console.log('[TAB:GALLERY] Images received:', images?.length ?? 0);
+        } catch (err) {
+            console.warn('[TAB:GALLERY] getGalleryByBusiness error:', err);
+        }
+    } else {
+        console.warn('[TAB:GALLERY] lilaAPI.getGalleryByBusiness is not defined — showing empty state.');
+    }
+
+    if (!images || !images.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📸</div>
+                ${t('لا توجد صور في الألبوم بعد','Aucune photo dans la galerie')}
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="gallery-grid">
+            ${images.map(img => `
+                <img src="${img.url || img}" alt="" loading="lazy"
+                     onclick="window.open('${img.url || img}', '_blank')">
+            `).join('')}
+        </div>
+    `;
+}
+
+/* ---- Reviews ---- */
+async function renderReviewsTab(container) {
+    console.log('[TAB:REVIEWS] Fetching reviews for businessId:', businessId);
+    const reviews = await lilaAPI.getReviewsByBusiness(businessId);
+    console.log('[TAB:REVIEWS] Reviews received:', reviews?.length ?? 0);
+
+    if (!reviews || !reviews.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⭐</div>
+                ${t('لا توجد تقييمات بعد — كوني أول من يقيّم!','Aucun avis — soyez la première à noter !')}
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = reviews.map(r => `
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-author">${r.profiles?.full_name || t('مستخدمة','Utilisatrice')}</span>
+                <span class="review-stars">${'★'.repeat(r.rating_overall || 0)}${'☆'.repeat(5 - (r.rating_overall || 0))}</span>
             </div>
-            
-            <div id="tabContent"></div>
-        `;
-        
-        // إضافة مستمعي التبويبات
-        document.querySelectorAll('.profile-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                activeTab = tab.dataset.tab;
-                renderTabContent();
-                document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
-        });
-        
-        renderTabContent();
-    }
-    
-    function getServicesTags(services) {
-        if (!services || !services.length) return '<span class="service-tag">خدمات متعددة</span>';
-        const serviceNames = {
-            salon_hair: '💇 صالون حلاقة',
-            salon_beauty: '💅 صالون تجميل',
-            home_hair: '🏠 حلاقة في المنزل',
-            mobile_hair: '🚗 حلاقة متنقلة',
-            product_seller: '🛍️ بائعة منتجات',
-            dress_rental: '👗 تأجير أزياء',
-            home_service: '🏠 خدمات منزلية'
+            <div class="review-sub">
+                ${t('جودة','Qualité')}: ${'★'.repeat(r.rating_quality||0)} &nbsp;
+                ${t('سعر','Prix')}: ${'★'.repeat(r.rating_price||0)} &nbsp;
+                ${t('معاملة','Accueil')}: ${'★'.repeat(r.rating_manners||0)}
+            </div>
+            <div class="review-text">${r.comment || ''}</div>
+            ${r.reply_from_business ? `
+                <div class="review-reply">
+                    <strong>↩️ ${t('رد صاحبة الحساب','Réponse du compte')}</strong>
+                    ${r.reply_from_business}
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+/* ---- Info ---- */
+function renderInfoTab(container) {
+    console.log('[TAB:INFO] Rendering info tab.');
+
+    // Working hours
+    let hoursHTML = t('غير محدد','Non défini');
+    if (businessData.working_hours && typeof businessData.working_hours === 'object') {
+        const dayNames = {
+            ar: ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],
+            fr: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
         };
-        return services.map(s => `<span class="service-tag">${serviceNames[s] || s}</span>`).join('');
+        const days = dayNames[lang] || dayNames.ar;
+        const wh = businessData.working_hours;
+        hoursHTML = `<table class="hours-table">` +
+            Object.entries(wh).map(([day, val]) => {
+                const dayLabel = days[parseInt(day)] || day;
+                const isOpen   = val && val.open;
+                return `<tr>
+                    <td>${dayLabel}</td>
+                    <td class="${isOpen ? 'open' : 'closed'}">
+                        ${isOpen ? `${val.from || ''} - ${val.to || ''}` : t('مغلق','Fermé')}
+                    </td>
+                </tr>`;
+            }).join('') + `</table>`;
     }
-    
-    async function renderTabContent() {
-        const container = document.getElementById('tabContent');
-        
-        if (activeTab === 'posts') {
-            const posts = await lilaAPI.getPostsByBusiness(businessId);
-            if (!posts.length) {
-                container.innerHTML = '<div class="info-section" style="text-align: center;">📝 لا توجد منشورات بعد</div>';
-                return;
-            }
-            container.innerHTML = posts.map(post => `
-                <div class="info-section">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>📅 ${new Date(post.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <p style="margin-top: 10px;">${post.content}</p>
-                    ${post.image_urls?.length ? `<div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">${post.image_urls.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="window.open('${url}')">`).join('')}</div>` : ''}
-                </div>
-            `).join('');
-        }
-        else if (activeTab === 'gallery') {
-            // تحميل ألبوم الصور من API
-            container.innerHTML = `
-                <div class="info-section">
-                    <h3>📸 ألبوم الأعمال</h3>
-                    <div class="gallery-grid" id="galleryGrid">
-                        <div style="text-align: center; grid-column: 1/-1; color: var(--text-dim);">جاري تحميل الصور...</div>
-                    </div>
-                </div>
-            `;
-            // هنا سيتم جلب الصور من قاعدة البيانات
-        }
-        else if (activeTab === 'reviews') {
-            const reviews = await lilaAPI.getReviewsByBusiness(businessId);
-            if (!reviews.length) {
-                container.innerHTML = '<div class="info-section" style="text-align: center;">⭐ لا توجد تقييمات بعد. كوني أول من يقيم!</div>';
-                return;
-            }
-            container.innerHTML = reviews.map(review => `
-                <div class="info-section">
-                    <div style="display: flex; justify-content: space-between;">
-                        <strong>${review.profiles?.full_name || 'مستخدمة'}</strong>
-                        <span>${'★'.repeat(review.rating_overall)}${'☆'.repeat(5-review.rating_overall)}</span>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">جودة: ${'★'.repeat(review.rating_quality)} | سعر: ${'★'.repeat(review.rating_price)} | معاملة: ${'★'.repeat(review.rating_manners)}</div>
-                    <p style="margin-top: 8px;">${review.comment}</p>
-                    ${review.reply_from_business ? `<div style="background: rgba(255,140,0,0.1); padding: 10px; border-radius: 8px; margin-top: 10px;"><strong>رد صاحبة الحساب:</strong><br>${review.reply_from_business}</div>` : ''}
-                </div>
-            `).join('');
-        }
-        else if (activeTab === 'info') {
-            container.innerHTML = `
-                <div class="info-section">
-                    <h3>📍 العنوان</h3>
-                    <p><strong>الولاية:</strong> ${businessData.wilaya_name || 'غير محدد'}</p>
-                    <p><strong>البلدية:</strong> ${businessData.baladiyah_name || 'غير محدد'}</p>
-                    <p><strong>الوصف:</strong> ${businessData.address_description || 'لا يوجد'}</p>
-                </div>
-                <div class="info-section">
-                    <h3>📞 التواصل</h3>
-                    <p>📱 ${businessData.phone || 'غير متوفر'}</p>
-                    <p>💬 واتساب: ${businessData.whatsapp || 'غير متوفر'}</p>
-                    ${businessData.instagram ? `<p>📷 <a href="${businessData.instagram}" target="_blank" style="color: var(--accent-orange);">Instagram</a></p>` : ''}
-                    ${businessData.tiktok ? `<p>🎵 <a href="${businessData.tiktok}" target="_blank" style="color: var(--accent-orange);">TikTok</a></p>` : ''}
-                </div>
-                <div class="info-section">
-                    <h3>⏰ مواعيد العمل</h3>
-                    <p>${businessData.working_hours ? JSON.stringify(businessData.working_hours) : 'غير محدد'}</p>
-                </div>
-            `;
-        }
+
+    container.innerHTML = `
+        <div class="card">
+            <div class="card-title">📍 ${t('العنوان','Adresse')}</div>
+            <div class="info-row"><span class="info-label">${t('الولاية','Wilaya')}</span><span class="info-value">${businessData.wilaya_name || t('غير محدد','Non défini')}</span></div>
+            <div class="info-row"><span class="info-label">${t('البلدية','Commune')}</span><span class="info-value">${businessData.baladiyah_name || t('غير محدد','Non défini')}</span></div>
+            <div class="info-row"><span class="info-label">${t('الوصف','Description')}</span><span class="info-value">${businessData.address_description || t('لا يوجد','Aucune')}</span></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📞 ${t('التواصل','Contact')}</div>
+            ${businessData.phone ? `<div class="info-row"><span class="info-label">📱 ${t('الهاتف','Téléphone')}</span><span class="info-value">${businessData.phone}</span></div>` : ''}
+            ${businessData.whatsapp ? `<div class="info-row"><span class="info-label">💬 WhatsApp</span><span class="info-value">${businessData.whatsapp}</span></div>` : ''}
+            ${businessData.instagram ? `<div class="info-row"><span class="info-label">📷 Instagram</span><span class="info-value"><a href="${businessData.instagram}" target="_blank">${t('عرض الصفحة','Voir la page')}</a></span></div>` : ''}
+            ${businessData.tiktok ? `<div class="info-row"><span class="info-label">🎵 TikTok</span><span class="info-value"><a href="${businessData.tiktok}" target="_blank">${t('عرض الصفحة','Voir la page')}</a></span></div>` : ''}
+            ${!businessData.phone && !businessData.whatsapp && !businessData.instagram && !businessData.tiktok ? `<div style="color:var(--c-text-3); font-size:0.82rem;">${t('لا توجد معلومات تواصل','Aucune info de contact')}</div>` : ''}
+        </div>
+
+        <div class="card">
+            <div class="card-title">⏰ ${t('مواعيد العمل','Horaires')}</div>
+            ${hoursHTML}
+        </div>
+    `;
+}
+
+/* ============================================================
+   10. FOLLOW / FAVORITE / BOOK
+   ============================================================ */
+window.toggleFollow = async function () {
+    if (!currentUserProfile) {
+        console.warn('[FOLLOW] User not logged in, redirecting to sign in.');
+        window.auth.signInWithGoogle();
+        return;
     }
-    
-    window.toggleFollow = async () => {
-        if (!currentUserProfile) {
-            window.auth.signInWithGoogle();
-            return;
-        }
+    try {
         if (isFollowing) {
+            console.log('[FOLLOW] Unfollowing businessId:', businessId);
             await lilaAPI.unfollowBusiness(currentUserProfile.id, businessId);
             isFollowing = false;
-            utils.showToast('تم إلغاء المتابعة', 'info');
+            showToast(t('تم إلغاء المتابعة','Désabonné(e)'), 'info');
+            console.log('[FOLLOW] Unfollowed successfully.');
         } else {
+            console.log('[FOLLOW] Following businessId:', businessId);
             await lilaAPI.followBusiness(currentUserProfile.id, businessId);
             isFollowing = true;
-            utils.showToast('تمت المتابعة بنجاح', 'success');
+            showToast(t('تمت المتابعة بنجاح','Abonné(e) avec succès'), 'success');
+            console.log('[FOLLOW] Followed successfully.');
         }
         renderProfile();
-    };
-    
-    window.toggleFavorite = async () => {
-        if (!currentUserProfile) {
-            window.auth.signInWithGoogle();
-            return;
-        }
+    } catch (err) {
+        console.error('[FOLLOW] Error toggling follow:', err);
+        showToast(t('حدث خطأ، حاولي مجدداً','Erreur, réessayez'), 'error');
+    }
+};
+
+window.toggleFavorite = async function () {
+    if (!currentUserProfile) {
+        console.warn('[FAV] User not logged in, redirecting to sign in.');
+        window.auth.signInWithGoogle();
+        return;
+    }
+    try {
         if (isFavorited) {
+            console.log('[FAV] Removing from favorites, businessId:', businessId);
             await lilaAPI.removeFromFavorites(currentUserProfile.id, businessId);
             isFavorited = false;
-            utils.showToast('تمت الإزالة من المفضلة', 'info');
+            showToast(t('تمت الإزالة من المفضلة','Retiré des favoris'), 'info');
+            console.log('[FAV] Removed from favorites.');
         } else {
+            console.log('[FAV] Adding to favorites, businessId:', businessId);
             await lilaAPI.addToFavorites(currentUserProfile.id, businessId);
             isFavorited = true;
-            utils.showToast('تمت الإضافة إلى المفضلة', 'success');
+            showToast(t('تمت الإضافة إلى المفضلة','Ajouté aux favoris'), 'success');
+            console.log('[FAV] Added to favorites.');
         }
         renderProfile();
-    };
-    
-    window.bookNow = () => {
-        if (!currentUserProfile) {
-            if (confirm('للحجز، يرجى تسجيل الدخول أولاً. هل تريدين تسجيل الدخول الآن؟')) {
-                window.auth.signInWithGoogle();
-            }
-            return;
+    } catch (err) {
+        console.error('[FAV] Error toggling favorite:', err);
+        showToast(t('حدث خطأ، حاولي مجدداً','Erreur, réessayez'), 'error');
+    }
+};
+
+window.bookNow = function () {
+    console.log('[BOOK] bookNow() called. currentUserProfile:', currentUserProfile);
+    if (!currentUserProfile) {
+        if (confirm(t('للحجز، يرجى تسجيل الدخول أولاً. هل تريدين تسجيل الدخول الآن؟',
+                      'Pour réserver, veuillez vous connecter. Voulez-vous vous connecter ?'))) {
+            window.auth.signInWithGoogle();
         }
-        window.location.href = `booking.html?business=${businessId}`;
-    };
-    
-    // التهيئة
-    document.addEventListener('DOMContentLoaded', async () => {
-        await window.auth.getCurrentSession();
-        await loadBusinessProfile();
-        if (typeof particles !== 'undefined') particles.init();
-    });
+        return;
+    }
+    console.log('[BOOK] Redirecting to booking page for businessId:', businessId);
+    window.location.href = `booking.html?business=${businessId}`;
+};
+
+/* ============================================================
+   11. INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('[INIT] DOMContentLoaded — starting init...');
+    await loadBusinessProfile();
+    console.log('[INIT] Init complete.');
+});
 </script>
 </body>
 </html>
