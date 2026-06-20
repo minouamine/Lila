@@ -13,32 +13,21 @@
    واحدة عند التحميل فقط (لا تتحدث فوراً عند الضغط).
    ============================================= */
 html, body {
-    height: 100%;
     margin: 0; padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
     background: var(--c-bg);
     color: var(--c-text);
     font-family: 'Cairo', sans-serif;
 }
 
 /* ── منطقة المحتوى القابلة للتمرير ── */
+/* ── منطقة المحتوى ── */
 .register-scroll {
-    flex: 1 1 auto;
     width: 100%;
-    min-width: 0;
     box-sizing: border-box;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 0;
     background: var(--c-bg);
     transition: background var(--t);
     padding: 14px 12px 24px;
 }
-
 /* ── شريط علوي صغير: زر رجوع فقط (سهم بلا دائرة) ── */
 .top-bar {
     display: flex;
