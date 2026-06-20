@@ -802,9 +802,10 @@ async function renderAccountUI() {
     const isBusiness = userProfile.user_type === 'business' && businessProfile;
     const tier = businessProfile?.subscription_tier || 'silver';
 
-    const avatarImg = `<img src="${userProfile.avatar_url || '../assets/images/default-avatar.png'}"
-         onerror="this.src='../assets/images/default-avatar.png'"
-         alt="${DOMPurify.sanitize(userProfile.full_name || 'مستخدمة')}">`;
+    const avatarImg = userProfile.avatar_url
+        ? `<img src="${userProfile.avatar_url}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:1.6rem;">👤</span>`
+        : `<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:1.6rem;">👤</span>`;
 
     container.innerHTML = `
         <!-- رأس الصفحة -->
@@ -1128,7 +1129,7 @@ function renderTabContent() {
                 </div>` : ''}
             </div>
 
-            <button class="edit-biz-btn" onclick="onTabClick('settings')">
+            <button class="edit-biz-btn" onclick="window.location.href='business-dashboard.html'">
                 ✏️ ${lang === 'fr' ? 'Modifier le profil professionnel' : 'تعديل معلومات الحساب التجاري'}
             </button>
         `;
@@ -1223,10 +1224,7 @@ function renderTabContent() {
                 <div class="form-group">
                     <label>${lang === 'fr' ? 'Photo de profil' : 'صورة الملف الشخصي'}</label>
                     <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-                        <img id="avatarPreview"
-                            src="${userProfile.avatar_url || '../assets/images/default-avatar.png'}"
-                            onerror="this.src='../assets/images/default-avatar.png'"
-                            style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--c-primary);">
+                        <div style="width:52px;height:52px;border-radius:50%;background:var(--c-surface);border:2px solid var(--c-primary);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden;" id="avatarPreviewWrap">👤</div>
                         <input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp,image/gif" style="flex:1;">
                     </div>
                     <span id="avatarError" class="field-error-msg" style="display:none;"></span>
@@ -1261,7 +1259,8 @@ function renderTabContent() {
                     return;
                 }
                 avatarError.style.display = 'none';
-                document.getElementById('avatarPreview').src = URL.createObjectURL(file);
+                const wrap = document.getElementById('avatarPreviewWrap');
+                wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;">`;
             });
         }
     }
