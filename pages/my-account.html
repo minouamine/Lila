@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ليلى — حسابي</title>
+<link rel="stylesheet" href="../css/main.css">
+<style>
+/* =============================================
+   my-account.html — scoped only, inherits main.css
+   نفس بنية search.html: لا header، لا أزرار لغة/صوت/مطورة.
+   اللغة تُقرأ من localStorage مرة واحدة عند التحميل فقط
+   (لا تتحدث فوراً عند الضغط، فقط بعد إعادة تحميل الصفحة).
+   ============================================= */
+html, body {
+    height: 100%;
+    margin: 0; padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Cairo', sans-serif;
+}
+
+/* ── منطقة المحتوى القابلة للتمرير ── */
+.account-scroll {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    background: var(--c-bg);
+    transition: background var(--t);
+    padding: 14px 12px calc(14px + 10px);
+}
+
+/* ── رأس الملف الشخصي ── */
+.profile-header {
+    background: var(--c-card);
+    border-radius: 16px;
+    padding: 22px 18px 16px;
+    text-align: center;
+    border: 1px solid var(--c-border);
+    box-shadow: 0 0 12px var(--c-glow-soft);
+    transition: background var(--t), border-color var(--t);
+}
+
+.profile-avatar {
+    width: 76px; height: 76px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-grad);
+}
+.profile-avatar-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+}
+.profile-avatar-inner img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+}
+
+.profile-name-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 7px; flex-wrap: wrap;
+    margin-bottom: 3px;
+}
+.profile-name {
+    font-size: 1.05rem; font-weight: 800; color: var(--c-text);
+    transition: color var(--t);
+}
+.tier-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 9px; border-radius: 20px;
+    font-size: 0.62rem; font-weight: 700; letter-spacing: .3px;
+}
+.tier-badge.silver   { background: linear-gradient(135deg,#c0c0c0,#9e9e9e); color:#1a1a1a; }
+.tier-badge.gold     { background: linear-gradient(135deg,#f7d774,#caa53d); color:#2a1f00; }
+.tier-badge.platinum { background: linear-gradient(135deg,#b993f4,#8a6fd1); color:#fff; }
+
+.profile-username {
+    color: var(--c-text-2); font-size: 0.74rem; margin-bottom: 10px;
+    transition: color var(--t);
+}
+
+.open-biz-btn {
+    margin-top: 4px;
+    padding: 9px 20px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.80rem;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.open-biz-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 16px var(--c-glow); }
+
+/* إحصائيات سريعة */
+.stats-row {
+    display: flex; justify-content: center;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--c-border);
+    transition: border-color var(--t);
+}
+.stat-item {
+    flex: 1; text-align: center; cursor: pointer;
+    padding: 6px 4px; border-radius: 10px;
+    max-width: 110px;
+    transition: background .2s;
+}
+.stat-item:hover { background: var(--c-glow-soft); }
+.stat-number { font-size: 1.25rem; font-weight: 800; color: var(--c-primary); }
+.stat-label  { font-size: 0.62rem; color: var(--c-text-2); transition: color var(--t); }
+
+/* ── شريط التبويبات الأيقوني (بنمط filter-chip من search.html) ── */
+.tabs-strip {
+    width: 100%;
+    margin-top: 14px;
+    padding: 4px 2px 6px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+}
+.tabs-strip::-webkit-scrollbar { display: none; }
+
+.tab-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 64px;
+}
+.tab-ring {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-grad);
+    transition: transform .22s var(--ease-snap), box-shadow .22s;
+}
+.tab-chip.active .tab-ring,
+.tab-chip:hover  .tab-ring {
+    transform: scale(1.10);
+    box-shadow: 0 4px 14px var(--c-glow);
+}
+.tab-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem;
+    transition: background var(--t);
+}
+.tab-chip.active .tab-inner { background: var(--c-glow-soft); }
+.tab-label {
+    font-size: 0.50rem;
+    font-weight: 700;
+    color: var(--c-text-2);
+    white-space: nowrap;
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.tab-chip.active .tab-label { color: var(--c-primary); }
+
+/* ── محتوى التبويب ── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#tabContent { animation: fadeIn .25s ease; margin-top: 14px; }
+
+.items-list { display: flex; flex-direction: column; gap: 10px; }
+.item-card {
+    background: var(--c-card);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    border: 1px solid var(--c-border);
+    transition: transform .2s var(--ease-snap), border-color var(--t), background var(--t);
+}
+.item-card:hover { transform: translateX(4px); border-color: var(--c-primary); }
+[dir="ltr"] .item-card:hover { transform: translateX(-4px); }
+.item-image { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; flex-shrink: 0; background: var(--c-surface); }
+.item-info { flex: 1; min-width: 0; }
+.item-name { font-weight: 700; font-size: 0.85rem; margin-bottom: 3px; color: var(--c-text); transition: color var(--t); }
+.item-details { font-size: 0.70rem; color: var(--c-text-2); transition: color var(--t); }
+.item-rating { color: gold; font-size: 0.74rem; }
+.item-status { padding: 3px 10px; border-radius: 20px; font-size: 0.62rem; font-weight: 700; display: inline-block; margin-top: 4px; }
+.status-pending   { background: #f87171; color: #fff; }
+.status-confirmed { background: #00c87a; color: #fff; }
+.status-completed { background: #1e6fff; color: #fff; }
+.status-cancelled { background: #64748b; color: #fff; }
+.remove-btn {
+    background: none; border: none; color: #ef4444;
+    cursor: pointer; font-size: 1.05rem; padding: 6px; flex-shrink: 0;
+    transition: transform .2s;
+}
+.remove-btn:hover { transform: scale(1.15); }
+
+/* قسم بيانات الحساب التجاري / لوحة التحكم */
+.biz-info-card, .dashboard-card {
+    background: var(--c-card);
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid var(--c-border);
+    margin-bottom: 12px;
+    transition: background var(--t), border-color var(--t);
+}
+.biz-info-card h4, .dashboard-card h4 {
+    color: var(--c-primary);
+    margin: 0 0 14px 0;
+    font-size: 0.92rem;
+    display: flex; align-items: center; gap: 7px;
+}
+.biz-info-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.80rem; }
+.biz-info-row .info-label { color: var(--c-text-2); min-width: 100px; flex-shrink: 0; font-weight: 700; transition: color var(--t); }
+.biz-info-row .info-value { color: var(--c-text); flex: 1; word-break: break-word; transition: color var(--t); }
+.biz-social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 3px; }
+.biz-social-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 20px; font-size: 0.70rem; font-weight: 600;
+    text-decoration: none; border: 1px solid var(--c-border); color: var(--c-text-2);
+    transition: all .2s;
+}
+.biz-social-link:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.services-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.service-tag {
+    padding: 3px 10px; background: var(--c-glow-soft); border-radius: 20px;
+    font-size: 0.68rem; color: var(--c-primary); font-weight: 700;
+}
+.edit-biz-btn {
+    width: 100%; padding: 10px; border-radius: 12px;
+    border: 1px solid var(--c-primary); background: transparent; color: var(--c-primary);
+    font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 0.84rem;
+    margin-top: 4px; transition: all .25s;
+}
+.edit-biz-btn:hover { background: var(--c-primary); color: #fff; }
+
+.tier-features { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.tier-feature { display: flex; align-items: center; gap: 9px; font-size: 0.78rem; color: var(--c-text); transition: color var(--t); }
+.tier-feature .feat-icon { font-size: .95rem; width: 20px; text-align: center; }
+.tier-feature.locked { color: var(--c-text-3); }
+.tier-feature.locked .feat-icon { filter: grayscale(1); opacity: .5; }
+.go-dashboard-btn {
+    width: 100%; padding: 12px; border-radius: 12px; border: none;
+    font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 0.86rem;
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.go-dashboard-btn.silver-btn   { background: linear-gradient(135deg,#c0c0c0,#9e9e9e); color:#1a1a1a; }
+.go-dashboard-btn.gold-btn     { background: linear-gradient(135deg,#f7d774,#caa53d); color:#2a1f00; }
+.go-dashboard-btn.platinum-btn { background: linear-gradient(135deg,#b993f4,#8a6fd1); color:#fff; }
+.go-dashboard-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.3); }
+
+.upgrade-notice {
+    background: var(--c-glow-soft);
+    border: 1px solid var(--c-border-act);
+    border-radius: 12px; padding: 11px 14px;
+    font-size: 0.76rem; color: var(--c-text-2);
+    margin-top: 11px; line-height: 1.6;
+    transition: color var(--t), border-color var(--t);
+}
+.upgrade-notice a { color: var(--c-primary); font-weight: 700; text-decoration: none; cursor: pointer; }
+.pending-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; background: rgba(248,113,113,.15);
+    border: 1px solid #f87171; border-radius: 20px;
+    font-size: 0.70rem; color: #f87171; margin-top: 8px;
+}
+
+/* منشورات / قصص */
+.posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 10px; }
+.post-card, .story-card {
+    background: var(--c-card); border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--c-border); cursor: pointer;
+    transition: transform .2s var(--ease-snap), border-color var(--t);
+    position: relative;
+}
+.post-card:hover, .story-card:hover { border-color: var(--c-primary); transform: translateY(-2px); }
+.post-card-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--c-surface); }
+.post-card-body { padding: 8px 10px; }
+.post-card-text {
+    font-size: 0.72rem; color: var(--c-text);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    transition: color var(--t);
+}
+.post-card-date { font-size: 0.62rem; color: var(--c-text-3); margin-top: 4px; }
+.story-card-img { width: 100%; aspect-ratio: 9/16; object-fit: cover; display: block; max-height: 180px; background: var(--c-surface); }
+.story-expired {
+    position: absolute; inset: 0; background: rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; color: #ccc;
+}
+.story-time {
+    position: absolute; bottom: 7px; right: 7px;
+    background: rgba(0,0,0,.6); color: #fff;
+    font-size: 0.62rem; padding: 2px 7px; border-radius: 10px;
+}
+[dir="ltr"] .story-time { right: auto; left: 7px; }
+
+.locked-feature-notice {
+    background: var(--c-card); border-radius: 14px; padding: 36px 20px;
+    text-align: center; border: 1px solid var(--c-border);
+}
+.locked-feature-notice .lock-icon { font-size: 2.6rem; margin-bottom: 12px; }
+.locked-feature-notice h4 { color: var(--c-text); margin-bottom: 7px; font-size: .92rem; transition: color var(--t); }
+.locked-feature-notice p { color: var(--c-text-2); font-size: 0.78rem; margin-bottom: 16px; line-height: 1.6; transition: color var(--t); }
+.locked-upgrade-btn {
+    padding: 9px 22px; border-radius: 20px; border: none;
+    background: linear-gradient(135deg,#f7d774,#caa53d); color:#2a1f00;
+    font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif;
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.locked-upgrade-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(202,165,61,.4); }
+
+/* إعدادات */
+.edit-form { background: var(--c-card); border-radius: 14px; padding: 20px; border: 1px solid var(--c-border); transition: background var(--t), border-color var(--t); }
+.edit-form h3 { color: var(--c-primary); margin-bottom: 16px; font-size: 0.96rem; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 7px; font-weight: 700; color: var(--c-text-2); font-size: 0.78rem; transition: color var(--t); }
+.form-group input, .form-group textarea {
+    width: 100%; padding: 10px 12px;
+    background: var(--c-surface); border: 1px solid var(--c-border-act);
+    border-radius: 9px; color: var(--c-text);
+    font-family: 'Cairo', sans-serif; font-size: 0.85rem;
+    box-sizing: border-box; outline: none;
+    transition: border-color var(--t), background var(--t), color var(--t);
+}
+.form-group input:focus, .form-group textarea:focus {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px var(--c-glow-soft);
+}
+.form-group .email-display {
+    padding: 10px 12px; background: var(--c-surface);
+    border: 1px solid var(--c-border); border-radius: 9px;
+    color: var(--c-text-2); font-size: 0.82rem;
+    user-select: all; direction: ltr; text-align: left;
+    transition: color var(--t), background var(--t), border-color var(--t);
+}
+.save-btn {
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+    border: none; border-radius: 10px; padding: 12px 22px;
+    color: #fff; font-weight: 700; cursor: pointer; width: 100%;
+    font-family: 'Cairo', sans-serif; font-size: 0.90rem;
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.save-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 14px var(--c-glow); }
+.save-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.field-error-msg { color: #ef4444; font-size: 11px; margin-top: 5px; display: block; }
+
+/* تسجيل الخروج */
+.logout-section { margin-top: 22px; text-align: center; }
+.logout-btn {
+    background: rgba(239,68,68,.12); border: 1px solid #ef4444;
+    border-radius: 12px; padding: 11px 26px; color: #ef4444;
+    font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif;
+    transition: all .25s;
+}
+.logout-btn:hover { background: #ef4444; color: #fff; }
+
+/* تسجيل الدخول */
+.login-prompt {
+    text-align: center; padding: 50px 20px;
+    background: var(--c-card); border-radius: 16px;
+    border: 1px solid var(--c-border);
+    transition: background var(--t), border-color var(--t);
+}
+.login-prompt-icon { font-size: 3.2rem; margin-bottom: 16px; }
+.login-prompt h3 { color: var(--c-primary); margin-bottom: 8px; font-size: 1rem; }
+.login-prompt p { color: var(--c-text-2); font-size: 0.82rem; transition: color var(--t); }
+
+/* زر دخول Google بأيقونة حقيقية */
+.google-login-btn {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    padding: 11px 22px;
+    color: #3c4043;
+    font-weight: 600;
+    font-size: 0.86rem;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    transition: box-shadow .25s, transform .2s var(--ease-snap);
+}
+.google-login-btn:hover { box-shadow: 0 4px 14px rgba(0,0,0,.25); transform: translateY(-1px); }
+.google-login-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* حالة فارغة */
+.empty-state { text-align: center; padding: 40px 18px; color: var(--c-text-2); transition: color var(--t); }
+.empty-icon { font-size: 2.4rem; margin-bottom: 12px; }
+
+/* spinner */
+.spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--c-border-act);
+    border-top-color: var(--c-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state { text-align: center; padding: 50px 18px; color: var(--c-text-2); }
+</style>
+</head>
+<body>
+
+<div class="account-scroll" id="accountScroll">
+    <div id="accountContent">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p data-ar="جارٍ تحميل حسابك..." data-fr="Chargement de votre compte...">جارٍ تحميل حسابك...</p>
+        </div>
+    </div>
+</div>
+
+<script src="../js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/pending_business_profile.js"></script>
+<script src="../js/utils.js"></script>
+
+<script>
+/* =============================================
+   my-account.html — logic (preview / mock data)
+   ============================================= */
+
+/*
+ * ── اللغة ─────────────────────────────────────
+ * نفس درس search.html: index.html لا يرسل أي شيء
+ * عبر postMessage ولا يوفر window.lang للـ iframe.
+ * لذلك نقرأ lila_lang من localStorage.
+ *
+ * مهم: بعكس ما حدث سابقاً مع search.html، هنا لا نضع
+ * أي مستمع (listener) لتغيّر اللغة أثناء التفاعل. اللغة
+ * تُقرأ مرة واحدة فقط عند DOMContentLoaded. فإن غيّر
+ * المستخدم اللغة من الإعدادات في index.html، لن تتغير
+ * فوراً هنا — فقط بعد إعادة تحميل هذا الـ iframe (تماماً
+ * كما طُلب صراحة).
+ */
+function getLang() {
+    return localStorage.getItem('lila_lang') || 'ar';
+}
+
+function syncTheme() {
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+    const b = document.body;
+    const themes = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
+    themes.forEach(t => b.classList.remove(t));
+    b.classList.add(theme);
+    b.classList.toggle('dark-mode',  mode === 'dark');
+    b.classList.toggle('light-mode', mode !== 'dark');
+}
+
+function applyLangAttrs() {
+    const lang = getLang();
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+}
+
+/* ── حالة الصفحة ── */
+let userProfile     = null;
+let businessProfile = null;
+let favoritesList    = [];
+let followingList     = [];
+let bookingsList      = [];
+let postsList         = [];
+let storiesList       = [];
+let activeTab         = 'bookings';
+let pendingUpgrade    = null;
+
+const SVG_GOOGLE = `
+<svg viewBox="0 0 48 48">
+  <path fill="#FFC107" d="M43.61 20.08H42V20H24v8h11.3c-1.64 4.66-6.06 8-11.3 8-6.63 0-12-5.37-12-12s5.37-12 12-12c3.06 0 5.85 1.15 7.97 3.03l5.66-5.66C34.6 6.05 29.6 4 24 4 12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20c0-1.34-.14-2.65-.39-3.92z"/>
+  <path fill="#FF3D00" d="M6.31 14.69l6.57 4.82C14.62 16.07 18.96 13 24 13c3.06 0 5.85 1.15 7.97 3.03l5.66-5.66C34.6 6.05 29.6 4 24 4 16.32 4 9.68 8.34 6.31 14.69z"/>
+  <path fill="#4CAF50" d="M24 44c5.5 0 10.43-2.11 14.18-5.55l-6.55-5.54C29.7 34.7 27 35.65 24 35.65c-5.22 0-9.63-3.32-11.28-7.95l-6.5 5.01C9.6 39.55 16.25 44 24 44z"/>
+  <path fill="#1976D2" d="M43.61 20.08H42V20H24v8h11.3c-.79 2.24-2.24 4.16-4.13 5.46.001-.001 6.55 5.54 6.55 5.54C41.5 35.74 44 30.5 44 24c0-1.34-.14-2.65-.39-3.92z"/>
+</svg>`;
+
+/* =====================================================
+   تحميل بيانات المستخدم (مطابق للأصل حرفياً — لا وميض:
+   ننتظر isReady ثم نحسم الحالة فعلياً قبل أي render)
+   ===================================================== */
+async function loadUserData() {
+    if (window.auth && !window.auth.isReady) {
+        await new Promise(resolve => {
+            const interval = setInterval(() => {
+                if (window.auth.isReady) { clearInterval(interval); resolve(); }
+            }, 50);
+        });
+    }
+    const profile = window.auth ? window.auth.getCurrentProfile() : null;
+    if (!profile) { renderLoginPrompt(); return; }
+    userProfile = profile;
+    await loadBusinessProfile();
+    await loadFavorites();
+    await loadFollowing();
+    await loadBookings();
+    if (userProfile.user_type === 'business' && businessProfile) {
+        await loadPosts();
+        await loadStories();
+    }
+    pendingUpgrade = await fetchPendingUpgrade();
+    await renderAccountUI();
+}
+
+/* ── تحميل بيانات الحساب التجاري ── */
+async function loadBusinessProfile() {
+    businessProfile = null;
+    try {
+        const { data, error } = await supabaseClient
+            .from('business_profiles')
+            .select('*')
+            .eq('id', userProfile.id)
+            .maybeSingle();
+        if (!error && data) businessProfile = data;
+    } catch (error) {
+        console.error('Error loading business profile:', error);
+    }
+}
+
+/* ── تحميل المفضلة ── */
+async function loadFavorites() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('favorites')
+            .select('*, business_profiles(*)')
+            .eq('customer_id', userProfile.id);
+        if (!error && data) favoritesList = data.map(f => f.business_profiles).filter(Boolean);
+        else favoritesList = getMockFavorites();
+    } catch (e) {
+        favoritesList = getMockFavorites();
+    }
+}
+
+/* ── تحميل الحسابات التي تتابعها ── */
+async function loadFollowing() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('follows')
+            .select('*, business_profiles(*)')
+            .eq('follower_id', userProfile.id);
+        if (!error && data) followingList = data.map(f => f.business_profiles).filter(Boolean);
+        else followingList = getMockFollowing();
+    } catch (e) {
+        followingList = getMockFollowing();
+    }
+}
+
+/* ── تحميل الحجوزات ── */
+async function loadBookings() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('bookings')
+            .select('*, business_profiles(business_name, logo_url)')
+            .eq('customer_id', userProfile.id)
+            .order('booking_date', { ascending: false });
+        if (!error && data) bookingsList = data;
+        else bookingsList = getMockBookings();
+    } catch (e) {
+        bookingsList = getMockBookings();
+    }
+}
+
+/* ── تحميل منشورات الحساب التجاري ── */
+async function loadPosts() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('posts')
+            .select('id, content, image_urls, created_at')
+            .eq('business_id', businessProfile.id)
+            .order('created_at', { ascending: false });
+        if (!error && data) postsList = data;
+        else postsList = [];
+    } catch (e) {
+        postsList = [];
+    }
+}
+
+/* ── تحميل قصص الحساب التجاري ── */
+async function loadStories() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('stories')
+            .select('id, media_url, media_type, created_at, expires_at')
+            .eq('business_id', businessProfile.id)
+            .order('created_at', { ascending: false });
+        if (!error && data) storiesList = data;
+        else storiesList = [];
+    } catch (e) {
+        storiesList = [];
+    }
+}
+
+/* ── جلب طلب الترقية المعلق ── */
+async function fetchPendingUpgrade() {
+    if (!businessProfile?.id) return null;
+    try {
+        const { data } = await supabaseClient
+            .from('payment_requests')
+            .select('id, requested_tier')
+            .eq('business_id', businessProfile.id)
+            .eq('status', 'pending')
+            .limit(1);
+        return data?.[0] || null;
+    } catch (e) { return null; }
+}
+
+/* =====================================================
+   بيانات احتياطية (fallback) — تُستخدم فقط عند فشل
+   استعلام Supabase، تماماً كما في الملف الأصلي
+   ===================================================== */
+function getMockFavorites() {
+    return [
+        { id: 'fav1', business_name: 'صالون نسمة', username: 'nesma_salon', logo_url: null, avg_rating: 4.8, wilaya_name: 'الجزائر' },
+        { id: 'fav2', business_name: 'قفاطين ليلى', username: 'lila_kaftan', logo_url: null, avg_rating: 4.9, wilaya_name: 'الجزائر' },
+        { id: 'fav3', business_name: 'حضانة أمان', username: 'aman_childcare', logo_url: null, avg_rating: 4.7, wilaya_name: 'وهران' }
+    ];
+}
+function getMockFollowing() {
+    return [
+        { id: 'fol1', business_name: 'صالون نسمة', username: 'nesma_salon', logo_url: null, avg_rating: 4.8, wilaya_name: 'الجزائر' },
+        { id: 'fol2', business_name: 'منتجات مريم', username: 'maria_beauty', logo_url: null, avg_rating: 4.5, wilaya_name: 'الجزائر' },
+        { id: 'fol3', business_name: 'طبخ منزلي - مريم', username: 'maria_cooking', logo_url: null, avg_rating: 4.8, wilaya_name: 'الجزائر' },
+        { id: 'fol4', business_name: 'قفاطين الأميرة', username: 'amira_kaftan', logo_url: null, avg_rating: 4.9, wilaya_name: 'وهران' }
+    ];
+}
+function getMockBookings() {
+    return [
+        { id: 'bok1', business_id: 'b1', business_profiles: { business_name: 'صالون نسمة', logo_url: null }, booking_date: '2024-12-20', booking_time: '14:00', status: 'confirmed', is_emergency: false },
+        { id: 'bok2', business_id: 'b2', business_profiles: { business_name: 'حضانة أمان', logo_url: null }, booking_date: '2024-12-18', booking_time: '10:00', status: 'completed', is_emergency: false },
+        { id: 'bok3', business_id: 'b3', business_profiles: { business_name: 'قفاطين ليلى', logo_url: null }, booking_date: '2024-12-25', booking_time: '16:00', status: 'pending', is_emergency: true },
+        { id: 'bok4', business_id: 'b4', business_profiles: { business_name: 'طبخ منزلي - مريم', logo_url: null }, booking_date: '2024-12-15', booking_time: '12:00', status: 'cancelled', is_emergency: false }
+    ];
+}
+
+/* =====================================================
+   تنقل بين الصفحات (نفس منطق search.html المصحح:
+   نحن أصلاً داخل iframe وداخل مجلد pages/، فنغيّر
+   window.location مباشرة بدون window.parent ولا بادئة pages/)
+   ===================================================== */
+function onBusinessClick(id) { window.location.href = `business-profile.html?id=${id}`; }
+function onRateClick(businessId) { window.location.href = `business-profile.html?id=${businessId}&rate=1`; }
+window.onBusinessClick = onBusinessClick;
+window.onRateClick = onRateClick;
+
+/* ── تسجيل الخروج (حقيقي عبر window.auth) ── */
+async function onLogout() {
+    if (window.auth) await window.auth.signOut();
+    window.location.href = '../index.html';
+}
+window.onLogout = onLogout;
+
+/* =====================================================
+   إزالة من المفضلة / إلغاء متابعة / إلغاء حجز (Supabase حقيقي،
+   مع fallback محلي عند الفشل، مطابق للأصل)
+   ===================================================== */
+async function onRemoveFromFavorites(businessId) {
+    try {
+        await supabaseClient.from('favorites').delete().eq('customer_id', userProfile.id).eq('business_id', businessId);
+        await loadFavorites();
+        renderTabContent();
+        if (window.utils) window.utils.showToast('تمت الإزالة من المفضلة', 'success');
+    } catch (e) {
+        favoritesList = favoritesList.filter(b => b.id !== businessId);
+        renderTabContent();
+    }
+}
+window.onRemoveFromFavorites = onRemoveFromFavorites;
+
+async function onUnfollow(businessId) {
+    followingList = followingList.filter(b => b.id !== businessId);
+    renderTabContent();
+}
+window.onUnfollow = onUnfollow;
+
+async function onCancelBooking(bookingId) {
+    const lang = getLang();
+    const msg = lang === 'fr' ? 'Annuler cette réservation ?' : 'هل تريدين إلغاء هذا الحجز؟';
+    if (confirm(msg)) {
+        try {
+            await supabaseClient.from('bookings').update({ status: 'cancelled', updated_at: new Date() }).eq('id', bookingId);
+            await loadBookings();
+            renderTabContent();
+            if (window.utils) window.utils.showToast('تم إلغاء الحجز', 'success');
+        } catch (e) {
+            const b = bookingsList.find(x => x.id === bookingId);
+            if (b) b.status = 'cancelled';
+            renderTabContent();
+        }
+    }
+}
+window.onCancelBooking = onCancelBooking;
+
+/* =====================================================
+   شارة نوع الاشتراك
+   ===================================================== */
+function renderTierBadge(tier, lang) {
+    if (!tier) return '';
+    const labels = {
+        silver:   { ar: '🥈 فضي',     fr: '🥈 Argent' },
+        gold:     { ar: '🥇 ذهبي',    fr: '🥇 Or' },
+        platinum: { ar: '💎 بلاتيني', fr: '💎 Platine' }
+    };
+    const label = labels[tier]?.[lang] || labels[tier]?.ar || tier;
+    return `<span class="tier-badge ${tier}">${label}</span>`;
+}
+
+/* =====================================================
+   بناء التبويبات على شكل filter-chip (دوائر بحلقة إنستغرام)
+   ===================================================== */
+function buildIconTabs(lang) {
+    const isBusiness = userProfile.user_type === 'business' && businessProfile;
+
+    const commonTabs = [
+        { id: 'bookings',  icon: '📅', ar: 'حجوزاتي', fr: 'Réservations' },
+        { id: 'favorites', icon: '⭐', ar: 'مفضلاتي', fr: 'Favoris' },
+        { id: 'following', icon: '👥', ar: 'متابَعات', fr: 'Abonnements' },
+    ];
+
+    const bizTabs = isBusiness ? [
+        { id: 'posts',     icon: '📝', ar: 'منشوراتي',      fr: 'Publications' },
+        { id: 'stories',   icon: '📖', ar: 'قصصي',          fr: 'Stories' },
+        { id: 'bizinfo',   icon: '🏪', ar: 'معلومات حسابي', fr: 'Mon Business' },
+        { id: 'dashboard', icon: '🏆', ar: 'لوحة التحكم',   fr: 'Tableau de bord' },
+    ] : [];
+
+    const settingTab = { id: 'settings', icon: '⚙️', ar: 'إعدادات', fr: 'Paramètres' };
+
+    const allTabs = [...commonTabs, ...bizTabs, settingTab];
+
+    return allTabs.map(t => `
+        <div class="tab-chip ${activeTab === t.id ? 'active' : ''}" data-tab="${t.id}" onclick="onTabClick('${t.id}')">
+            <div class="tab-ring"><div class="tab-inner">${t.icon}</div></div>
+            <span class="tab-label">${lang === 'fr' ? t.fr : t.ar}</span>
+        </div>
+    `).join('');
+}
+
+function onTabClick(tabId) {
+    activeTab = tabId;
+    document.querySelectorAll('.tab-chip').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-tab') === tabId);
+    });
+    renderTabContent();
+}
+window.onTabClick = onTabClick;
+
+function onStatClick(tabId) {
+    onTabClick(tabId);
+}
+window.onStatClick = onStatClick;
+
+/* =====================================================
+   عرض شاشة تسجيل الدخول
+   ===================================================== */
+function renderLoginPrompt() {
+    const lang = getLang();
+    const container = document.getElementById('accountContent');
+    container.innerHTML = `
+        <div class="login-prompt">
+            <div class="login-prompt-icon">🔐</div>
+            <h3>${lang === 'fr' ? 'Bienvenue dans votre compte' : 'مرحباً بك في حسابك'}</h3>
+            <p>${lang === 'fr' ? 'Connectez-vous pour voir vos réservations et favoris' : 'سجلي الدخول لمشاهدة حجوزاتك ومفضلاتك'}</p>
+            <button class="google-login-btn" onclick="if(window.auth)window.auth.signInWithGoogle()">
+                ${SVG_GOOGLE}
+                <span>${lang === 'fr' ? 'Se connecter avec Google' : 'تسجيل الدخول عبر Google'}</span>
+            </button>
+        </div>`;
+}
+
+/* =====================================================
+   عرض واجهة الحساب الرئيسية
+   ===================================================== */
+async function renderAccountUI() {
+    const container = document.getElementById('accountContent');
+    const lang = getLang();
+
+    if (!userProfile) { renderLoginPrompt(); return; }
+
+    const isBusiness = userProfile.user_type === 'business' && businessProfile;
+    const tier = businessProfile?.subscription_tier || 'silver';
+
+    const avatarImg = userProfile.avatar_url
+        ? `<img src="${userProfile.avatar_url}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:1.6rem;">👤</span>`
+        : `<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:1.6rem;">👤</span>`;
+
+    container.innerHTML = `
+        <!-- رأس الصفحة -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <div class="profile-avatar-inner">${avatarImg}</div>
+            </div>
+
+            <div class="profile-name-row">
+                <span class="profile-name">${DOMPurify.sanitize(userProfile.full_name || (lang === 'fr' ? 'Utilisatrice' : 'مستخدمة'))}</span>
+                ${isBusiness ? renderTierBadge(tier, lang) : ''}
+            </div>
+
+            ${isBusiness && businessProfile.username
+                ? `<div class="profile-username">@${DOMPurify.sanitize(businessProfile.username)}</div>`
+                : ''}
+
+            ${!isBusiness ? `
+                <button class="open-biz-btn" onclick="window.location.href='business-register.html'">
+                    🏪 ${lang === 'fr' ? 'Créer un compte professionnel' : 'افتحي حسابك التجاري'}
+                </button>` : ''}
+
+            <div class="stats-row">
+                <div class="stat-item" onclick="onStatClick('bookings')">
+                    <div class="stat-number">${bookingsList.length}</div>
+                    <div class="stat-label">${lang === 'fr' ? 'Réservations' : 'حجوزات'}</div>
+                </div>
+                <div class="stat-item" onclick="onStatClick('favorites')">
+                    <div class="stat-number">${favoritesList.length}</div>
+                    <div class="stat-label">${lang === 'fr' ? 'Favoris' : 'مفضلة'}</div>
+                </div>
+                <div class="stat-item" onclick="onStatClick('following')">
+                    <div class="stat-number">${followingList.length}</div>
+                    <div class="stat-label">${lang === 'fr' ? 'Abonnements' : 'متابَعات'}</div>
+                </div>
+                ${isBusiness ? `
+                <div class="stat-item" onclick="onStatClick('posts')">
+                    <div class="stat-number">${postsList.length}</div>
+                    <div class="stat-label">${lang === 'fr' ? 'Publications' : 'منشورات'}</div>
+                </div>` : ''}
+            </div>
+        </div>
+
+        <!-- شريط التبويبات الأيقوني -->
+        <div class="tabs-strip" id="tabsStrip">
+            ${buildIconTabs(lang)}
+        </div>
+
+        <!-- محتوى التبويب -->
+        <div id="tabContent"></div>
+
+        <!-- تسجيل الخروج -->
+        <div class="logout-section">
+            <button class="logout-btn" onclick="onLogout()">🚪 ${lang === 'fr' ? 'Déconnexion' : 'تسجيل الخروج'}</button>
+        </div>
+    `;
+
+    renderTabContent();
+}
+
+/* =====================================================
+   عرض محتوى التبويب النشط
+   ===================================================== */
+function renderTabContent() {
+    const container = document.getElementById('tabContent');
+    if (!container) return;
+    const lang = getLang();
+
+    // --- حجوزاتي ---
+    if (activeTab === 'bookings') {
+        if (!bookingsList.length) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>
+                <p>${lang === 'fr' ? 'Aucune réservation pour le moment' : 'لا توجد حجوزات بعد'}</p></div>`;
+            return;
+        }
+        container.innerHTML = `<div class="items-list">
+            ${bookingsList.map(b => `
+                <div class="item-card" onclick="onBusinessClick('${b.business_id}')">
+                    <div class="item-image" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💇‍♀️</div>
+                    <div class="item-info">
+                        <div class="item-name">${DOMPurify.sanitize(b.business_profiles?.business_name || 'خدمة')}</div>
+                        <div class="item-details">📅 ${new Date(b.booking_date).toLocaleDateString()} | 🕐 ${b.booking_time}</div>
+                        ${b.is_emergency ? `<div class="item-details" style="color:#ef4444;">🚨 ${lang === 'fr' ? 'Urgence' : 'طوارئ'}</div>` : ''}
+                        <div class="item-status status-${b.status}">${getStatusText(b.status, lang)}</div>
+                    </div>
+                    ${(b.status === 'pending' || b.status === 'confirmed') ? `
+                        <button class="remove-btn" onclick="event.stopPropagation();onCancelBooking('${b.id}')" title="${lang === 'fr' ? 'Annuler' : 'إلغاء'}">🗑️</button>` : ''}
+                    ${b.status === 'completed' ? `
+                        <button class="remove-btn" style="color:gold;" onclick="event.stopPropagation();onRateClick('${b.business_id}')" title="${lang === 'fr' ? 'Évaluer' : 'قيمي'}">⭐</button>` : ''}
+                </div>`).join('')}
+        </div>`;
+    }
+
+    // --- مفضلاتي ---
+    else if (activeTab === 'favorites') {
+        if (!favoritesList.length) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">⭐</div>
+                <p>${lang === 'fr' ? 'Aucun compte dans vos favoris' : 'لا توجد حسابات في المفضلة'}</p></div>`;
+            return;
+        }
+        container.innerHTML = `<div class="items-list">
+            ${favoritesList.map(biz => `
+                <div class="item-card" onclick="onBusinessClick('${biz.id}')">
+                    <div class="item-image" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💇‍♀️</div>
+                    <div class="item-info">
+                        <div class="item-name">${DOMPurify.sanitize(biz.business_name)}</div>
+                        <div class="item-details">📍 ${biz.wilaya_name || (lang === 'fr' ? 'Wilaya non spécifiée' : 'ولاية غير محددة')}</div>
+                        <div class="item-rating">⭐ ${biz.avg_rating || 0}</div>
+                    </div>
+                    <button class="remove-btn" onclick="event.stopPropagation();onRemoveFromFavorites('${biz.id}')" title="${lang === 'fr' ? 'Retirer' : 'إزالة'}">🗑️</button>
+                </div>`).join('')}
+        </div>`;
+    }
+
+    // --- متابَعات ---
+    else if (activeTab === 'following') {
+        if (!followingList.length) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div>
+                <p>${lang === 'fr' ? 'Vous ne suivez aucun compte pour le moment' : 'لا تتابعين أي حسابات بعد'}</p></div>`;
+            return;
+        }
+        container.innerHTML = `<div class="items-list">
+            ${followingList.map(biz => `
+                <div class="item-card" onclick="onBusinessClick('${biz.id}')">
+                    <div class="item-image" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💇‍♀️</div>
+                    <div class="item-info">
+                        <div class="item-name">${DOMPurify.sanitize(biz.business_name)}</div>
+                        <div class="item-details">📍 ${biz.wilaya_name || (lang === 'fr' ? 'Wilaya non spécifiée' : 'ولاية غير محددة')}</div>
+                        <div class="item-rating">⭐ ${biz.avg_rating || 0}</div>
+                    </div>
+                    <button class="remove-btn" onclick="event.stopPropagation();onUnfollow('${biz.id}')" title="${lang === 'fr' ? 'Ne plus suivre' : 'إلغاء المتابعة'}">🔕</button>
+                </div>`).join('')}
+        </div>`;
+    }
+
+    // --- منشوراتي ---
+    else if (activeTab === 'posts') {
+        if (!postsList.length) {
+            container.innerHTML = `<div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>${lang === 'fr' ? 'Aucune publication pour le moment' : 'لم تنشري أي منشور بعد'}</p>
+                <button class="edit-biz-btn" style="width:auto;margin-top:12px;padding:9px 20px;" onclick="window.location.href='business-dashboard.html'">
+                    ➕ ${lang === 'fr' ? 'Nouvelle publication' : 'نشر منشور جديد'}
+                </button>
+            </div>`;
+            return;
+        }
+        container.innerHTML = `
+            <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+                <button class="edit-biz-btn" style="width:auto;padding:7px 16px;font-size:0.76rem;" onclick="window.location.href='business-dashboard.html'">
+                    ➕ ${lang === 'fr' ? 'Nouvelle publication' : 'منشور جديد'}
+                </button>
+            </div>
+            <div class="posts-grid">
+                ${postsList.map(p => `
+                    <div class="post-card" onclick="window.location.href='business-dashboard.html'">
+                        <div class="post-card-img" style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📝</div>
+                        <div class="post-card-body">
+                            <div class="post-card-text">${DOMPurify.sanitize(p.content)}</div>
+                            <div class="post-card-date">🕐 ${new Date(p.created_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>`).join('')}
+            </div>`;
+    }
+
+    // --- قصصي ---
+    else if (activeTab === 'stories') {
+        const tier = businessProfile?.subscription_tier || 'silver';
+        if (tier === 'silver') {
+            container.innerHTML = `
+                <div class="locked-feature-notice">
+                    <div class="lock-icon">🔒</div>
+                    <h4>${lang === 'fr' ? 'Stories réservées au compte Or et plus' : 'القصص متاحة للحساب الذهبي فما فوق'}</h4>
+                    <p>${lang === 'fr'
+                        ? 'Les stories disparaissent après 24h et permettent de partager vos offres du jour. Passez à l\'abonnement Or.'
+                        : 'القصص تختفي بعد 24 ساعة وتتيح لك نشر عروضك اليومية والتخفيضات المفاجئة. رقّي حسابك للاستفادة من هذه الميزة.'}</p>
+                    <button class="locked-upgrade-btn" onclick="onUpgradeButtonClick()">
+                        🥇 ${lang === 'fr' ? 'Passer à Or' : 'الترقية إلى ذهبي'}
+                    </button>
+                </div>`;
+            return;
+        }
+        if (!storiesList.length) {
+            container.innerHTML = `<div class="empty-state">
+                <div class="empty-icon">📖</div>
+                <p>${lang === 'fr' ? 'Aucune story. Publiez votre première!' : 'لا توجد قصص. انشري قصتك الأولى!'}</p>
+                <button class="edit-biz-btn" style="width:auto;margin-top:12px;padding:9px 20px;" onclick="window.location.href='business-dashboard.html'">
+                    ➕ ${lang === 'fr' ? 'Nouvelle story' : 'قصة جديدة'}
+                </button>
+            </div>`;
+            return;
+        }
+        const now = new Date();
+        container.innerHTML = `
+            <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+                <button class="edit-biz-btn" style="width:auto;padding:7px 16px;font-size:0.76rem;" onclick="window.location.href='business-dashboard.html'">
+                    ➕ ${lang === 'fr' ? 'Nouvelle story' : 'قصة جديدة'}
+                </button>
+            </div>
+            <div class="posts-grid">
+                ${storiesList.map(s => {
+                    const expired = s.expires_at && new Date(s.expires_at) < now;
+                    return `<div class="story-card">
+                        <div class="story-card-img" style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📖</div>
+                        ${expired ? `<div class="story-expired">${lang === 'fr' ? 'Expirée' : 'انتهت'}</div>` : ''}
+                        <div class="story-time">${new Date(s.created_at).toLocaleDateString()}</div>
+                    </div>`;
+                }).join('')}
+            </div>`;
+    }
+
+    // --- معلومات الحساب التجاري ---
+    else if (activeTab === 'bizinfo') {
+        const bp = businessProfile;
+        const serviceLabelsAr = {
+            salon_hair: 'صالون حلاقة', salon_beauty: 'صالون تجميل',
+            home_hairdresser: 'حلاقة منزلية', mobile_hairdresser: 'حلاقة متنقلة',
+            products_seller: 'بائعة منتجات', dress_rental: 'مؤجرة أزياء',
+            home_services: 'خدمات منزلية'
+        };
+        const serviceLabelsFr = {
+            salon_hair: 'Salon coiffure', salon_beauty: 'Salon beauté',
+            home_hairdresser: 'Coiffure domicile', mobile_hairdresser: 'Coiffure mobile',
+            products_seller: 'Vendeuse produits', dress_rental: 'Location tenues',
+            home_services: 'Services domicile'
+        };
+        const labels = lang === 'fr' ? serviceLabelsFr : serviceLabelsAr;
+        const services = (bp.services || []).map(s => labels[s] || s);
+        const workingHours = bp.working_hours
+            ? Object.entries(bp.working_hours).map(([d, h]) => `${d}: ${h}`).join(' | ')
+            : null;
+
+        container.innerHTML = `
+            <div class="biz-info-card">
+                <h4>🏪 ${lang === 'fr' ? 'Informations du compte' : 'بيانات الحساب التجاري'}</h4>
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Nom du compte' : 'اسم المشروع'}</span>
+                    <span class="info-value">${DOMPurify.sanitize(bp.business_name || '—')}</span>
+                </div>
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? "Nom d'utilisateur" : 'اسم المستخدم'}</span>
+                    <span class="info-value" style="direction:ltr;text-align:right;">@${DOMPurify.sanitize(bp.username || '—')}</span>
+                </div>
+                ${services.length ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Type de service' : 'نوع الخدمة'}</span>
+                    <span class="info-value"><div class="services-tags">${services.map(s => `<span class="service-tag">${s}</span>`).join('')}</div></span>
+                </div>` : ''}
+                ${bp.bio ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Description' : 'وصف الحساب'}</span>
+                    <span class="info-value">${DOMPurify.sanitize(bp.bio)}</span>
+                </div>` : ''}
+            </div>
+
+            <div class="biz-info-card">
+                <h4>📍 ${lang === 'fr' ? 'Localisation & Contact' : 'الموقع والتواصل'}</h4>
+                ${bp.wilaya_name ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Wilaya' : 'الولاية'}</span>
+                    <span class="info-value">${DOMPurify.sanitize(bp.wilaya_name)}${bp.daira_name ? ' / ' + DOMPurify.sanitize(bp.daira_name) : ''}${bp.baladiyah_name ? ' / ' + DOMPurify.sanitize(bp.baladiyah_name) : ''}</span>
+                </div>` : ''}
+                ${bp.address_description ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Adresse' : 'وصف العنوان'}</span>
+                    <span class="info-value">${DOMPurify.sanitize(bp.address_description)}</span>
+                </div>` : ''}
+                ${bp.phone ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Téléphone' : 'رقم الهاتف'}</span>
+                    <span class="info-value" style="direction:ltr;text-align:right;">${DOMPurify.sanitize(bp.phone)}</span>
+                </div>` : ''}
+                ${bp.whatsapp ? `
+                <div class="biz-info-row">
+                    <span class="info-label">WhatsApp</span>
+                    <span class="info-value" style="direction:ltr;text-align:right;">${DOMPurify.sanitize(bp.whatsapp)}</span>
+                </div>` : ''}
+                ${(bp.instagram || bp.tiktok || bp.facebook) ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Réseaux sociaux' : 'التواصل الاجتماعي'}</span>
+                    <span class="info-value">
+                        <div class="biz-social-links">
+                            ${bp.instagram ? `<a href="https://instagram.com/${bp.instagram}" target="_blank" class="biz-social-link">📸 Instagram</a>` : ''}
+                            ${bp.tiktok ? `<a href="https://tiktok.com/@${bp.tiktok}" target="_blank" class="biz-social-link">🎵 TikTok</a>` : ''}
+                            ${bp.facebook ? `<a href="${bp.facebook}" target="_blank" class="biz-social-link">📘 Facebook</a>` : ''}
+                        </div>
+                    </span>
+                </div>` : ''}
+            </div>
+
+            <div class="biz-info-card">
+                <h4>🕐 ${lang === 'fr' ? 'Horaires & Statut' : 'المواعيد والحالة'}</h4>
+                ${workingHours ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Horaires de travail' : 'مواعيد العمل'}</span>
+                    <span class="info-value" style="font-size:0.76rem;">${workingHours}</span>
+                </div>` : ''}
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Vérification' : 'حالة التوثيق'}</span>
+                    <span class="info-value">
+                        ${bp.verification_status === 'approved'
+                            ? `<span style="color:#00c87a;font-weight:700;">✅ ${lang === 'fr' ? 'Vérifié' : 'موثق'}</span>`
+                            : bp.verification_status === 'rejected'
+                            ? `<span style="color:#ef4444;font-weight:700;">❌ ${lang === 'fr' ? 'Refusé' : 'مرفوض'}</span>`
+                            : `<span style="color:#f59e0b;font-weight:700;">⏳ ${lang === 'fr' ? 'En attente' : 'قيد المراجعة'}</span>`}
+                    </span>
+                </div>
+                ${bp.has_gold_badge ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Badge de confiance' : 'شارة الثقة'}</span>
+                    <span class="info-value" style="color:#f7d774;font-weight:700;">🏅 ${lang === 'fr' ? 'Registre de commerce vérifié' : 'سجل تجاري موثق'}</span>
+                </div>` : ''}
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Salon mixte' : 'صالون مختلط'}</span>
+                    <span class="info-value">${bp.is_mixte_salon ? (lang === 'fr' ? 'Oui' : 'نعم') : (lang === 'fr' ? 'Non' : 'لا')}</span>
+                </div>
+                ${bp.is_on_vacation ? `
+                <div class="biz-info-row">
+                    <span class="info-label">${lang === 'fr' ? 'Statut' : 'الحالة'}</span>
+                    <span class="info-value" style="color:#f59e0b;font-weight:700;">🌴 ${lang === 'fr' ? 'En vacances' : 'في إجازة مؤقتة'}${bp.vacation_until ? ' حتى ' + new Date(bp.vacation_until).toLocaleDateString() : ''}</span>
+                </div>` : ''}
+            </div>
+
+            <button class="edit-biz-btn" onclick="window.location.href='business-dashboard.html'">
+                ✏️ ${lang === 'fr' ? 'Modifier le profil professionnel' : 'تعديل معلومات الحساب التجاري'}
+            </button>
+        `;
+    }
+
+    // --- لوحة التحكم ---
+    else if (activeTab === 'dashboard') {
+        const tier = businessProfile?.subscription_tier || 'silver';
+
+        const featuresBySilver = [
+            { icon: '📅', ar: 'استقبال حجوزات (3 يومياً)', fr: 'Réservations (3/jour)', locked: false },
+            { icon: '👤', ar: 'إدارة الملف الشخصي', fr: 'Gestion du profil', locked: false },
+            { icon: '📊', ar: 'لوحة تحليل الحساب', fr: 'Tableau analytique', locked: true },
+            { icon: '📖', ar: 'قصص 24 ساعة', fr: 'Stories 24h', locked: true },
+            { icon: '🏷️', ar: 'إطلاق تخفيضات', fr: 'Lancer des promotions', locked: true },
+            { icon: '🔔', ar: 'إشعارات للمتابعات', fr: 'Notifications abonnées', locked: true },
+        ];
+        const featuresFromGold = [
+            { icon: '📅', ar: 'حجوزات غير محدودة', fr: 'Réservations illimitées', locked: false },
+            { icon: '📊', ar: 'لوحة تحليل الحساب', fr: 'Tableau analytique', locked: false },
+            { icon: '📖', ar: 'قصص 24 ساعة', fr: 'Stories 24h', locked: false },
+            { icon: '🏷️', ar: 'إطلاق تخفيضات', fr: 'Lancer des promotions', locked: false },
+            { icon: '🔔', ar: 'إشعارات للمتابعات (5)', fr: 'Notifications (5)', locked: false },
+            { icon: '🔝', ar: 'تحسين الظهور في البحث', fr: 'Meilleure visibilité', locked: false },
+        ];
+
+        const features = (tier === 'silver') ? featuresBySilver : featuresFromGold;
+        const btnClass = tier === 'platinum' ? 'platinum-btn' : tier === 'gold' ? 'gold-btn' : 'silver-btn';
+        const tierLabel = { silver: '🥈 فضي', gold: '🥇 ذهبي', platinum: '💎 بلاتيني' }[tier];
+
+        let upgradeSection = '';
+        if (tier === 'silver') {
+            if (pendingUpgrade && pendingUpgrade.requested_tier === 'gold') {
+                upgradeSection = `<div class="pending-badge">⏳ ${lang === 'fr' ? 'Demande de passage à Or en cours...' : 'طلب الترقية إلى ذهبي قيد المراجعة'}</div>`;
+            } else {
+                upgradeSection = `
+                    <div class="upgrade-notice">
+                        ${lang === 'fr'
+                            ? 'Passez au compte <strong>Or</strong> pour débloquer les analyses, stories, promotions et plus encore — <a onclick="onUpgradeButtonClick()">Passer à Or 🥇</a>'
+                            : 'رقّي إلى الحساب <strong>الذهبي</strong> لفتح التحليلات والقصص والتخفيضات وأكثر — <a onclick="onUpgradeButtonClick()">الترقية إلى ذهبي 🥇</a>'}
+                    </div>`;
+            }
+        } else if (tier === 'gold') {
+            if (pendingUpgrade && pendingUpgrade.requested_tier === 'platinum') {
+                upgradeSection = `<div class="pending-badge" style="margin-top:10px;">⏳ ${lang === 'fr' ? 'Demande Platine en cours...' : 'طلب الترقية إلى بلاتيني قيد المراجعة'}</div>`;
+            } else {
+                upgradeSection = `
+                    <div class="upgrade-notice" style="margin-top:10px;">
+                        ${lang === 'fr'
+                            ? 'Passez au <strong>Platine</strong> et économisez 33% — <a onclick="onUpgradeButtonClick()">Passer à Platine 💎</a>'
+                            : 'رقّي إلى <strong>البلاتيني</strong> ووفّري 33% — <a onclick="onUpgradeButtonClick()">الترقية إلى بلاتيني 💎</a>'}
+                    </div>`;
+            }
+        }
+
+        container.innerHTML = `
+            <div class="dashboard-card">
+                <h4>🏆 ${lang === 'fr' ? 'Tableau de bord' : 'لوحة التحكم'} — ${tierLabel}</h4>
+                <div class="tier-features">
+                    ${features.map(f => `
+                        <div class="tier-feature ${f.locked ? 'locked' : ''}">
+                            <span class="feat-icon">${f.icon}</span>
+                            <span>${lang === 'fr' ? f.fr : f.ar}</span>
+                            ${f.locked ? `<span style="margin-right:auto;font-size:0.66rem;color:#f87171;">🔒 ${lang === 'fr' ? 'Verrouillé' : 'محجوب'}</span>` : ''}
+                        </div>`).join('')}
+                </div>
+                <button class="go-dashboard-btn ${btnClass}" onclick="window.location.href='business-dashboard.html'">
+                    🚀 ${lang === 'fr' ? 'Accéder au tableau de bord' : 'الدخول إلى لوحة التحكم'}
+                </button>
+                ${upgradeSection}
+            </div>`;
+    }
+
+    // --- إعدادات ---
+    else if (activeTab === 'settings') {
+        container.innerHTML = `
+            <div class="edit-form">
+                <h3>${lang === 'fr' ? 'Paramètres du compte' : 'إعدادات الحساب'}</h3>
+
+                <div class="form-group">
+                    <label>${lang === 'fr' ? 'Adresse e-mail' : 'البريد الإلكتروني'}</label>
+                    <div class="email-display">${DOMPurify.sanitize(userProfile.email || '—')}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>${lang === 'fr' ? 'Nom complet' : 'الاسم الكامل'}</label>
+                    <input type="text" id="fullName" value="${DOMPurify.sanitize(userProfile.full_name || '')}"
+                        placeholder="${lang === 'fr' ? 'Votre nom' : 'اسمك كاملاً'}" maxlength="30">
+                    <span id="fullNameError" class="field-error-msg" style="display:none;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>${lang === 'fr' ? 'Photo de profil' : 'صورة الملف الشخصي'}</label>
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+                        <div style="width:52px;height:52px;border-radius:50%;background:var(--c-surface);border:2px solid var(--c-primary);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden;" id="avatarPreviewWrap">👤</div>
+                        <input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp,image/gif" style="flex:1;">
+                    </div>
+                    <span id="avatarError" class="field-error-msg" style="display:none;"></span>
+                </div>
+
+                <button class="save-btn" id="saveSettingsBtn" onclick="onSaveSettings()">
+                    💾 ${lang === 'fr' ? 'Enregistrer' : 'حفظ التغييرات'}
+                </button>
+            </div>`;
+
+        const avatarFileInput = document.getElementById('avatarFile');
+        if (avatarFileInput) {
+            avatarFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+                const avatarError = document.getElementById('avatarError');
+                if (!allowed.includes(file.type)) {
+                    avatarError.textContent = lang === 'fr'
+                        ? 'Format non autorisé. Utilisez JPG, PNG, WEBP ou GIF.'
+                        : 'نوع الملف غير مسموح. استخدمي JPG أو PNG أو WEBP أو GIF.';
+                    avatarError.style.display = 'block';
+                    avatarFileInput.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    avatarError.textContent = lang === 'fr'
+                        ? "La taille de l'image ne doit pas dépasser 5 Mo."
+                        : 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت.';
+                    avatarError.style.display = 'block';
+                    avatarFileInput.value = '';
+                    return;
+                }
+                avatarError.style.display = 'none';
+                const wrap = document.getElementById('avatarPreviewWrap');
+                wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;">`;
+            });
+        }
+    }
+}
+
+/* =====================================================
+   التحقق من صحة الاسم
+   ===================================================== */
+function validateFullName(name, lang) {
+    const errorEl = document.getElementById('fullNameError');
+    const isFr = lang === 'fr';
+    if (!name || name.trim().length === 0) {
+        errorEl.textContent = isFr ? 'Le nom ne peut pas être vide.' : 'الاسم لا يمكن أن يكون فارغاً.';
+        errorEl.style.display = 'block'; return false;
+    }
+    if (name.trim().length < 3) {
+        errorEl.textContent = isFr ? 'Le nom doit contenir au moins 3 caractères.' : 'الاسم يجب أن يحتوي على 3 حروف على الأقل.';
+        errorEl.style.display = 'block'; return false;
+    }
+    if (name.trim().length > 30) {
+        errorEl.textContent = isFr ? 'Le nom ne doit pas dépasser 30 caractères.' : 'الاسم يجب ألا يتجاوز 30 حرفاً.';
+        errorEl.style.display = 'block'; return false;
+    }
+    const nameRegex = /^[a-zA-Z0-9_\u0600-\u06FF\s]{3,30}$/;
+    if (!nameRegex.test(name.trim())) {
+        errorEl.textContent = isFr
+            ? 'Le nom ne peut contenir que des lettres, chiffres, espaces et underscores.'
+            : 'الاسم يجب أن يحتوي على حروف وأرقام ومسافات وشرطة سفلية فقط. لا رموز خاصة.';
+        errorEl.style.display = 'block'; return false;
+    }
+    if (window.utils && window.utils.containsProfanity(name, lang === 'fr' ? 'fr' : 'ar')) {
+        errorEl.textContent = isFr ? 'Ce nom contient des mots inappropriés.' : 'الاسم يحتوي على كلمات غير لائقة.';
+        errorEl.style.display = 'block'; return false;
+    }
+    errorEl.style.display = 'none';
+    return true;
+}
+
+/* =====================================================
+   معالجة الضغط على زر الترقية
+   ===================================================== */
+function onUpgradeButtonClick() {
+    const lang = getLang();
+    if (userProfile.user_type !== 'business') { window.location.href = 'business-register.html'; return; }
+    const tier = businessProfile?.subscription_tier || 'silver';
+    if (tier === 'platinum') return;
+    const targetTier = tier === 'gold' ? 'platinum' : 'gold';
+    const amount = targetTier === 'gold' ? 3000 : 6000;
+    const tierLabelAr = targetTier === 'gold' ? 'الذهبي 🥇' : 'البلاتيني 💎';
+    const tierLabelFr = targetTier === 'gold' ? 'Gold 🥇' : 'Platinum 💎';
+    const message = lang === 'fr'
+        ? `Voulez-vous passer à l'abonnement ${tierLabelFr} pour ${amount.toLocaleString('fr-FR')} DZD ?`
+        : `هل تريدين الترقية إلى الاشتراك ${tierLabelAr} مقابل ${amount.toLocaleString('ar-DZ')} د.ج؟`;
+    if (confirm(message)) {
+        localStorage.setItem('upgrade_target_tier', targetTier);
+        localStorage.setItem('upgrade_amount', amount);
+        window.location.href = 'upgrade.html';
+    }
+}
+window.onUpgradeButtonClick = onUpgradeButtonClick;
+
+/* =====================================================
+   ضغط الصورة قبل الرفع
+   ===================================================== */
+async function compressAvatarImage(file) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height;
+            const maxSize = 512;
+            if (w > maxSize) { h = (h * maxSize) / w; w = maxSize; }
+            if (h > maxSize) { w = (w * maxSize) / h; h = maxSize; }
+            canvas.width = Math.round(w);
+            canvas.height = Math.round(h);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                if (blob) resolve(blob);
+                else reject(new Error('Compression failed'));
+            }, 'image/jpeg', 0.8);
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+/* =====================================================
+   حفظ إعدادات المستخدم (Supabase حقيقي)
+   ===================================================== */
+window.onSaveSettings = async function () {
+    const lang = getLang();
+    const fullNameRaw = document.getElementById('fullName')?.value || '';
+    const avatarFile = document.getElementById('avatarFile')?.files[0];
+    const saveBtn = document.getElementById('saveSettingsBtn');
+    if (!validateFullName(fullNameRaw, lang)) return;
+    const fullName = window.utils
+        ? window.utils.sanitizeText(fullNameRaw.trim(), lang === 'fr' ? 'fr' : 'ar')
+        : fullNameRaw.trim();
+    if (saveBtn) saveBtn.disabled = true;
+    try {
+        const updates = { full_name: fullName, updated_at: new Date() };
+        if (avatarFile) {
+            const compressedBlob = await compressAvatarImage(avatarFile);
+            const fileName = `${userProfile.id}_${Date.now()}.jpg`;
+            const newAvatarUrl = await window.lilaAPI.uploadFile('avatars', fileName, compressedBlob);
+            updates.avatar_url = newAvatarUrl;
+        }
+        await supabaseClient.from('profiles').update(updates).eq('id', userProfile.id);
+        userProfile.full_name = updates.full_name;
+        if (updates.avatar_url) userProfile.avatar_url = updates.avatar_url;
+        if (window.utils) window.utils.showToast(lang === 'fr' ? 'Profil mis à jour' : 'تم تحديث الملف الشخصي', 'success');
+        await renderAccountUI();
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        if (window.utils) window.utils.showToast(lang === 'fr' ? 'Erreur lors de la mise à jour' : 'حدث خطأ أثناء التحديث', 'error');
+    } finally {
+        if (saveBtn) saveBtn.disabled = false;
+    }
+};
+
+/* =====================================================
+   نص الحالة مترجم
+   ===================================================== */
+function getStatusText(status, lang) {
+    const map = {
+        pending:   { ar: 'قيد الانتظار', fr: 'En attente' },
+        confirmed: { ar: 'مؤكد',         fr: 'Confirmé' },
+        completed: { ar: 'مكتمل',        fr: 'Terminé' },
+        cancelled: { ar: 'ملغي',          fr: 'Annulé' }
+    };
+    return map[status]?.[lang] ?? status;
+}
+
+/* =====================================================
+   التهيئة عند تحميل الصفحة
+   ===================================================== */
+async function initPage() {
+    syncTheme();
+    applyLangAttrs();
+    await loadUserData();
+    if (window.auth && typeof window.auth.addAuthListener === 'function') {
+        window.auth.addAuthListener(() => { loadUserData(); });
+    }
+    console.log('[MyAccount] Page initialized successfully');
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>

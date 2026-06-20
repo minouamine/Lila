@@ -1,0 +1,65 @@
+{
+  "1": [
+    { "code": "1-1", "name_ar": "أدرار", "name_fr": "Adrar" },
+    { "code": "1-2", "name_ar": "تامنطيت", "name_fr": "Tamantit" },
+    { "code": "1-3", "name_ar": "فنوغيل", "name_fr": "Fenoughil" },
+    { "code": "1-4", "name_ar": "رقان", "name_fr": "Reggane" },
+    { "code": "1-5", "name_ar": "تيمقتن", "name_fr": "Timokten" },
+    { "code": "1-6", "name_ar": "أولف", "name_fr": "Aoulef" },
+    { "code": "1-7", "name_ar": "برج باجي مختار", "name_fr": "Bordj Badji Mokhtar" }
+  ],
+  "2": [
+    { "code": "2-1", "name_ar": "الشلف", "name_fr": "Chlef" },
+    { "code": "2-2", "name_ar": "تنس", "name_fr": "Ténès" },
+    { "code": "2-3", "name_ar": "بني حواء", "name_fr": "Beni Haoua" },
+    { "code": "2-4", "name_ar": "المرسى", "name_fr": "El Marsa" },
+    { "code": "2-5", "name_ar": "وادي الفضة", "name_fr": "Oued Fodda" },
+    { "code": "2-6", "name_ar": "أبو الحسن", "name_fr": "Abou El Hassan" },
+    { "code": "2-7", "name_ar": "عين مران", "name_fr": "Aïn Mérane" },
+    { "code": "2-8", "name_ar": "الزبوجية", "name_fr": "Zeboudja" },
+    { "code": "2-9", "name_ar": "الكرن", "name_fr": "El Karimia" },
+    { "code": "2-10", "name_ar": "تاشرة", "name_fr": "Taougrite" },
+    { "code": "2-11", "name_ar": "بوقادير", "name_fr": "Boukadir" },
+    { "code": "2-12", "name_ar": "وادي سلي", "name_fr": "Oued Sly" }
+  ],
+  "16": [
+    { "code": "16-1", "name_ar": "الجزائر الوسطى", "name_fr": "Alger Centre" },
+    { "code": "16-2", "name_ar": "سيدي امحمد", "name_fr": "Sidi M'Hamed" },
+    { "code": "16-3", "name_ar": "باب الوادي", "name_fr": "Bab El Oued" },
+    { "code": "16-4", "name_ar": "الحراش", "name_fr": "El Harrach" },
+    { "code": "16-5", "name_ar": "بئر مراد رايس", "name_fr": "Bir Mourad Raïs" },
+    { "code": "16-6", "name_ar": "بئر خادم", "name_fr": "Bir Khadem" },
+    { "code": "16-7", "name_ar": "الرويبة", "name_fr": "Rouïba" },
+    { "code": "16-8", "name_ar": "براقي", "name_fr": "Baraki" },
+    { "code": "16-9", "name_ar": "الدار البيضاء", "name_fr": "Dar El Beïda" },
+    { "code": "16-10", "name_ar": "باب الزوار", "name_fr": "Bab Ezzouar" },
+    { "code": "16-11", "name_ar": "بني مسوس", "name_fr": "Beni Moussa" },
+    { "code": "16-12", "name_ar": "دالي إبراهيم", "name_fr": "Dely Ibrahim" },
+    { "code": "16-13", "name_ar": "زرالدة", "name_fr": "Zéralda" },
+    { "code": "16-14", "name_ar": "شراقة", "name_fr": "Chéraga" },
+    { "code": "16-15", "name_ar": "دوارة", "name_fr": "Douera" },
+    { "code": "16-16", "name_ar": "درارية", "name_fr": "Draria" },
+    { "code": "16-17", "name_ar": "حسين داي", "name_fr": "Hussein Dey" },
+    { "code": "16-18", "name_ar": "القبة", "name_fr": "Kouba" }
+  ],
+  "31": [
+    { "code": "31-1", "name_ar": "وهران", "name_fr": "Oran" },
+    { "code": "31-2", "name_ar": "عين الترك", "name_fr": "Aïn El Turck" },
+    { "code": "31-3", "name_ar": "أرزيو", "name_fr": "Arzew" },
+    { "code": "31-4", "name_ar": "بطيوة", "name_fr": "Boutlélis" },
+    { "code": "31-5", "name_ar": "وادي تليلات", "name_fr": "Oued Tlélat" },
+    { "code": "31-6", "name_ar": "بئر الجير", "name_fr": "Bir El Djir" },
+    { "code": "31-7", "name_ar": "الكريمية", "name_fr": "El Kerma" },
+    { "code": "31-8", "name_ar": "السانية", "name_fr": "Es Sénia" },
+    { "code": "31-9", "name_ar": "بني صاف", "name_fr": "Beni Saf" },
+    { "code": "31-10", "name_ar": "سيدي الشحمي", "name_fr": "Sidi Chami" }
+  ],
+  "25": [
+    { "code": "25-1", "name_ar": "قسنطينة", "name_fr": "Constantine" },
+    { "code": "25-2", "name_ar": "الخروب", "name_fr": "El Khroub" },
+    { "code": "25-3", "name_ar": "زيغود يوسف", "name_fr": "Zighoud Youcef" },
+    { "code": "25-4", "name_ar": "حمام بو حجر", "name_fr": "Hamma Bouziane" },
+    { "code": "25-5", "name_ar": "ابن باديس", "name_fr": "Ibn Badis" },
+    { "code": "25-6", "name_ar": "عين عبيد", "name_fr": "Aïn Abid" }
+  ]
+}

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>لوحة تحكم الأدمن - ليلى</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        /* أنماط إضافية للوحة تحكم الأدمن */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* بطاقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card-admin {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card-admin:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-orange);
+        }
+        
+        .stat-value-admin {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-orange);
+        }
+        
+        .stat-label-admin {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        /* التبويبات */
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+        }
+        
+        .admin-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-arabic);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .admin-tab:hover {
+            color: var(--accent-orange);
+            background: rgba(255,140,0,0.1);
+        }
+        
+        .admin-tab.active {
+            color: var(--accent-orange);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+        
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* بطاقات الحسابات */
+        .business-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .business-card-header {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .business-card-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .business-card-info {
+            flex: 1;
+        }
+        
+        .business-card-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .business-card-email {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        
+        .business-card-stats {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+        }
+        
+        .business-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        
+        .btn-admin {
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-approve { background: var(--green); color: white; }
+        .btn-reject { background: var(--red); color: white; }
+        .btn-ban { background: #f87171; color: white; }
+        .btn-unban { background: var(--blue); color: white; }
+        .btn-delete { background: #991b1b; color: white; }
+        .btn-view-id { background: var(--purple); color: white; }
+        
+        /* طلبات الدفع */
+        .payment-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .payment-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: gold;
+        }
+        
+        /* الإبلاغات */
+        .report-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-right: 3px solid var(--red);
+        }
+        
+        /* مودال عرض الهوية */
+        .id-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .id-modal img {
+            max-width: 90%;
+            max-height: 70vh;
+            border-radius: 12px;
+        }
+        
+        /* حقل الرفض */
+        .reject-reason {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .reject-reason input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 6px;
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .business-card-header { flex-direction: column; text-align: center; }
+            .business-card-stats { justify-content: center; }
+            .business-card-actions { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<div class="scanline-overlay"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">لوحة تحكم الأدمن</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">إدارة الحسابات والمدفوعات والإبلاغات</div>
+    </div>
+
+    <div class="main-content">
+        <div class="admin-container">
+            <!-- إحصائيات سريعة -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statCustomers">0</div>
+                    <div class="stat-label-admin">مستخدمات عاديات</div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statBusinesses">0</div>
+                    <div class="stat-label-admin">حسابات تجارية</div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statPending">0</div>
+                    <div class="stat-label-admin">قيد المراجعة</div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statPayments">0</div>
+                    <div class="stat-label-admin">طلبات دفع</div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statReports">0</div>
+                    <div class="stat-label-admin">إبلاغات</div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-value-admin" id="statReviews">0</div>
+                    <div class="stat-label-admin">تقييمات</div>
+                </div>
+            </div>
+            
+            <!-- تبويبات الأدمن -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="pending">⏳ قيد المراجعة</button>
+                <button class="admin-tab" data-tab="active">✅ حسابات نشطة</button>
+                <button class="admin-tab" data-tab="payments">💰 طلبات الدفع</button>
+                <button class="admin-tab" data-tab="reports">⚠️ الإبلاغات</button>
+                <button class="admin-tab" data-tab="warnings">📋 طلبات مراجعة التحذيرات</button>
+            </div>
+            
+            <!-- تبويب الحسابات قيد المراجعة -->
+            <div id="tab-pending" class="tab-pane active">
+                <div id="pendingList"></div>
+            </div>
+            
+            <!-- تبويب الحسابات النشطة -->
+            <div id="tab-active" class="tab-pane">
+                <div id="activeList"></div>
+            </div>
+            
+            <!-- تبويب طلبات الدفع -->
+            <div id="tab-payments" class="tab-pane">
+                <div id="paymentsList"></div>
+            </div>
+            
+            <!-- تبويب الإبلاغات -->
+            <div id="tab-reports" class="tab-pane">
+                <div id="reportsList"></div>
+            </div>
+            
+            <!-- تبويب طلبات مراجعة التحذيرات -->
+            <div id="tab-warnings" class="tab-pane">
+                <div id="warningsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+    // متغيرات عامة
+    let pendingBusinesses = [];
+    let activeBusinesses = [];
+    let paymentRequests = [];
+    let reports = [];
+    let warningReviews = [];
+    
+    // التحقق من صلاحيات الأدمن
+    async function checkAdminAccess() {
+        const isAdmin = await window.admin?.requireAdmin();
+        if (isAdmin === false) {
+            window.location.href = '../index.html';
+            return false;
+        }
+        return true;
+    }
+    
+    // تحميل جميع البيانات
+    async function loadAllData() {
+        // تحميل الإحصائيات
+        const stats = await window.admin?.fetchAdminStats() || {};
+        document.getElementById('statCustomers').textContent = stats.customers || 0;
+        document.getElementById('statBusinesses').textContent = stats.businesses || 0;
+        document.getElementById('statReviews').textContent = stats.reviews || 0;
+        
+        // تحميل البيانات حسب التبويبات
+        pendingBusinesses = await window.admin?.fetchPendingBusinesses() || [];
+        document.getElementById('statPending').textContent = pendingBusinesses.length;
+        
+        activeBusinesses = await window.admin?.fetchActiveBusinesses() || [];
+        paymentRequests = await window.admin?.fetchPaymentRequests() || [];
+        document.getElementById('statPayments').textContent = paymentRequests.length;
+        
+        reports = await window.admin?.fetchReports() || [];
+        document.getElementById('statReports').textContent = reports.length;
+        
+        warningReviews = await window.admin?.fetchWarningReviews() || [];
+        
+        // عرض البيانات
+        renderPendingList();
+        renderActiveList();
+        renderPaymentsList();
+        renderReportsList();
+        renderWarningsList();
+    }
+    
+    // عرض الحسابات قيد المراجعة
+    function renderPendingList() {
+        const container = document.getElementById('pendingList');
+        
+        if (!pendingBusinesses.length) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">✨ لا توجد حسابات قيد المراجعة</div>';
+            return;
+        }
+        
+        container.innerHTML = pendingBusinesses.map(business => `
+            <div class="business-card" data-id="${business.id}">
+                <div class="business-card-header">
+                    <img class="business-card-avatar" src="${business.profiles?.avatar_url || '../assets/images/default-avatar.png'}" alt="${business.business_name}">
+                    <div class="business-card-info">
+                        <div class="business-card-name">${business.business_name}</div>
+                        <div class="business-card-email">${business.profiles?.email || ''}</div>
+                        <div class="business-card-stats">
+                            <span>📅 ${new Date(business.created_at).toLocaleDateString()}</span>
+                            <span>📍 ${business.wilaya_name || 'غير محدد'}</span>
+                            <span>💼 ${business.services?.length || 0} خدمات</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="business-card-actions">
+                    <button class="btn-admin btn-view-id" onclick="showIdCards('${business.id_front_url}', '${business.id_back_url}')">🆔 عرض الهوية</button>
+                    <button class="btn-admin btn-approve" onclick="approveBusiness('${business.id}')">✅ قبول</button>
+                    <button class="btn-admin btn-reject" onclick="showRejectModal('${business.id}')">❌ رفض</button>
+                </div>
+                <div id="reject-${business.id}" style="display: none;" class="reject-reason">
+                    <input type="text" id="rejectReason-${business.id}" placeholder="سبب الرفض...">
+                    <button class="btn-admin btn-reject" onclick="confirmReject('${business.id}')">تأكيد الرفض</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // عرض الحسابات النشطة
+    function renderActiveList() {
+        const container = document.getElementById('activeList');
+        
+        if (!activeBusinesses.length) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">📭 لا توجد حسابات نشطة</div>';
+            return;
+        }
+        
+        container.innerHTML = activeBusinesses.map(business => `
+            <div class="business-card">
+                <div class="business-card-header">
+                    <img class="business-card-avatar" src="${business.logo_url || '../assets/images/default-business.png'}" alt="${business.business_name}">
+                    <div class="business-card-info">
+                        <div class="business-card-name">
+                            ${business.business_name}
+                            ${business.subscription_tier === 'gold' ? '<span style="color: gold;">🥇</span>' : ''}
+                            ${business.subscription_tier === 'platinum' ? '<span style="color: #b0c4de;">💎</span>' : ''}
+                        </div>
+                        <div class="business-card-email">@${business.username}</div>
+                        <div class="business-card-stats">
+                            <span>👥 ${business.followers_count || 0} متابع</span>
+                            <span>⭐ ${(business.avg_rating || 0).toFixed(1)}</span>
+                            <span>📅 ${new Date(business.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="business-card-actions">
+                    ${business.profiles?.is_banned ? 
+                        `<button class="btn-admin btn-unban" onclick="unbanBusiness('${business.id}')">🔓 رفع الحظر</button>` :
+                        `<button class="btn-admin btn-ban" onclick="banBusiness('${business.id}')">🔒 حظر</button>`
+                    }
+                    <button class="btn-admin btn-delete" onclick="deleteBusinessConfirm('${business.id}')">🗑️ حذف نهائي</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // عرض طلبات الدفع
+    function renderPaymentsList() {
+        const container = document.getElementById('paymentsList');
+        
+        if (!paymentRequests.length) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">💰 لا توجد طلبات دفع معلقة</div>';
+            return;
+        }
+        
+        container.innerHTML = paymentRequests.map(payment => `
+            <div class="payment-card">
+                <div class="business-card-header">
+                    <div class="business-card-info">
+                        <div class="business-card-name">${payment.business_profiles?.business_name || 'غير معروف'}</div>
+                        <div class="business-card-email">@${payment.business_profiles?.username || ''}</div>
+                        <div class="payment-amount">${payment.amount} دج</div>
+                        <div>${payment.requested_tier === 'gold' ? '🥇 ترقية إلى ذهبي (3 أشهر)' : '💎 ترقية إلى بلاتيني (6 أشهر)'}</div>
+                        <div>📅 ${new Date(payment.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+                <div class="business-card-actions">
+                    <a href="${payment.transfer_receipt_url}" target="_blank" class="btn-admin btn-view-id" style="text-decoration: none;">🧾 عرض وصل التحويل</a>
+                    <button class="btn-admin btn-approve" onclick="approvePayment('${payment.id}', '${payment.business_id}', '${payment.requested_tier}')">💰 قبول الدفع</button>
+                    <button class="btn-admin btn-reject" onclick="rejectPayment('${payment.id}', '${payment.business_id}')">🚫 رفض</button>
+                </div>
+                <div id="paymentReject-${payment.id}" style="display: none;" class="reject-reason">
+                    <input type="text" id="paymentRejectReason-${payment.id}" placeholder="سبب الرفض...">
+                    <button class="btn-admin btn-reject" onclick="confirmRejectPayment('${payment.id}', '${payment.business_id}')">تأكيد الرفض</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // عرض الإبلاغات
+    function renderReportsList() {
+        const container = document.getElementById('reportsList');
+        
+        if (!reports.length) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">⚠️ لا توجد إبلاغات معلقة</div>';
+            return;
+        }
+        
+        container.innerHTML = reports.map(report => `
+            <div class="report-card">
+                <div class="business-card-header">
+                    <div class="business-card-info">
+                        <div class="business-card-name">${report.business_profiles?.business_name || 'حساب غير معروف'}</div>
+                        <div class="business-card-email">مُبلَّغ من: ${report.profiles?.full_name || 'مستخدمة'}</div>
+                        <div><strong>السبب:</strong> ${report.reason}</div>
+                        <div>📅 ${new Date(report.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+                <div class="business-card-actions">
+                    <button class="btn-admin btn-unban" onclick="dismissReport('${report.id}', '${report.target_business_id}')">📌 تجاهل الإبلاغ</button>
+                    <button class="btn-admin btn-ban" onclick="warnBusinessFromReport('${report.id}', '${report.target_business_id}')">⚠️ إضافة تحذير</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // عرض طلبات مراجعة التحذيرات
+    function renderWarningsList() {
+        const container = document.getElementById('warningsList');
+        
+        if (!warningReviews.length) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">📋 لا توجد طلبات مراجعة تحذيرات</div>';
+            return;
+        }
+        
+        container.innerHTML = warningReviews.map(request => `
+            <div class="business-card">
+                <div class="business-card-header">
+                    <div class="business-card-info">
+                        <div class="business-card-name">${request.business_profiles?.business_name || 'غير معروف'}</div>
+                        <div class="business-card-email">@${request.business_profiles?.username || ''}</div>
+                        <div>الاشتراك: ${request.business_profiles?.subscription_tier === 'gold' ? '🥇 ذهبي' : '💎 بلاتيني'}</div>
+                        <div>📅 تاريخ الطلب: ${new Date(request.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+                <div class="business-card-actions">
+                    <button class="btn-admin btn-approve" onclick="approveWarningReview('${request.id}', '${request.business_id}', '${request.warning_id}')">✅ قبول إزالة التحذير</button>
+                    <button class="btn-admin btn-reject" onclick="rejectWarningReview('${request.id}', '${request.business_id}')">❌ رفض</button>
+                </div>
+                <div id="warningReject-${request.id}" style="display: none;" class="reject-reason">
+                    <input type="text" id="warningRejectReason-${request.id}" placeholder="سبب الرفض...">
+                    <button class="btn-admin btn-reject" onclick="confirmRejectWarning('${request.id}', '${request.business_id}')">تأكيد الرفض</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // دوال إدارة الحسابات
+    window.showIdCards = (frontUrl, backUrl) => {
+        const modal = document.createElement('div');
+        modal.className = 'id-modal';
+        modal.innerHTML = `
+            <button onclick="this.parentElement.remove()" style="position: absolute; top: 20px; right: 20px; background: var(--red); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer;">إغلاق</button>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <div>
+                    <h3 style="color: white; text-align: center;">الوجه</h3>
+                    <img src="${frontUrl}" alt="الوجه">
+                </div>
+                <div>
+                    <h3 style="color: white; text-align: center;">الظهر</h3>
+                    <img src="${backUrl}" alt="الظهر">
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    };
+    
+    window.showRejectModal = (businessId) => {
+        const div = document.getElementById(`reject-${businessId}`);
+        div.style.display = div.style.display === 'none' ? 'flex' : 'none';
+    };
+    
+    window.confirmReject = async (businessId) => {
+        const reason = document.getElementById(`rejectReason-${businessId}`).value;
+        if (!reason) {
+            utils.showToast('الرجاء كتابة سبب الرفض', 'error');
+            return;
+        }
+        await window.admin?.rejectBusiness(businessId, reason);
+        utils.showToast('تم رفض الحساب', 'success');
+        await loadAllData();
+    };
+    
+    window.approveBusiness = async (businessId) => {
+        await window.admin?.approveBusiness(businessId);
+        utils.showToast('تم قبول الحساب بنجاح', 'success');
+        await loadAllData();
+    };
+    
+    window.banBusiness = async (businessId) => {
+        const reason = prompt('الرجاء كتابة سبب الحظر:');
+        if (reason) {
+            await window.admin?.banBusiness(businessId, reason);
+            utils.showToast('تم حظر الحساب', 'success');
+            await loadAllData();
+        }
+    };
+    
+    window.unbanBusiness = async (businessId) => {
+        await window.admin?.unbanBusiness(businessId);
+        utils.showToast('تم رفع الحظر عن الحساب', 'success');
+        await loadAllData();
+    };
+    
+    window.deleteBusinessConfirm = async (businessId) => {
+        if (confirm('هل أنت متأكد من حذف هذا الحساب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) {
+            await window.admin?.deleteBusiness(businessId);
+            utils.showToast('تم حذف الحساب', 'success');
+            await loadAllData();
+        }
+    };
+    
+    // دوال إدارة طلبات الدفع
+    window.approvePayment = async (paymentId, businessId, tier) => {
+        await window.admin?.approvePayment(paymentId, businessId, tier);
+        utils.showToast('تم قبول الدفع وترقية الحساب', 'success');
+        await loadAllData();
+    };
+    
+    window.rejectPayment = (paymentId, businessId) => {
+        const div = document.getElementById(`paymentReject-${paymentId}`);
+        div.style.display = div.style.display === 'none' ? 'flex' : 'none';
+    };
+    
+    window.confirmRejectPayment = async (paymentId, businessId) => {
+        const reason = document.getElementById(`paymentRejectReason-${paymentId}`).value;
+        await window.admin?.rejectPayment(paymentId, businessId, reason);
+        utils.showToast('تم رفض طلب الدفع', 'success');
+        await loadAllData();
+    };
+    
+    // دوال معالجة الإبلاغات
+    window.dismissReport = async (reportId, businessId) => {
+        await window.admin?.processReport(reportId, businessId, 'dismiss');
+        utils.showToast('تم تجاهل الإبلاغ', 'success');
+        await loadAllData();
+    };
+    
+    window.warnBusinessFromReport = async (reportId, businessId) => {
+        await window.admin?.processReport(reportId, businessId, 'warn');
+        utils.showToast('تم إضافة تحذير للحساب', 'warning');
+        await loadAllData();
+    };
+    
+    // دوال مراجعة التحذيرات
+    window.approveWarningReview = async (requestId, businessId, warningId) => {
+        await window.admin?.approveWarningReview(requestId, businessId, warningId);
+        utils.showToast('تم قبول الطلب وإزالة التحذير', 'success');
+        await loadAllData();
+    };
+    
+    window.rejectWarningReview = (requestId, businessId) => {
+        const div = document.getElementById(`warningReject-${requestId}`);
+        div.style.display = div.style.display === 'none' ? 'flex' : 'none';
+    };
+    
+    window.confirmRejectWarning = async (requestId, businessId) => {
+        const reason = document.getElementById(`warningRejectReason-${requestId}`).value;
+        await window.admin?.rejectWarningReview(requestId, businessId, reason);
+        utils.showToast('تم رفض طلب مراجعة التحذير', 'info');
+        await loadAllData();
+    };
+    
+    // تبديل التبويبات
+    function initTabs() {
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+    }
+    
+    // التهيئة
+    document.addEventListener('DOMContentLoaded', async () => {
+        const hasAccess = await checkAdminAccess();
+        if (hasAccess) {
+            await loadAllData();
+            initTabs();
+        }
+        if (typeof particles !== 'undefined') particles.init();
+    });
+</script>
+</body>
+<script src="js/debug.js"></script>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ليلى | أسماء الأطفال</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #040810;
+            --bg-mid: #080f1c;
+            --bg-surface: #0d1628;
+            --bg-card: #0f1a2e;
+            --bg-card-hover: #162038;
+            --text-primary: #d8e4f0;
+            --text-secondary: #7a9ab8;
+            --text-dim: #3d5a78;
+            --accent-orange: #ef4444;
+            --accent-gold: #dc2626;
+            --accent-amber: #f87171;
+            --glow-orange: rgba(255, 140, 0, 0.35);
+            --border-subtle: rgba(255, 140, 0, 0.12);
+            --border-active: rgba(255, 140, 0, 0.5);
+            --border-dim: rgba(255, 255, 255, 0.06);
+            --font-arabic: 'Cairo', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-arabic);
+            min-height: 100vh;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(192, 132, 252, 0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse 60% 40% at 10% 100%, rgba(255, 140, 0, 0.06) 0%, transparent 50%),
+                        linear-gradient(160deg, #040810 0%, #060d1a 40%, #080f1c 70%, #040810 100%);
+            background-attachment: fixed;
+            padding: 20px;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 4px);
+            animation: scanlineScroll 8s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes scanlineScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        .app {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(8, 15, 28, 0.97);
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255,255,255,0.04);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(180deg, rgba(255,140,0,0.05) 0%, transparent 100%),
+                        linear-gradient(135deg, #060a14, #0a1020, #060a14);
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-active);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 2.4rem;
+            font-weight: 800;
+            filter: drop-shadow(0 0 20px rgba(255,140,0,0.3));
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(255,140,0,0.25)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255,140,0,0.5)); }
+        }
+
+        .title-ar { color: #ffffff; }
+        .title-sep { color: var(--accent-orange); font-size: 1.6rem; }
+        .title-fr { color: var(--accent-orange); }
+
+        .header-sub {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: 8px;
+            border: 1px solid var(--border-dim);
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 20px;
+        }
+
+        .main-content {
+            padding: 28px 24px 100px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 24px;
+            font-size: 1rem;
+            font-family: var(--font-arabic);
+            background: rgba(13, 22, 40, 0.8);
+            border: 1px solid var(--border-active);
+            border-radius: 60px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s;
+            text-align: right;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px var(--glow-orange);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+        }
+
+        .stats-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .stats-count span {
+            color: var(--accent-orange);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .gender-indicator {
+            color: var(--accent-amber);
+            font-weight: 600;
+        }
+
+        .names-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .name-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 22px;
+            transition: all 0.25s ease;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .name-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-orange);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(255,140,0,0.15);
+            background: var(--bg-card-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px dashed var(--border-active);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .name-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffcc88, var(--accent-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .name-id {
+            font-size: 0.7rem;
+            background: rgba(255,140,0,0.2);
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: var(--text-secondary);
+        }
+
+        .meaning-text {
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(4, 8, 16, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 8px 24px;
+            display: flex;
+            gap: 40px;
+            border: 1px solid var(--border-active);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--glow-orange);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-family: var(--font-arabic);
+            font-weight: 600;
+        }
+
+        .nav-btn img {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--border-dim);
+            transition: 0.2s;
+        }
+
+        .nav-btn span {
+            font-size: 0.85rem;
+        }
+
+        .nav-btn.active {
+            color: var(--accent-orange);
+        }
+
+        .nav-btn.active img {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px var(--glow-orange);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .main-content { padding: 20px 16px 100px; }
+            .app-title { font-size: 1.7rem; }
+            .bottom-nav { gap: 15px; padding: 6px 16px; }
+            .nav-btn img { width: 45px; height: 45px; }
+            .nav-btn span { font-size: 0.75rem; }
+            .name-text { font-size: 1.4rem; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(4,8,16,0.5); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-orange); border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="app-title">
+            <span class="title-ar">ليلى</span>
+            <span class="title-sep">✦</span>
+            <span class="title-fr">Lila</span>
+        </div>
+        <div class="header-sub">أَسْمَاءُ الأَطْفَالِ</div>
+    </div>
+
+    <div class="main-content">
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن اسم...">
+        </div>
+
+        <div class="stats">
+            <div class="stats-count"><span id="countDisplay">0</span> اسم</div>
+            <div class="gender-indicator" id="genderIndicator">👧 أسماء البنات</div>
+        </div>
+
+        <div id="namesContainer" class="names-grid">
+            <div class="loading">✨ جاري تحميل الأسماء... ✨</div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <button id="girlsBtn" class="nav-btn active">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ffb6c1'/%3E%3Ccircle cx='35' cy='38' r='5' fill='%23333'/%3E%3Ccircle cx='65' cy='38' r='5' fill='%23333'/%3E%3Cpath d='M42 65 Q50 78 58 65' stroke='%23b3413b' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='46' y='18' width='8' height='18' fill='%23ff69b4'/%3E%3C/svg%3E" alt="girl">
+        <span>👧 بنات</span>
+    </button>
+    <button id="boysBtn" class="nav-btn">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='55' r='42' fill='%2342a5f5'/%3E%3Ccircle cx='34' cy='46' r='5' fill='%23fff'/%3E%3Ccircle cx='66' cy='46' r='5' fill='%23fff'/%3E%3Cpath d='M45 74 L55 74 L52 84 L48 84 Z' fill='%23ffa500'/%3E%3Crect x='46' y='26' width='8' height='20' fill='%23336699'/%3E%3C/svg%3E" alt="boy">
+        <span>👦 أولاد</span>
+    </button>
+</div>
+
+<script>
+    // State
+    let currentGender = 'girls';
+    let allNames = [];
+    let filteredNames = [];
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const namesContainer = document.getElementById('namesContainer');
+    const countDisplay = document.getElementById('countDisplay');
+    const genderIndicator = document.getElementById('genderIndicator');
+    const girlsBtn = document.getElementById('girlsBtn');
+    const boysBtn = document.getElementById('boysBtn');
+
+    // Load JSON from file
+    async function loadNames(gender) {
+        const filePath = gender === 'girls' 
+            ? 'assets/data/girls_names.json' 
+            : 'assets/data/boys_names.json';
+        
+        try {
+            const response = await fetch(filePath);
+            
+            if (!response.ok) {
+                console.warn(`File not found: ${filePath}`);
+                return [];
+            }
+            
+            const data = await response.json();
+            
+            if (!Array.isArray(data)) {
+                console.warn(`Invalid data format from ${filePath}`);
+                return [];
+            }
+            
+            // Debug: log first item to see available fields
+            if (data.length > 0) {
+                console.log('First item fields:', Object.keys(data[0]));
+                console.log('Sample item:', data[0]);
+            }
+            
+            return data;
+        } catch (error) {
+            console.error(`Error loading ${filePath}:`, error);
+            return [];
+        }
+    }
+
+    // Get meaning from item - supports multiple possible field names
+    function getMeaning(item) {
+        // Try different possible field names from your JSON
+        return item.شرح_الاسم ||      // with underscore
+               item['شرح الاسم'] ||    // with space
+               item.meaning || 
+               item.description ||
+               item.شرح ||
+               'لا يوجد شرح';
+    }
+
+    // Get name from item
+    function getName(item) {
+        return item.الاسم || item.name || item.title || 'اسم غير معروف';
+    }
+
+    // Get id from item
+    function getId(item) {
+        return item.id || Math.floor(Math.random() * 1000);
+    }
+
+    // Render names to UI
+    function renderNames() {
+        if (!filteredNames || filteredNames.length === 0) {
+            namesContainer.innerHTML = `<div class="empty-state">✨ لا توجد أسماء مطابقة ✨</div>`;
+            countDisplay.textContent = '0';
+            return;
+        }
+
+        const html = filteredNames.map(item => {
+            const name = getName(item);
+            const meaning = getMeaning(item);
+            const id = getId(item);
+
+            return `
+                <div class="name-card">
+                    <div class="card-header">
+                        <div class="name-text">${escapeHtml(name)}</div>
+                        <div class="name-id">#${id}</div>
+                    </div>
+                    <div class="meaning-text">${escapeHtml(meaning)}</div>
+                </div>
+            `;
+        }).join('');
+
+        namesContainer.innerHTML = html;
+        countDisplay.textContent = filteredNames.length;
+    }
+
+    // Filter names based on search input
+    // استبدل دالة filterNames بهذه
+// استبدل دالة filterNames بأكملها بهذه
+async function filterNames() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+        // إذا كان البحث فارغًا، اعرض القائمة الحالية فقط
+        filteredNames = [...allNames];
+        renderNames();
+        return;
+    }
+    
+    // ابحث في كلا الملفين (بنات وأولاد)
+    const girlsData = await loadNames('girls');
+    const boysData = await loadNames('boys');
+    
+    const allNamesCombined = [...girlsData, ...boysData];
+    
+    filteredNames = allNamesCombined.filter(item => {
+        const name = getName(item).toLowerCase();
+        return name.includes(searchTerm);
+    });
+    
+    renderNames();
+    genderIndicator.innerHTML = `🔍 نتائج البحث عن "${searchTerm}" (${filteredNames.length} اسم)`;
+}
+
+
+    // Switch between girls and boys
+    async function switchToGender(gender) {
+        currentGender = gender;
+        
+        // Update UI indicators
+        if (gender === 'girls') {
+            genderIndicator.innerHTML = '👧 أسماء البنات';
+            girlsBtn.classList.add('active');
+            boysBtn.classList.remove('active');
+        } else {
+            genderIndicator.innerHTML = '👦 أسماء الأولاد';
+            boysBtn.classList.add('active');
+            girlsBtn.classList.remove('active');
+        }
+        
+        // Show loading state
+        namesContainer.innerHTML = '<div class="loading">✨ جاري التحميل... ✨</div>';
+        countDisplay.textContent = '0';
+        
+        // Load data
+        allNames = await loadNames(gender);
+        
+        console.log(`Loaded ${allNames.length} names for ${gender}`);
+        
+        filteredNames = [...allNames];
+        
+        // Clear search input
+        searchInput.value = '';
+        
+        // Render
+        renderNames();
+    }
+
+    // Helper function to escape HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterNames);
+    
+    girlsBtn.addEventListener('click', () => {
+        if (currentGender !== 'girls') {
+            switchToGender('girls');
+        }
+    });
+    
+    boysBtn.addEventListener('click', () => {
+        if (currentGender !== 'boys') {
+            switchToGender('boys');
+        }
+    });
+
+    // Initialize with girls names
+    switchToGender('girls');
+</script>
+<script src="../js/debug.js"></script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ليلى - دليل صالونات وخدمات النساء في الجزائر</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="dark-mode theme-lime" id="bodyEl">
+
+<!-- Particle Canvas Background -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- Scanline overlay -->
+<div class="scanline-overlay"></div>
+
+<div class="app">
+
+    <!-- ===== HEADER — reserved for banner-controller.js ===== -->
+    <div id="dynamicHeader" class="header">
+        <div class="header-grid-lines"></div>
+        <div class="header-corner top-right"></div>
+        <div class="header-corner top-left"></div>
+        <div class="header-corner bottom-right"></div>
+        <div class="header-corner bottom-left"></div>
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">ليلى</span>
+            <span class="title-sep"> · </span>
+            <span class="title-fr">Lila</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">دليل صالونات وخدمات النساء في الجزائر</div>
+    </div>
+
+    <!-- ===== HORIZONTAL SCROLL BAR ===== -->
+    <div class="hscroll-bar" id="hscrollBar">
+
+        <a class="hscroll-item" href="pages/virtual_tryon.html">
+            <div class="hscroll-ring"><div class="hscroll-inner">🤖</div></div>
+            <span class="hscroll-label" data-ar="AI ملابس وشعر" data-fr="AI Mode & Coiffure">AI ملابس وشعر</span>
+        </a>
+
+        <a class="hscroll-item" href="pages/emergency.html">
+            <div class="hscroll-ring"><div class="hscroll-inner">🆘</div></div>
+            <span class="hscroll-label" data-ar="SOS" data-fr="SOS">SOS</span>
+        </a>
+
+        <div class="hscroll-item" id="settingsHscrollBtn" onclick="openSettings()">
+            <div class="hscroll-ring"><div class="hscroll-inner">⚙️</div></div>
+            <span class="hscroll-label" data-ar="الإعدادات" data-fr="Paramètres">الإعدادات</span>
+        </div>
+
+        <a class="hscroll-item" href="pages/abraj.html">
+            <div class="hscroll-ring"><div class="hscroll-inner">♈</div></div>
+            <span class="hscroll-label" data-ar="الأبراج" data-fr="Horoscope">الأبراج</span>
+        </a>
+
+        <a class="hscroll-item" href="pages/baby_names.html">
+            <div class="hscroll-ring"><div class="hscroll-inner">👶</div></div>
+            <span class="hscroll-label" data-ar="أسماء الأطفال" data-fr="Prénoms bébé">أسماء الأطفال</span>
+        </a>
+
+        <a class="hscroll-item" href="pages/voice-orders.html">
+            <div class="hscroll-ring"><div class="hscroll-inner">🎙️</div></div>
+            <span class="hscroll-label" data-ar="أوامر صوتية" data-fr="Commandes vocales">أوامر صوتية</span>
+        </a>
+
+    </div>
+
+    <!-- ===== SEARCH ===== -->
+    <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" class="search-input"
+            data-placeholder-ar="ابحث عن صالون، حلاقة، فستان، ولاية..."
+            data-placeholder-fr="Rechercher un salon, coiffure, robe, wilaya..."
+            placeholder="ابحث عن صالون، حلاقة، فستان، ولاية...">
+    </div>
+
+    <!-- ===== IFRAME ZONE ===== -->
+    <!-- This area displays the content of the navigated page -->
+    <div class="iframe-zone" id="iframeZone">
+        <iframe id="mainFrame" src="pages/search.html" title="محتوى الصفحة"></iframe>
+    </div>
+
+</div><!-- /app -->
+
+<!-- ===== BOTTOM NAV BAR ===== -->
+<nav class="bottom-nav">
+
+    <button class="nav-item active" id="nav0" onclick="setNav(0, 'pages/search.html')">
+        <div class="nav-ring"><div class="nav-inner">💇‍♀️</div></div>
+        <span class="nav-label" data-ar="صالونات" data-fr="Salons">صالونات</span>
+    </button>
+
+    <button class="nav-item" id="nav1" onclick="setNav(1, 'pages/products.html')">
+        <div class="nav-ring"><div class="nav-inner">💄</div></div>
+        <span class="nav-label" data-ar="تجميل" data-fr="Beauté">تجميل</span>
+    </button>
+
+    <button class="nav-item" id="nav2" onclick="setNav(2, 'pages/rentals.html')">
+        <div class="nav-ring"><div class="nav-inner">👗</div></div>
+        <span class="nav-label" data-ar="فساتين" data-fr="Robes">فساتين</span>
+    </button>
+
+    <button class="nav-item" id="nav3" onclick="setNav(3, 'pages/home-services.html')">
+        <div class="nav-ring"><div class="nav-inner">🏠</div></div>
+        <span class="nav-label" data-ar="منزلية" data-fr="Domicile">منزلية</span>
+    </button>
+
+    <button class="nav-item" id="nav4" onclick="window.location.href='pages/my-account.html'">
+        <div class="nav-ring"><div class="nav-inner">👤</div></div>
+        <span class="nav-label" data-ar="حسابي" data-fr="Compte">حسابي</span>
+    </button>
+
+</nav>
+
+<!-- ===== SETTINGS BOTTOM SHEET ===== -->
+<div class="settings-overlay" id="settingsOverlay" onclick="onOverlayClick(event)">
+    <div class="settings-sheet" id="settingsSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">⚙️ <span data-ar="الإعدادات" data-fr="Paramètres">الإعدادات</span></div>
+
+        <!-- اللغة -->
+        <div class="section-label">🌐 <span data-ar="اللغة" data-fr="Langue">اللغة</span></div>
+        <div class="lang-row">
+            <button class="lang-btn-s active" id="lbAr" onclick="switchLang('ar')">
+                <span class="lflag">🇩🇿</span>عربي
+            </button>
+            <button class="lang-btn-s" id="lbFr" onclick="switchLang('fr')">
+                <span class="lflag">🇫🇷</span>Français
+            </button>
+        </div>
+
+        <!-- الوضع -->
+        <div class="section-label">🌙 <span data-ar="الوضع" data-fr="Mode">الوضع</span></div>
+        <div class="mode-row">
+            <span class="mode-row-lbl">
+                <span id="modeIco">🌙</span>
+                <span id="modeText">الوضع الداكن</span>
+            </span>
+            <div class="toggle on" id="modeToggle" onclick="toggleMode()">
+                <div class="toggle-knob"></div>
+            </div>
+        </div>
+
+        <!-- الألوان -->
+        <div class="section-label">🎨 <span data-ar="لون التطبيق" data-fr="Couleur">لون التطبيق</span></div>
+        <div class="swatches">
+            <div class="swatch sw-lime    active" data-theme="theme-lime"    onclick="switchTheme(this)" title="Lime"></div>
+            <div class="swatch sw-magenta"        data-theme="theme-magenta" onclick="switchTheme(this)" title="Magenta"></div>
+            <div class="swatch sw-rose"           data-theme="theme-rose"    onclick="switchTheme(this)" title="Rose"></div>
+            <div class="swatch sw-violet"         data-theme="theme-violet"  onclick="switchTheme(this)" title="Violet"></div>
+            <div class="swatch sw-teal"           data-theme="theme-teal"    onclick="switchTheme(this)" title="Teal"></div>
+            <div class="swatch sw-gold"           data-theme="theme-gold"    onclick="switchTheme(this)" title="Gold"></div>
+        </div>
+
+        <!-- تواصل مع المطور -->
+        <div class="section-label">👨‍💻 <span data-ar="تواصل مع المطور" data-fr="Contacter le développeur">تواصل مع المطور</span></div>
+        <div class="dev-row">
+            <div class="dev-ava">👩‍💻</div>
+            <div class="dev-meta">
+                <div class="dev-name-t" data-ar="اسم المطورة" data-fr="Nom de la développeuse">اسم المطورة</div>
+                <div class="dev-sub-t"  data-ar="مطورة تطبيقات · الجزائر" data-fr="Développeuse · Algérie">مطورة تطبيقات · الجزائر</div>
+                <div class="dev-links">
+                    <a href="mailto:dev@lila.dz" class="dev-lnk">📧 Email</a>
+                    <a href="https://t.me/lila_app" class="dev-lnk">✈️ Telegram</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- حاوية المودالات الديناميكية -->
+<div id="dynamicModals"></div>
+
+<!-- ===== Scripts ===== -->
+<script src="js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/banner-controller.js"></script>
+
+
+<script>
+(function () {
+
+    /* ===== PARTICLES ===== */
+
+    const canvas = document.getElementById('particleCanvas');
+    const ctx    = canvas.getContext('2d');
+    let particles = [];
+    let particleColors = ['#32CD32', '#7FFF00'];
+
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Particle() { this.reset(); }
+    Particle.prototype.reset = function () {
+        this.x       = Math.random() * canvas.width;
+        this.y       = Math.random() * canvas.height;
+        this.size    = Math.random() * 1.4 + 0.3;
+        this.speedX  = (Math.random() - 0.5) * 0.28;
+        this.speedY  = (Math.random() - 0.5) * 0.28;
+        this.opacity = Math.random() * 0.45 + 0.08;
+        this.color   = particleColors[Math.random() > 0.65 ? 0 : 1];
+    };
+    Particle.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+    };
+    Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle   = this.color;
+        ctx.globalAlpha = this.opacity;
+        ctx.fill();
+    };
+
+    for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* ===== STATE ===== */
+    let currentLang = localStorage.getItem('lila_lang') || 'ar';
+    let isDark = (localStorage.getItem('lila_mode') || 'dark') === 'dark';
+
+    /* ===== LANGUAGE ===== */
+    window.switchLang = function (lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('[data-ar]').forEach(el => {
+            el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.fr;
+        });
+
+        const inp = document.getElementById('searchInput');
+        if (inp) {
+            inp.placeholder = lang === 'ar'
+                ? inp.dataset.placeholderAr
+                : inp.dataset.placeholderFr;
+        }
+
+        document.getElementById('lbAr').classList.toggle('active', lang === 'ar');
+        document.getElementById('lbFr').classList.toggle('active', lang === 'fr');
+
+        localStorage.setItem('lila_lang', lang);
+        updateModeLabel();
+    };
+
+    /* ===== DARK / LIGHT MODE ===== */
+    window.toggleMode = function () {
+        isDark = !isDark;
+        applyMode();
+    };
+
+    function applyMode() {
+        const body = document.getElementById('bodyEl');
+        body.classList.toggle('dark-mode',  isDark);
+        body.classList.toggle('light-mode', !isDark);
+        document.getElementById('modeToggle').classList.toggle('on', isDark);
+        localStorage.setItem('lila_mode', isDark ? 'dark' : 'light');
+        updateModeLabel();
+    }
+
+    function updateModeLabel() {
+        const ico = document.getElementById('modeIco');
+        const txt = document.getElementById('modeText');
+        if (!ico || !txt) return;
+        ico.textContent = isDark ? '🌙' : '☀️';
+        txt.textContent = isDark
+            ? (currentLang === 'ar' ? 'الوضع الداكن' : 'Mode sombre')
+            : (currentLang === 'ar' ? 'الوضع الفاتح' : 'Mode clair');
+    }
+
+    /* ===== THEME COLOR ===== */
+    const THEMES = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
+    const THEME_PARTICLES = {
+        'theme-lime':    ['#32CD32', '#7FFF00'],
+        'theme-magenta': ['#FF00FF', '#c084fc'],
+        'theme-rose':    ['#FB7185', '#E11D78'],
+        'theme-violet':  ['#A78BFA', '#7C3AED'],
+        'theme-teal':    ['#2DD4BF', '#0D9488'],
+        'theme-gold':    ['#F59E0B', '#B45309'],
+    };
+
+    window.switchTheme = function (swatch) {
+        const t = swatch.dataset.theme;
+        const body = document.getElementById('bodyEl');
+        THEMES.forEach(th => body.classList.remove(th));
+        body.classList.add(t);
+        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        particleColors = THEME_PARTICLES[t] || ['#32CD32', '#7FFF00'];
+        particles.forEach(p => p.reset());
+        localStorage.setItem('lila_theme', t);
+    };
+
+    /* ===== BOTTOM NAV ===== */
+    window.setNav = function (idx, url) {
+        document.querySelectorAll('.nav-item').forEach((n, i) =>
+            n.classList.toggle('active', i === idx));
+        document.getElementById('mainFrame').src = url;
+    };
+
+    /* ===== SETTINGS ===== */
+    window.openSettings = function () {
+        document.getElementById('settingsOverlay').classList.add('open');
+    };
+    window.onOverlayClick = function (e) {
+        if (e.target === document.getElementById('settingsOverlay')) {
+            document.getElementById('settingsOverlay').classList.remove('open');
+        }
+    };
+
+    /* ===== INIT — restore saved preferences ===== */
+    (function init() {
+        // mode
+        const body = document.getElementById('bodyEl');
+        body.classList.toggle('dark-mode',  isDark);
+        body.classList.toggle('light-mode', !isDark);
+        document.getElementById('modeToggle').classList.toggle('on', isDark);
+
+        // theme
+        const savedTheme = localStorage.getItem('lila_theme') || 'theme-lime';
+        THEMES.forEach(t => body.classList.remove(t));
+        body.classList.add(savedTheme);
+        const activeSwatch = document.querySelector(`.swatch[data-theme="${savedTheme}"]`);
+        if (activeSwatch) {
+            document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            activeSwatch.classList.add('active');
+        }
+        particleColors = THEME_PARTICLES[savedTheme] || ['#32CD32', '#7FFF00'];
+
+        // lang
+        switchLang(currentLang);
+    })();
+
+})();
+</script>
+
+</body>
+</html>

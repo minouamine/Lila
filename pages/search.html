@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ليلى — بحث</title>
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+/* =============================================
+   search.html — scoped only, inherits main.css
+   ============================================= */
+html, body {
+    height: 100%;
+    margin: 0; padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Cairo', sans-serif;
+}
+
+/* ── شريط الفلاتر ── */
+.filters-strip {
+    width: 100%;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    padding: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.filters-strip::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    max-width: 70px;
+}
+
+.filter-ring {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-grad);
+    transition: transform .22s var(--ease-snap), box-shadow .22s;
+    flex-shrink: 0;
+}
+.filter-chip.active .filter-ring,
+.filter-chip:hover  .filter-ring {
+    transform: scale(1.10);
+    box-shadow: 0 4px 14px var(--c-glow);
+}
+.filter-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem;
+    transition: background var(--t);
+}
+.filter-chip.active .filter-inner { background: var(--c-glow-soft); }
+
+.filter-label {
+    font-size: 0.50rem;
+    font-weight: 700;
+    color: var(--c-text-2);
+    white-space: nowrap;
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.filter-chip.active .filter-label { color: var(--c-primary); }
+
+/* dropdown */
+.dropdown-panel {
+    display: none;
+    position: fixed;
+    left: 8px; right: 8px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border-act);
+    border-radius: 12px;
+    padding: 14px;
+    z-index: 300;
+    box-shadow: 0 8px 30px rgba(0,0,0,.75), 0 0 20px var(--c-glow-soft);
+    animation: dropIn .18s ease;
+    transition: background var(--t);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.dropdown-panel.open { display: block; }
+@keyframes dropIn {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.dropdown-panel select {
+    width: 100%;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border-act);
+    border-radius: 8px;
+    color: var(--c-text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    outline: none;
+    margin-top: 4px;
+    transition: border-color var(--t), background var(--t), color var(--t);
+}
+.dropdown-panel select:focus { border-color: var(--c-primary); }
+.dp-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--c-text-3);
+    display: block;
+    margin-bottom: 2px;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+
+/* online toggle */
+.online-row {
+    display: flex; align-items: center; gap: 8px; padding: 2px 0;
+}
+.online-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #00c87a;
+    animation: onlinePulse 1.5s infinite; flex-shrink: 0;
+}
+@keyframes onlinePulse {
+    0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)}
+}
+.online-row label {
+    font-size: .82rem; color: var(--c-text);
+    cursor: pointer; font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.toggle-sm {
+    width: 38px; height: 21px;
+    background: rgba(255,255,255,.1);
+    border-radius: 11px; position: relative;
+    cursor: pointer; border: 1.5px solid var(--c-border-act);
+    margin-right: auto; flex-shrink: 0;
+    transition: background .25s, border-color .25s;
+}
+.light-mode .toggle-sm { background: rgba(0,0,0,.10); }
+.toggle-sm.on { background: var(--c-primary); border-color: var(--c-primary); }
+.toggle-sm .knob {
+    position: absolute; top: 2px; right: 2px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    transition: right .22s var(--ease-snap);
+}
+.toggle-sm.on .knob { right: calc(100% - 15px); }
+
+/* ── شريط عرض القائمة/الخريطة ── */
+.view-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 5px 12px 2px;
+    flex-shrink: 0;
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+    transition: background var(--t), border-color var(--t);
+}
+.view-btn {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; cursor: pointer; background: none; border: none;
+    padding: 3px 6px; border-radius: 8px;
+}
+.view-btn-ring {
+    width: 30px; height: 30px; border-radius: 50%; padding: 2px;
+    background: var(--ig-grad);
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.view-btn.active .view-btn-ring,
+.view-btn:hover  .view-btn-ring {
+    transform: scale(1.12);
+    box-shadow: 0 3px 10px var(--c-glow);
+}
+.view-btn-inner {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .80rem; transition: background var(--t);
+}
+.view-btn.active .view-btn-inner { background: var(--c-glow-soft); }
+.view-btn-lbl {
+    font-size: .44rem; font-weight: 700; color: var(--c-text-2);
+    white-space: nowrap; font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.view-btn.active .view-btn-lbl { color: var(--c-primary); }
+
+/* ── منطقة النتائج ── */
+.results-area {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 10px 16px;
+    scrollbar-width: thin;
+    background: var(--c-bg);
+    transition: background var(--t);
+    min-height: 0;
+}
+
+/* عنوان الصف */
+.row-title {
+    font-size: .66rem; font-weight: 700;
+    color: var(--c-text-2); letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 12px 0 6px;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+    width: 100%;
+    box-sizing: border-box;
+}
+.row-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--c-border), transparent);
+}
+
+/* صف البطاقات — متمركز ويلتف بدلاً من الالتصاق بطرف واحد */
+.cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding-bottom: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* بطاقة صالون */
+.salon-card {
+    flex: 0 0 auto;
+    width: 148px;
+    background: var(--c-card);
+    border-radius: 14px;
+    border: 1.5px solid var(--c-primary);
+    box-shadow: 0 0 10px var(--c-glow-soft), inset 0 0 0 1px rgba(50,205,50,0.05);
+    overflow: hidden; cursor: pointer;
+    transition: transform .22s var(--ease-snap), box-shadow .22s,
+                border-color var(--t), background var(--t);
+    position: relative;
+}
+.salon-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 0 22px var(--c-glow), inset 0 0 0 1px rgba(50,205,50,0.15);
+}
+.salon-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--c-primary), transparent);
+    opacity: .75;
+}
+.card-avatar-wrap {
+    display: flex; justify-content: center; padding: 12px 0 5px;
+}
+.card-avatar-ring {
+    width: 60px; height: 60px; border-radius: 50%;
+    padding: 2.5px; background: var(--ig-grad); flex-shrink: 0;
+}
+.card-avatar-inner {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: var(--c-surface); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; transition: background var(--t);
+}
+.card-avatar-inner img {
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 50%; display: block;
+}
+.card-body { padding: 0 8px 12px; text-align: center; }
+.card-name {
+    font-size: .76rem; font-weight: 700; color: var(--c-text);
+    margin-bottom: 3px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+    transition: color var(--t);
+}
+.card-badges {
+    display: flex; flex-wrap: wrap; gap: 3px;
+    justify-content: center; margin-bottom: 4px;
+}
+.badge-gold   { font-size:.55rem; background:rgba(255,215,0,.15);  color:gold;    border-radius:10px; padding:1px 5px; }
+.badge-online { font-size:.55rem; background:rgba(0,200,122,.15);  color:#00c87a; border-radius:10px; padding:1px 5px; }
+.card-rating  { font-size:.62rem; color: gold; }
+.card-followers { font-size:.56rem; color: var(--c-text-3); margin-top:2px; }
+
+/* loading / empty */
+.loading-state, .empty-state {
+    text-align: center; padding: 50px 20px;
+    color: var(--c-text-2);
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--c-border-act);
+    border-top-color: var(--c-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+/* خريطة */
+#mapView {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+}
+#mapView.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ── شريط الفلاتر ── -->
+<div class="filters-strip" id="filtersStrip">
+
+    <div class="filter-chip" onclick="toggleDrop('drop-service', this, event)">
+        <div class="filter-ring"><div class="filter-inner">💇</div></div>
+        <span class="filter-label" data-ar="نوع الخدمة" data-fr="Service">نوع الخدمة</span>
+        <div class="dropdown-panel" id="drop-service">
+            <span class="dp-label" data-ar="نوع الخدمة" data-fr="Type de service">نوع الخدمة</span>
+            <select id="sel-service" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value=""    data-ar="جميع الخدمات"      data-fr="Tous les services">جميع الخدمات</option>
+                <option value="salon_hair"      data-ar="💇 صالون حلاقة"      data-fr="💇 Salon coiffure">💇 صالون حلاقة</option>
+                <option value="salon_beauty"    data-ar="💅 صالون تجميل"      data-fr="💅 Salon beauté">💅 صالون تجميل</option>
+                <option value="home_hair"       data-ar="🏠 حلاقة منزلية"     data-fr="🏠 Coiffure domicile">🏠 حلاقة منزلية</option>
+                <option value="mobile_hair"     data-ar="🚗 حلاقة متنقلة"     data-fr="🚗 Coiffure mobile">🚗 حلاقة متنقلة</option>
+                <option value="product_seller"  data-ar="🛍️ بائعة منتجات"    data-fr="🛍️ Vendeuse produits">🛍️ بائعة منتجات</option>
+                <option value="dress_rental"    data-ar="👗 تأجير أزياء"      data-fr="👗 Location tenues">👗 تأجير أزياء</option>
+                <option value="home_service"    data-ar="🏠 خدمات منزلية"     data-fr="🏠 Services domicile">🏠 خدمات منزلية</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-wilaya', this, event)">
+        <div class="filter-ring"><div class="filter-inner">📍</div></div>
+        <span class="filter-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
+        <div class="dropdown-panel" id="drop-wilaya">
+            <span class="dp-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
+            <select id="sel-wilaya" onchange="onWilayaChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-daira', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🏘️</div></div>
+        <span class="filter-label" data-ar="الدائرة" data-fr="Daïra">الدائرة</span>
+        <div class="dropdown-panel" id="drop-daira">
+            <span class="dp-label" data-ar="الدائرة" data-fr="Daïra">الدائرة</span>
+            <select id="sel-daira" onchange="onDairaChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-baladiya', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🏙️</div></div>
+        <span class="filter-label" data-ar="البلدية" data-fr="Commune">البلدية</span>
+        <div class="dropdown-panel" id="drop-baladiya">
+            <span class="dp-label" data-ar="البلدية" data-fr="Commune">البلدية</span>
+            <select id="sel-baladiya" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-sort', this, event)">
+        <div class="filter-ring"><div class="filter-inner">📊</div></div>
+        <span class="filter-label" data-ar="ترتيب" data-fr="Trier">ترتيب</span>
+        <div class="dropdown-panel" id="drop-sort">
+            <span class="dp-label" data-ar="ترتيب حسب" data-fr="Trier par">ترتيب حسب</span>
+            <select id="sel-sort" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value="rating"    data-ar="⭐ الأعلى تقييماً"  data-fr="⭐ Les mieux notés">⭐ الأعلى تقييماً</option>
+                <option value="followers" data-ar="👥 الأكثر متابعة"   data-fr="👥 Les plus suivis">👥 الأكثر متابعة</option>
+                <option value="nearest"   data-ar="📍 الأقرب إليك"     data-fr="📍 Les plus proches">📍 الأقرب إليك</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-online', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🟢</div></div>
+        <span class="filter-label" data-ar="متاحة الآن" data-fr="Disponible">متاحة الآن</span>
+        <div class="dropdown-panel" id="drop-online">
+            <div class="online-row">
+                <span class="online-dot"></span>
+                <label data-ar="متاحة الآن فقط" data-fr="Disponibles seulement">متاحة الآن فقط</label>
+                <div class="toggle-sm" id="onlineToggle"
+                     onclick="this.classList.toggle('on'); onFilterChange(); event.stopPropagation();">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ── شريط العرض ── -->
+<div class="view-bar">
+    <button class="view-btn active" onclick="setView('list', this)">
+        <div class="view-btn-ring"><div class="view-btn-inner">📋</div></div>
+        <span class="view-btn-lbl" data-ar="قائمة" data-fr="Liste">قائمة</span>
+    </button>
+    <button class="view-btn" onclick="setView('map', this)">
+        <div class="view-btn-ring"><div class="view-btn-inner">🗺️</div></div>
+        <span class="view-btn-lbl" data-ar="خريطة" data-fr="Carte">خريطة</span>
+    </button>
+</div>
+
+<!-- ── النتائج ── -->
+<div class="results-area" id="resultsArea">
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p data-ar="جارٍ التحميل..." data-fr="Chargement...">جارٍ التحميل...</p>
+    </div>
+</div>
+
+<!-- ── الخريطة ── -->
+<div id="mapView"></div>
+
+<!-- Scripts — نفس ترتيب search.html الأصلي -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+/* =============================================
+   search.html — logic
+   ============================================= */
+
+let allResults    = [];
+let wilayasData   = [];
+let dairasData    = [];
+let baladiyasData = [];
+let userLocation  = null;
+let map           = null;
+let mapMarkers    = [];
+
+const SERVICE_LABELS = {
+    ar: {
+        salon_hair:     '💇 صالونات حلاقة',
+        salon_beauty:   '💅 صالونات تجميل',
+        home_hair:      '🏠 حلاقة منزلية',
+        mobile_hair:    '🚗 حلاقة متنقلة',
+        product_seller: '🛍️ بائعات منتجات',
+        dress_rental:   '👗 تأجير أزياء',
+        home_service:   '🏠 خدمات منزلية',
+        other:          '📋 أخرى',
+    },
+    fr: {
+        salon_hair:     '💇 Salons coiffure',
+        salon_beauty:   '💅 Salons beauté',
+        home_hair:      '🏠 Coiffure domicile',
+        mobile_hair:    '🚗 Coiffure mobile',
+        product_seller: '🛍️ Vendeuses produits',
+        dress_rental:   '👗 Location tenues',
+        home_service:   '🏠 Services domicile',
+        other:          '📋 Autres',
+    }
+};
+
+/*
+ * ── اللغة ─────────────────────────────────────────
+ * index.html (الصفحة الأب) لا يوفر window.lang ولا يرسل
+ * أي رسالة للـ iframe. لذلك نعتمد بالكامل على localStorage
+ * (lila_lang) بنفس الطريقة التي كانت تُستخدم في النسخة
+ * القديمة من هذا الملف. لا تحاول قراءة window.parent.lang.
+ */
+function getLang() {
+    return localStorage.getItem('lila_lang') || 'ar';
+}
+
+/* ── مزامنة الثيم ──────────────────────────────────
+ * index.html يخزن الثيم/الوضع في localStorage فقط
+ * (lila_mode, lila_theme) ولا يضيف كلاسات عبر window.parent
+ * بشكل يمكن الاعتماد عليه من iframe بمعزل عنه، لذلك نقرأ
+ * القيم مباشرة من localStorage كما في النسخة القديمة.
+ */
+function syncTheme() {
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+    const b = document.body;
+    const themes = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
+    themes.forEach(t => b.classList.remove(t));
+    b.classList.add(theme);
+    b.classList.toggle('dark-mode',  mode === 'dark');
+    b.classList.toggle('light-mode', mode !== 'dark');
+    console.log('[Search] Theme synced from localStorage:', theme, mode);
+}
+
+/* ── تطبيق اللغة على كل العناصر ── */
+function applyLang() {
+    const lang = getLang();
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+    document.querySelectorAll('[data-ar]').forEach(el => {
+        if (el.tagName === 'OPTION') return; // نتجاهل options هنا
+        el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.fr;
+    });
+
+    document.querySelectorAll('option[data-ar]').forEach(opt => {
+        opt.textContent = lang === 'ar' ? opt.dataset.ar : opt.dataset.fr;
+    });
+
+    // تحديث select الولاية (الخيار الأول الديناميكي بدون data-ar)
+    const wSel = document.getElementById('sel-wilaya');
+    Array.from(wSel.options).forEach(opt => {
+        if (!opt.value && !opt.dataset.ar) {
+            opt.textContent = lang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات';
+        } else if (opt.dataset.ar) {
+            opt.textContent = lang === 'ar' ? opt.dataset.ar : opt.dataset.fr;
+        }
+    });
+
+    console.log('[Search] Lang applied:', lang);
+}
+
+/* ── تحميل الولايات ── */
+async function loadWilayas() {
+    try {
+        const res = await fetch('../assets/data/wilayas.json');
+        if (!res.ok) throw new Error('wilayas.json not found');
+        wilayasData = await res.json();
+        const lang = getLang();
+        const sel  = document.getElementById('sel-wilaya');
+        sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات'}</option>`;
+        wilayasData.forEach(w => {
+            const opt = document.createElement('option');
+            opt.value      = w.code;
+            opt.dataset.ar = w.name_ar;
+            opt.dataset.fr = w.name_fr || w.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
+        });
+        console.log('[Search] Wilayas loaded:', wilayasData.length);
+    } catch(e) {
+        console.error('[Search] Error loading wilayas:', e);
+    }
+}
+
+/* ── تحميل الدوائر ── */
+async function loadDairas(wilayaCode) {
+    const lang = getLang();
+    const sel  = document.getElementById('sel-daira');
+    sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les daïras' : 'جميع الدوائر'}</option>`;
+    document.getElementById('sel-baladiya').innerHTML =
+        `<option value="">${lang === 'fr' ? 'Toutes les communes' : 'جميع البلديات'}</option>`;
+
+    if (!wilayaCode) return;
+    try {
+        if (!dairasData.length) {
+    const res = await fetch('../assets/data/dairas.json');
+    if (!res.ok) throw new Error('dairas.json not found');
+    const obj = await res.json();
+    dairasData = Object.entries(obj).flatMap(([code, dairas]) =>
+        dairas.map(d => ({ ...d, wilaya_code: parseInt(code) }))
+    );
+}
+        const filtered = dairasData.filter(d => String(d.code).split('-')[0] === String(wilayaCode));
+        filtered.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value      = d.code || d.id || d.name_ar;
+            opt.dataset.ar = d.name_ar;
+            opt.dataset.fr = d.name_fr || d.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
+        });
+        console.log('[Search] Dairas loaded for wilaya', wilayaCode, ':', filtered.length);
+    } catch(e) {
+        console.error('[Search] Error loading dairas:', e);
+    }
+}
+
+/* ── تحميل البلديات ── */
+async function loadBaladiyahs(dairaCode) {
+    const lang = getLang();
+    const sel  = document.getElementById('sel-baladiya');
+    sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les communes' : 'جميع البلديات'}</option>`;
+
+    if (!dairaCode) return;
+    try {
+        if (!baladiyasData.length) {
+    const res = await fetch('../assets/data/baladiyahs.json');
+    if (!res.ok) throw new Error('baladiyahs.json not found');
+    const obj = await res.json();
+    baladiyasData = Object.entries(obj).flatMap(([dairaCode, baladiyahs]) =>
+    baladiyahs.map(b => ({ ...b, daira_code: dairaCode }))
+);
+}
+        const filtered = baladiyasData.filter(b => String(b.daira_code) === String(dairaCode));
+        filtered.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value      = b.code || b.id || b.name_ar;
+            opt.dataset.ar = b.name_ar;
+            opt.dataset.fr = b.name_fr || b.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
+        });
+        console.log('[Search] Baladiyahs loaded for daira', dairaCode, ':', filtered.length);
+    } catch(e) {
+        console.error('[Search] Error loading baladiyahs:', e);
+    }
+}
+
+/* ── البحث ── */
+async function performSearch() {
+    showLoading();
+
+    const wilaya  = document.getElementById('sel-wilaya').value;
+    const service = document.getElementById('sel-service').value;
+    const online  = document.getElementById('onlineToggle').classList.contains('on');
+    const sortBy  = document.getElementById('sel-sort').value;
+
+    const filters = {};
+    if (wilaya)  filters.wilaya_code = parseInt(wilaya);
+    if (service) filters.services    = [service];
+    if (online)  filters.is_online   = true;
+
+    console.log('[Search] Performing search with filters:', filters);
+
+    try {
+        if (window.lilaAPI && typeof window.lilaAPI.getBusinessProfiles === 'function') {
+            allResults = await window.lilaAPI.getBusinessProfiles(filters, 100, 0);
+            console.log('[Search] Results from Supabase:', allResults.length);
+        } else {
+            console.warn('[Search] lilaAPI not available');
+            allResults = [];
+        }
+
+        // ترتيب
+        if (sortBy === 'rating') {
+            allResults.sort((a,b) => (b.avg_rating||0) - (a.avg_rating||0));
+        } else if (sortBy === 'followers') {
+            allResults.sort((a,b) => (b.followers_count||0) - (a.followers_count||0));
+        } else if (sortBy === 'nearest' && userLocation) {
+            allResults.forEach(r => {
+                r._dist = (r.latitude && r.longitude)
+                    ? calcDist(userLocation.lat, userLocation.lng, r.latitude, r.longitude)
+                    : Infinity;
+            });
+            allResults.sort((a,b) => a._dist - b._dist);
+        }
+
+        renderListView();
+        if (map) renderMapView();
+
+    } catch(e) {
+        console.error('[Search] Search error:', e);
+        const lang = getLang();
+        document.getElementById('resultsArea').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <p>${lang === 'fr' ? 'Erreur de connexion. Réessayez.' : 'فشل الاتصال بقاعدة البيانات. حاول مرة أخرى.'}</p>
+            </div>`;
+    }
+}
+
+function calcDist(la1,lo1,la2,lo2) {
+    const R=6371, dL=(la2-la1)*Math.PI/180, dO=(lo2-lo1)*Math.PI/180;
+    const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+/* ── عرض القائمة ── */
+function renderListView() {
+    const lang = getLang();
+    const area = document.getElementById('resultsArea');
+
+    if (!allResults || !allResults.length) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <p>${lang === 'fr' ? 'Aucun résultat trouvé' : 'لا توجد نتائج'}</p>
+            </div>`;
+        console.log('[Search] No results to display');
+        return;
+    }
+
+    // groupBy services[0]
+    const groups = {};
+    allResults.forEach(b => {
+        const svc = (b.services && b.services[0]) || 'other';
+        if (!groups[svc]) groups[svc] = [];
+        groups[svc].push(b);
+    });
+
+    let html = '';
+    Object.entries(groups).forEach(([svc, items]) => {
+        const title = (SERVICE_LABELS[lang] || SERVICE_LABELS.ar)[svc]
+                   || (lang === 'fr' ? 'Autres' : 'أخرى');
+        html += `<div class="row-title">${title}</div><div class="cards-row">`;
+        items.forEach(b => { html += buildCard(b, lang); });
+        html += `</div>`;
+    });
+
+    area.innerHTML = html;
+    console.log('[Search] Rendered', allResults.length, 'results in', Object.keys(groups).length, 'groups');
+}
+
+function buildCard(b, lang) {
+    const name = DOMPurify.sanitize(b.business_name || b.username || '—');
+    const stars = '★'.repeat(Math.floor(b.avg_rating||0)) + '☆'.repeat(5-Math.floor(b.avg_rating||0));
+    const badgeG = b.has_gold_badge
+        ? `<span class="badge-gold">⭐ ${lang==='fr'?'Certifié':'موثوق'}</span>` : '';
+    const badgeO = b.is_online
+        ? `<span class="badge-online">🟢 ${lang==='fr'?'Dispo':'متاحة'}</span>` : '';
+    const imgSrc = b.logo_url ? DOMPurify.sanitize(b.logo_url) : '';
+    const imgEl  = imgSrc
+        ? `<img src="${imgSrc}" alt="${name}"
+               onload="this.style.display='block';this.nextElementSibling.style.display='none'"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+               style="display:block">`
+        : '';
+    const fallback = `<span style="display:${imgSrc?'none':'flex'};align-items:center;justify-content:center;
+        width:100%;height:100%;font-size:1.5rem">💇‍♀️</span>`;
+    const followers = b.followers_count
+        ? `<div class="card-followers">👥 ${b.followers_count} ${lang==='fr'?'abonné(e)s':'متابع'}</div>` : '';
+
+    /*
+     * التنقل لصفحة الحساب التجاري:
+     * هذا الملف نفسه محمَّل داخل iframe (id="mainFrame") من index.html.
+     * النسخة القديمة كانت تستخدم window.location.href مباشرة لأنها
+     * كانت تُفتح بمفردها. بما أننا الآن دائماً داخل iframe، يجب تغيير
+     * موقع الإطار نفسه (window.location) وليس محاولة استخدام
+     * window.parent.location، لأن:
+     *  - business-profile.html يقع في نفس مجلد pages/ (بجانب search.html)
+     *  - لا حاجة لإضافة بادئة "pages/" لأننا أصلاً داخل pages/
+     *  - تغيير window.parent.location كان يطلب من المتصفح الانتقال إلى
+     *    "pages/business-profile.html" بالنسبة لمسار index.html (الجذر)
+     *    وهو مسار صحيح ظاهرياً، لكنه يفقد إطار iframe بالكامل (الصفحة
+     *    تخرج عن تصميم index.html/bottom-nav) وقد يتسبب أيضاً في خطأ
+     *    "forbidden" حسب إعدادات X-Frame-Options/CSP الخادم عند تغييره
+     *    من سياق iframe. الحل الصحيح والمطابق لسلوك "صالونات" في
+     *    index.html هو فتح الصفحة داخل نفس الإطار.
+     */
+    return `
+    <div class="salon-card" onclick="window.location.href='business-profile.html?id=${b.id}'">
+        <div class="card-avatar-wrap">
+            <div class="card-avatar-ring">
+                <div class="card-avatar-inner">${imgEl}${fallback}</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="card-name">${name}</div>
+            <div class="card-badges">${badgeG}${badgeO}</div>
+            <div class="card-rating">${stars} (${b.reviews_count||0})</div>
+            ${followers}
+        </div>
+    </div>`;
+}
+
+function showLoading() {
+    const lang = getLang();
+    document.getElementById('resultsArea').innerHTML = `
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>${lang==='fr'?'Recherche en cours...':'جارٍ البحث عن الخدمات...'}</p>
+        </div>`;
+}
+
+/* ── الخريطة ── */
+function renderMapView() {
+    const lang = getLang();
+    if (!map) {
+        map = L.map('mapView').setView([36.75, 3.06], 6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OSM', subdomains: 'abcd'
+        }).addTo(map);
+    }
+    mapMarkers.forEach(m => map.removeLayer(m));
+    mapMarkers = [];
+    let bounds = null;
+    allResults.forEach(b => {
+        if (!b.latitude || !b.longitude) return;
+        const m = L.marker([b.latitude, b.longitude])
+            .bindPopup(`
+                <div style="text-align:center;min-width:160px">
+                    <b>${DOMPurify.sanitize(b.business_name||'')}</b><br>
+                    <span style="color:gold">⭐ ${b.avg_rating||0}</span><br>
+                    <a href="business-profile.html?id=${b.id}" style="color:#32CD32">
+                        ${lang==='fr'?'Voir →':'عرض التفاصيل →'}
+                    </a>
+                </div>`)
+            .addTo(map);
+        mapMarkers.push(m);
+        bounds = bounds ? bounds.extend([b.latitude,b.longitude])
+                        : L.latLngBounds([[b.latitude,b.longitude]]);
+    });
+    if (bounds && mapMarkers.length) map.fitBounds(bounds.pad(0.1));
+    else if (userLocation) map.setView([userLocation.lat,userLocation.lng],10);
+    /* تأخير صغير ضروري لأن إعادة الرسم تحتاج أن يكون العنصر مرئياً
+       (display:block) ومتقدماً أبعاده الفعلية قبل invalidateSize */
+    setTimeout(() => map.invalidateSize(), 150);
+    console.log('[Search] Map rendered with', mapMarkers.length, 'markers');
+}
+
+/* ── تبديل العرض ── */
+function setView(v, btn) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const area  = document.getElementById('resultsArea');
+    const mapEl = document.getElementById('mapView');
+    if (v === 'list') {
+        area.style.display = '';
+        mapEl.classList.remove('active');
+    } else {
+        area.style.display = 'none';
+        mapEl.classList.add('active');
+        renderMapView();
+    }
+}
+
+/* ── Dropdowns ── */
+function toggleDrop(id, chip, evt) {
+    evt.stopPropagation();
+    const panel  = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    closeAllDrops();
+    if (!isOpen) {
+        const rect = chip.getBoundingClientRect();
+        const panelWidth = Math.min(window.innerWidth - 16, 360);
+        // نحاول توسيط اللوحة أسفل الشريحة قدر الإمكان مع إبقائها داخل الشاشة
+        let left = rect.left + rect.width / 2 - panelWidth / 2;
+        left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
+        panel.style.top   = (rect.bottom + 6) + 'px';
+        panel.style.left  = left + 'px';
+        panel.style.right = 'auto';
+        panel.style.width = panelWidth + 'px';
+        panel.classList.add('open');
+        chip.classList.add('active');
+    }
+}
+function closeAllDrops() {
+    document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+}
+document.addEventListener('click', e => {
+    if (!e.target.closest('.filter-chip') && !e.target.closest('.dropdown-panel')) closeAllDrops();
+});
+
+/* ── أحداث الفلاتر ── */
+async function onWilayaChange() {
+    await loadDairas(document.getElementById('sel-wilaya').value);
+    onFilterChange();
+}
+async function onDairaChange() {
+    await loadBaladiyahs(document.getElementById('sel-daira').value);
+    onFilterChange();
+}
+function onFilterChange() { performSearch(); }
+
+/* ── موقع المستخدم ── */
+function getUserLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            console.log('[Search] User location obtained:', userLocation);
+        },
+        err => console.log('[Search] Geolocation error:', err.message)
+    );
+}
+
+/* ── Init ── */
+async function initPage() {
+    console.log('[Search] Initializing...');
+    syncTheme();
+    applyLang();
+    getUserLocation();
+    await loadWilayas();
+    await performSearch();
+    console.log('[Search] Page initialized successfully');
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>

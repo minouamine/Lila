@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ليلى - طوارئ نسائية</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* أنماط إضافية لصفحة الطوارئ */
+        .emergency-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* زر العودة - ثابت دائماً على اليمين */
+        .back-btn-wrapper {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .btn-back {
+            display: inline-block;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+        
+        /* هيدر الطوارئ */
+        .emergency-header {
+            background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.05));
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid var(--red);
+            animation: emergencyPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes emergencyPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
+        }
+        
+        .emergency-icon {
+            font-size: 4rem;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+        
+        .emergency-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--red);
+            margin: 10px 0;
+        }
+        
+        .emergency-subtitle {
+            color: var(--text-secondary);
+        }
+        
+        /* خيارات الطوارئ السريعة */
+        .emergency-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .emergency-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .emergency-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--red);
+            box-shadow: 0 10px 25px rgba(239,68,68,0.2);
+        }
+        
+        .emergency-card.selected {
+            border-color: var(--red);
+            background: rgba(239,68,68,0.15);
+        }
+        
+        .emergency-card-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .emergency-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        
+        .emergency-card-desc {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+        
+        /* نموذج الطلب العاجل */
+        .emergency-form {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .form-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-arabic);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--red);
+            box-shadow: 0 0 0 2px rgba(239,68,68,0.3);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        /* الخريطة المصغرة */
+        .mini-map {
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid var(--border-active);
+        }
+        
+        .map-note {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        /* رسوم الطوارئ */
+        .emergency-fee-box {
+            background: rgba(239,68,68,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .fee-label {
+            font-weight: 600;
+        }
+        
+        .fee-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--red);
+        }
+        
+        /* زر الطلب العاجل */
+        .btn-emergency-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--red), #dc2626);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-emergency-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239,68,68,0.4);
+        }
+        
+        /* قائمة الخدمات المتاحة للطوارئ */
+        .available-services {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .service-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .service-card:hover {
+            transform: translateX(5px);
+            border-color: var(--red);
+        }
+        
+        .service-card-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .service-card-info {
+            flex: 1;
+        }
+        
+        .service-card-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .service-card-distance {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        
+        .service-card-rating {
+            font-size: 0.75rem;
+            color: gold;
+        }
+        
+        .service-card-emergency {
+            color: var(--red);
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        
+        .emergency-badge {
+            background: var(--red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            animation: blink 1s infinite;
+            align-self: center;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* مودال التأكيد */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .confirm-modal.show {
+            display: flex;
+        }
+        
+        .confirm-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--red);
+            animation: modalPop 0.3s ease;
+        }
+        
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .confirm-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .confirm-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+        }
+        
+        .confirm-message {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .confirm-time {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+        
+        .confirm-btn {
+            background: var(--accent-orange);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--glow-orange);
+        }
+        
+        /* حالة عدم وجود نتائج */
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+        }
+        
+        /* مؤشر التحميل */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-active);
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .emergency-container { padding: 12px; }
+            .emergency-title { font-size: 1.3rem; }
+            .emergency-options { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .service-card { flex-direction: column; text-align: center; }
+            .service-card-img { margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Particle Canvas Background -->
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+<!-- Scanline overlay -->
+<div class="scanline-overlay"></div>
+
+<!-- زر الصوت -->
+<button class="music-toggle" id="musicToggleBtn">🔇</button>
+
+<div class="app">
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="header-corner top-right"></div>
+        <div class="header-corner top-left"></div>
+        <div class="header-corner bottom-right"></div>
+        <div class="header-corner bottom-left"></div>
+
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">طوارئ نسائية</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">خدمة عاجلة خلال ساعتين</div>
+    </div>
+
+    <!-- ===== LANG BAR ===== -->
+    <div class="lang-bar" dir="ltr">
+        <button class="lang-btn" data-lang="ar">
+            <span class="lang-flag">🇩🇿</span>
+            <span>عربي</span>
+        </button>
+        <button class="lang-btn" data-lang="fr">
+            <span class="lang-flag">🇫🇷</span>
+            <span>Français</span>
+        </button>
+        <button class="dev-btn" id="openDevBtn">
+            <span class="dev-btn-icon">👩‍💻</span>
+            <span>التواصل مع المطورة</span>
+        </button>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+        <div class="emergency-container">
+            <!-- زر العودة - ثابت على اليمين -->
+            <div class="back-btn-wrapper">
+                <a href="../index.html" class="btn-back" id="backButton">← العودة إلى الرئيسية</a>
+            </div>
+            
+            <!-- هيدر الطوارئ -->
+            <div class="emergency-header">
+                <div class="emergency-icon">🚨</div>
+                <div class="emergency-title" id="emergencyTitle">طوارئ نسائية</div>
+                <div class="emergency-subtitle" id="emergencySubtitle">هل تحتاجين خدمة عاجلة خلال ساعتين؟ نحن هنا لمساعدتك</div>
+            </div>
+            
+            <!-- خيارات الطوارئ السريعة -->
+            <div class="emergency-options" id="emergencyOptions">
+                <div class="emergency-card" data-type="hair">
+                    <div class="emergency-card-icon">💇‍♀️</div>
+                    <div class="emergency-card-title" data-ar="حلاقة وتصفيف" data-fr="Coiffure">حلاقة وتصفيف</div>
+                    <div class="emergency-card-desc" data-ar="تسريحة عاجلة" data-fr="Coiffure urgente">تسريحة عاجلة</div>
+                </div>
+                <div class="emergency-card" data-type="beauty">
+                    <div class="emergency-card-icon">💅</div>
+                    <div class="emergency-card-title" data-ar="تجميل وأظافر" data-fr="Beauté">تجميل وأظافر</div>
+                    <div class="emergency-card-desc" data-ar="عناية فورية" data-fr="Soins urgents">عناية فورية</div>
+                </div>
+                <div class="emergency-card" data-type="childcare">
+                    <div class="emergency-card-icon">👶</div>
+                    <div class="emergency-card-title" data-ar="حضانة مؤقتة" data-fr="Garde enfants">حضانة مؤقتة</div>
+                    <div class="emergency-card-desc" data-ar="رعاية أطفال" data-fr="Garde d'enfants">رعاية أطفال</div>
+                </div>
+                <div class="emergency-card" data-type="cooking">
+                    <div class="emergency-card-icon">🍳</div>
+                    <div class="emergency-card-title" data-ar="طبخ منزلي" data-fr="Cuisine">طبخ منزلي</div>
+                    <div class="emergency-card-desc" data-ar="طبخ عاجل" data-fr="Cuisine urgente">طبخ عاجل</div>
+                </div>
+                <div class="emergency-card" data-type="cleaning">
+                    <div class="emergency-card-icon">🧹</div>
+                    <div class="emergency-card-title" data-ar="تنظيف عاجل" data-fr="Nettoyage">تنظيف عاجل</div>
+                    <div class="emergency-card-desc" data-ar="تنظيف سريع" data-fr="Nettoyage maison">تنظيف سريع</div>
+                </div>
+                <div class="emergency-card" data-type="dress">
+                    <div class="emergency-card-icon">👗</div>
+                    <div class="emergency-card-title" data-ar="فستان طوارئ" data-fr="Robe d'urgence">فستان طوارئ</div>
+                    <div class="emergency-card-desc" data-ar="تأجير فستان" data-fr="Location robe">تأجير فستان</div>
+                </div>
+            </div>
+            
+            <!-- نموذج الطلب العاجل -->
+            <div class="emergency-form">
+                <div class="form-title">
+                    <span>📋</span>
+                    <span id="formTitle">تفاصيل الطلب العاجل</span>
+                </div>
+                
+                <div class="form-group">
+                    <label id="serviceTypeLabel">نوع الخدمة المطلوبة *</label>
+                    <select id="emergencyServiceType">
+                        <option value="">-- اختر نوع الخدمة --</option>
+                        <option value="salon_hair" data-ar="💇 صالون حلاقة" data-fr="💇 Salon coiffure">💇 صالون حلاقة</option>
+                        <option value="home_hair" data-ar="🏠 حلاقة في المنزل" data-fr="🏠 Coiffure à domicile">🏠 حلاقة في المنزل</option>
+                        <option value="mobile_hair" data-ar="🚗 حلاقة متنقلة" data-fr="🚗 Coiffure mobile">🚗 حلاقة متنقلة</option>
+                        <option value="salon_beauty" data-ar="💅 صالون تجميل" data-fr="💅 Salon beauté">💅 صالون تجميل</option>
+                        <option value="home_service_childcare" data-ar="👶 حضانة أطفال" data-fr="👶 Garde d'enfants">👶 حضانة أطفال</option>
+                        <option value="home_service_cooking" data-ar="🍳 طبخ منزلي" data-fr="🍳 Cuisine à domicile">🍳 طبخ منزلي</option>
+                        <option value="home_service_cleaning" data-ar="🧹 تنظيف" data-fr="🧹 Ménage">🧹 تنظيف</option>
+                        <option value="dress_rental" data-ar="👗 تأجير فستان" data-fr="👗 Location de robe">👗 تأجير فستان</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label id="wilayaLabel">الولاية *</label>
+                        <select id="emergencyWilaya">
+                            <option value="">-- اختر الولاية --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="dairaLabel">الدائرة *</label>
+                        <select id="emergencyDaira" disabled>
+                            <option value="">-- اختر الدائرة أولاً --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label id="baladiyahLabel">البلدية *</label>
+                    <select id="emergencyBaladiyah" disabled>
+                        <option value="">-- اختر البلدية --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label id="addressLabel">العنوان المفصل *</label>
+                    <input type="text" id="emergencyAddress" placeholder="مثال: 12 شارع ديدوش مراد، الجزائر العاصمة">
+                </div>
+                
+                <div class="form-group">
+                    <label id="instructionsLabel">تعليمات إضافية للوصول</label>
+                    <textarea id="emergencyInstructions" rows="2" placeholder="أي تفاصيل مهمة للوصول السريع..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label id="phoneLabel">رقم الهاتف *</label>
+                        <input type="tel" id="emergencyPhone" placeholder="05XX XX XX XX">
+                    </div>
+                    <div class="form-group">
+                        <label id="phoneAltLabel">رقم آخر (اختياري)</label>
+                        <input type="tel" id="emergencyPhoneAlt" placeholder="05XX XX XX XX">
+                    </div>
+                </div>
+                
+                <!-- خريطة مصغرة -->
+                <label id="mapLabel">حددي موقعك على الخريطة</label>
+                <div class="mini-map" id="emergencyMiniMap"></div>
+                <div class="map-note" id="mapNote">📍 انقري على الخريطة لتحديد موقعك بدقة</div>
+                
+                <!-- رسوم الطوارئ -->
+                <div class="emergency-fee-box">
+                    <span class="fee-label" id="feeLabel">🚨 رسوم الطوارئ الإضافية</span>
+                    <span class="fee-amount">+500 دج</span>
+                </div>
+                
+                <button id="onEmergencySubmit" class="btn-emergency-submit">
+                    <span>🚨</span>
+                    <span id="submitBtnText">طلب خدمة عاجلة الآن</span>
+                </button>
+            </div>
+            
+            <!-- الخدمات المتاحة للطوارئ -->
+            <div class="available-services">
+                <div class="section-title">
+                    <span>📍</span>
+                    <span id="nearbyTitle">خدمات متاحة للطوارئ في منطقتك</span>
+                </div>
+                <div id="nearbyServicesList">
+                    <div class="loading-spinner">
+                        <div class="loader"></div>
+                        <p id="loadingText">جاري البحث عن خدمات قريبة...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال المطور -->
+<div id="devModal" class="dev-modal">
+    <div class="dev-card">
+        <div class="dev-card-deco"></div>
+        <div class="dev-avatar">
+            <div class="avatar-ring"></div>
+            <img src="../assets/images/developer.jpg" alt="المطورة" onerror="this.src='https://via.placeholder.com/120?text=Dev'">
+        </div>
+        <div class="dev-info">
+            <h3>فريق ليلى</h3>
+            <p>تطوير تطبيقات | الجزائر</p>
+            <div class="dev-contacts">
+                <a href="mailto:dev@lila.dz" class="dev-contact-btn">📧 البريد الإلكتروني</a>
+                <a href="https://t.me/lila_app" class="dev-contact-btn">✈️ Telegram</a>
+            </div>
+        </div>
+        <button id="closeModalBtn">
+            <span>✕</span>
+            <span>إغلاق</span>
+        </button>
+    </div>
+</div>
+
+<!-- مودال تأكيد الطلب -->
+<div id="confirmModal" class="confirm-modal">
+    <div class="confirm-card">
+        <div class="confirm-icon">🚨</div>
+        <div class="confirm-title" id="confirmTitle">تم إرسال طلب الطوارئ!</div>
+        <div class="confirm-message" id="confirmMessage">سيتم إشعارك خلال دقائق عند قبول طلبك. ستصلك رسالة تأكيد عبر التطبيق.</div>
+        <div class="confirm-time" id="confirmTime">متوسط وقت الاستجابة: 5-15 دقيقة</div>
+        <button class="confirm-btn" id="closeConfirmBtn">حسناً</button>
+    </div>
+</div>
+
+<script src="../js/debug.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/particles.js"></script>
+<script src="../js/dark-mode.js"></script>
+<script src="../js/lang.js"></script>
+<script src="../js/voice-orders/voice-orders.js"></script>
+
+<script>
+    // ========================================
+    // المتغيرات العامة
+    // ========================================
+    let map = null;
+    let marker = null;
+    let userLocation = null;
+    let selectedLocation = null;
+    let wilayasList = [];
+    let dairasData = {};
+    let baladiyahsData = {};
+    let nearbyServices = [];
+    let currentLang = 'ar';
+    
+    // الترجمة
+    const translations = {
+        ar: {
+            backButton: '← العودة إلى الرئيسية',
+            emergencyTitle: 'طوارئ نسائية',
+            emergencySubtitle: 'هل تحتاجين خدمة عاجلة خلال ساعتين؟ نحن هنا لمساعدتك',
+            formTitle: 'تفاصيل الطلب العاجل',
+            serviceTypeLabel: 'نوع الخدمة المطلوبة *',
+            wilayaLabel: 'الولاية *',
+            dairaLabel: 'الدائرة *',
+            baladiyahLabel: 'البلدية *',
+            addressLabel: 'العنوان المفصل *',
+            instructionsLabel: 'تعليمات إضافية للوصول',
+            phoneLabel: 'رقم الهاتف *',
+            phoneAltLabel: 'رقم آخر (اختياري)',
+            mapLabel: 'حددي موقعك على الخريطة',
+            mapNote: '📍 انقري على الخريطة لتحديد موقعك بدقة',
+            feeLabel: '🚨 رسوم الطوارئ الإضافية',
+            submitBtnText: 'طلب خدمة عاجلة الآن',
+            nearbyTitle: 'خدمات متاحة للطوارئ في منطقتك',
+            loadingText: 'جاري البحث عن خدمات قريبة...',
+            confirmTitle: 'تم إرسال طلب الطوارئ!',
+            confirmMessage: 'سيتم إشعارك خلال دقائق عند قبول طلبك. ستصلك رسالة تأكيد عبر التطبيق.',
+            confirmTime: 'متوسط وقت الاستجابة: 5-15 دقيقة',
+            selectWilaya: '-- اختر الولاية --',
+            selectDaira: '-- اختر الدائرة --',
+            selectBaladiyah: '-- اختر البلدية --',
+            selectService: '-- اختر نوع الخدمة --'
+        },
+        fr: {
+            backButton: '← Retour à l\'accueil',
+            emergencyTitle: 'Urgence Féminine',
+            emergencySubtitle: 'Besoin d\'un service urgent dans les 2 heures ? Nous sommes là pour vous aider',
+            formTitle: 'Détails de la demande urgente',
+            serviceTypeLabel: 'Type de service *',
+            wilayaLabel: 'Wilaya *',
+            dairaLabel: 'Daïra *',
+            baladiyahLabel: 'Commune *',
+            addressLabel: 'Adresse détaillée *',
+            instructionsLabel: 'Instructions supplémentaires',
+            phoneLabel: 'Numéro de téléphone *',
+            phoneAltLabel: 'Autre numéro (optionnel)',
+            mapLabel: 'Localisez-vous sur la carte',
+            mapNote: '📍 Cliquez sur la carte pour préciser votre position',
+            feeLabel: '🚨 Frais d\'urgence supplémentaires',
+            submitBtnText: 'Demander un service urgent',
+            nearbyTitle: 'Services d\'urgence disponibles dans votre région',
+            loadingText: 'Recherche de services à proximité...',
+            confirmTitle: 'Demande d\'urgence envoyée !',
+            confirmMessage: 'Vous serez notifiée dans quelques minutes lorsque votre demande sera acceptée.',
+            confirmTime: 'Temps de réponse moyen : 5-15 minutes',
+            selectWilaya: '-- Choisissez la wilaya --',
+            selectDaira: '-- Choisissez la daïra --',
+            selectBaladiyah: '-- Choisissez la commune --',
+            selectService: '-- Choisissez le service --'
+        }
+    };
+    
+    // ========================================
+    // تطبيق اللغة على الواجهة
+    // ========================================
+    function applyLanguage(lang) {
+        currentLang = lang;
+        
+        // تحديث النصوص الثابتة
+        document.getElementById('backButton').innerHTML = translations[lang].backButton;
+        document.getElementById('emergencyTitle').innerHTML = translations[lang].emergencyTitle;
+        document.getElementById('emergencySubtitle').innerHTML = translations[lang].emergencySubtitle;
+        document.getElementById('formTitle').innerHTML = translations[lang].formTitle;
+        document.getElementById('serviceTypeLabel').innerHTML = translations[lang].serviceTypeLabel;
+        document.getElementById('wilayaLabel').innerHTML = translations[lang].wilayaLabel;
+        document.getElementById('dairaLabel').innerHTML = translations[lang].dairaLabel;
+        document.getElementById('baladiyahLabel').innerHTML = translations[lang].baladiyahLabel;
+        document.getElementById('addressLabel').innerHTML = translations[lang].addressLabel;
+        document.getElementById('instructionsLabel').innerHTML = translations[lang].instructionsLabel;
+        document.getElementById('phoneLabel').innerHTML = translations[lang].phoneLabel;
+        document.getElementById('phoneAltLabel').innerHTML = translations[lang].phoneAltLabel;
+        document.getElementById('mapLabel').innerHTML = translations[lang].mapLabel;
+        document.getElementById('mapNote').innerHTML = translations[lang].mapNote;
+        document.getElementById('feeLabel').innerHTML = translations[lang].feeLabel;
+        document.getElementById('submitBtnText').innerHTML = translations[lang].submitBtnText;
+        document.getElementById('nearbyTitle').innerHTML = translations[lang].nearbyTitle;
+        document.getElementById('loadingText').innerHTML = translations[lang].loadingText;
+        document.getElementById('confirmTitle').innerHTML = translations[lang].confirmTitle;
+        document.getElementById('confirmMessage').innerHTML = translations[lang].confirmMessage;
+        document.getElementById('confirmTime').innerHTML = translations[lang].confirmTime;
+        
+        // تحديث خيارات الخدمة
+        const serviceSelect = document.getElementById('emergencyServiceType');
+        Array.from(serviceSelect.options).forEach(option => {
+            if (option.value === '') {
+                option.textContent = translations[lang].selectService;
+            } else {
+                const arText = option.getAttribute('data-ar');
+                const frText = option.getAttribute('data-fr');
+                if (arText && frText) {
+                    option.textContent = lang === 'fr' ? frText : arText;
+                }
+            }
+        });
+        
+        // تحديث أزرار اللغة
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            if (btn.getAttribute('data-lang') === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        // تحديث خيارات الولاية إذا كانت محملة
+        updateWilayaSelectLanguage();
+        
+        // تحديث أزرار الطوارئ
+        document.querySelectorAll('.emergency-card').forEach(card => {
+            const titleSpan = card.querySelector('.emergency-card-title');
+            const descSpan = card.querySelector('.emergency-card-desc');
+            if (titleSpan) {
+                const arTitle = titleSpan.getAttribute('data-ar');
+                const frTitle = titleSpan.getAttribute('data-fr');
+                if (arTitle && frTitle) {
+                    titleSpan.textContent = lang === 'fr' ? frTitle : arTitle;
+                }
+            }
+            if (descSpan) {
+                const arDesc = descSpan.getAttribute('data-ar');
+                const frDesc = descSpan.getAttribute('data-fr');
+                if (arDesc && frDesc) {
+                    descSpan.textContent = lang === 'fr' ? frDesc : arDesc;
+                }
+            }
+        });
+        
+        // تحديث مكان حجز النصوص
+        const addressInput = document.getElementById('emergencyAddress');
+        const instructionsInput = document.getElementById('emergencyInstructions');
+        const phoneInput = document.getElementById('emergencyPhone');
+        const phoneAltInput = document.getElementById('emergencyPhoneAlt');
+        
+        addressInput.placeholder = lang === 'fr' ? 'Ex: 12 rue Didouche Mourad, Alger' : 'مثال: 12 شارع ديدوش مراد، الجزائر العاصمة';
+        instructionsInput.placeholder = lang === 'fr' ? 'Toute information importante pour l\'accès...' : 'أي تفاصيل مهمة للوصول السريع...';
+        phoneInput.placeholder = '05XX XX XX XX';
+        phoneAltInput.placeholder = '05XX XX XX XX';
+        
+        localStorage.setItem('lila_lang', lang);
+    }
+    
+    // ========================================
+    // تحديث لغة خيارات الولاية
+    // ========================================
+    function updateWilayaSelectLanguage() {
+        const wilayaSelect = document.getElementById('emergencyWilaya');
+        const currentLang = localStorage.getItem('lila_lang') || 'ar';
+        
+        if (wilayaSelect.options.length > 1) {
+            const firstOption = wilayaSelect.options[0];
+            firstOption.textContent = translations[currentLang].selectWilaya;
+            
+            for (let i = 1; i < wilayaSelect.options.length; i++) {
+                const option = wilayaSelect.options[i];
+                const wilaya = wilayasList.find(w => w.code == option.value);
+                if (wilaya) {
+                    option.textContent = currentLang === 'fr' ? wilaya.name_fr : wilaya.name_ar;
+                }
+            }
+        }
+    }
+    
+    // ========================================
+    // تحميل قائمة الولايات من ملف JSON
+    // ========================================
+    async function loadWilayas() {
+        try {
+            const response = await fetch('../assets/data/wilayas.json');
+            if (!response.ok) throw new Error('Failed to load wilayas.json');
+            wilayasList = await response.json();
+            
+            const select = document.getElementById('emergencyWilaya');
+            const currentLang = localStorage.getItem('lila_lang') || 'ar';
+            
+            select.innerHTML = `<option value="">${translations[currentLang].selectWilaya}</option>`;
+            
+            wilayasList.forEach(wilaya => {
+                const option = document.createElement('option');
+                option.value = wilaya.code;
+                option.textContent = currentLang === 'fr' ? wilaya.name_fr : wilaya.name_ar;
+                option.setAttribute('data-ar', wilaya.name_ar);
+                option.setAttribute('data-fr', wilaya.name_fr);
+                select.appendChild(option);
+            });
+            
+            select.addEventListener('change', onWilayaChange);
+        } catch (error) {
+            console.error('Error loading wilayas:', error);
+        }
+    }
+    
+    // ========================================
+    // عند تغيير الولاية - تحميل الدوائر
+    // ========================================
+    async function onWilayaChange() {
+        const wilayaCode = document.getElementById('emergencyWilaya').value;
+        const dairaSelect = document.getElementById('emergencyDaira');
+        const baladiyahSelect = document.getElementById('emergencyBaladiyah');
+        const currentLang = localStorage.getItem('lila_lang') || 'ar';
+        
+        if (!wilayaCode) {
+            dairaSelect.innerHTML = `<option value="">${translations[currentLang].selectDaira}</option>`;
+            dairaSelect.disabled = true;
+            baladiyahSelect.innerHTML = `<option value="">${translations[currentLang].selectBaladiyah}</option>`;
+            baladiyahSelect.disabled = true;
+            return;
+        }
+        
+        dairaSelect.disabled = false;
+        dairaSelect.innerHTML = '<option value="">جاري التحميل...</option>';
+        
+        try {
+            const response = await fetch('../assets/data/dairas.json');
+            if (!response.ok) throw new Error('Failed to load dairas.json');
+            const allDairas = await response.json();
+            dairasData = allDairas[wilayaCode] || [];
+            
+            dairaSelect.innerHTML = `<option value="">${translations[currentLang].selectDaira}</option>`;
+            
+            dairasData.forEach(daira => {
+                const option = document.createElement('option');
+                option.value = daira.code;
+                option.textContent = currentLang === 'fr' ? daira.name_fr : daira.name_ar;
+                option.setAttribute('data-ar', daira.name_ar);
+                option.setAttribute('data-fr', daira.name_fr);
+                dairaSelect.appendChild(option);
+            });
+            
+            dairaSelect.removeEventListener('change', onDairaChange);
+            dairaSelect.addEventListener('change', onDairaChange);
+            
+            // إعادة تعيين البلديات
+            baladiyahSelect.innerHTML = `<option value="">${translations[currentLang].selectBaladiyah}</option>`;
+            baladiyahSelect.disabled = true;
+            
+        } catch (error) {
+            console.error('Error loading dairas:', error);
+            dairaSelect.innerHTML = `<option value="">${translations[currentLang].selectDaira}</option>`;
+        }
+    }
+    
+    // ========================================
+    // عند تغيير الدائرة - تحميل البلديات
+    // ========================================
+    async function onDairaChange() {
+        const dairaCode = document.getElementById('emergencyDaira').value;
+        const baladiyahSelect = document.getElementById('emergencyBaladiyah');
+        const currentLang = localStorage.getItem('lila_lang') || 'ar';
+        
+        if (!dairaCode) {
+            baladiyahSelect.innerHTML = `<option value="">${translations[currentLang].selectBaladiyah}</option>`;
+            baladiyahSelect.disabled = true;
+            return;
+        }
+        
+        baladiyahSelect.disabled = false;
+        baladiyahSelect.innerHTML = '<option value="">جاري التحميل...</option>';
+        
+        try {
+            const response = await fetch('../assets/data/baladiyahs.json');
+            if (!response.ok) throw new Error('Failed to load baladiyahs.json');
+            const allBaladiyahs = await response.json();
+            baladiyahsData = allBaladiyahs[dairaCode] || [];
+            
+            baladiyahSelect.innerHTML = `<option value="">${translations[currentLang].selectBaladiyah}</option>`;
+            
+            baladiyahsData.forEach(baladiyah => {
+                const option = document.createElement('option');
+                option.value = baladiyah.code;
+                option.textContent = currentLang === 'fr' ? baladiyah.name_fr : baladiyah.name_ar;
+                option.setAttribute('data-ar', baladiyah.name_ar);
+                option.setAttribute('data-fr', baladiyah.name_fr);
+                baladiyahSelect.appendChild(option);
+            });
+            
+        } catch (error) {
+            console.error('Error loading baladiyahs:', error);
+            baladiyahSelect.innerHTML = `<option value="">${translations[currentLang].selectBaladiyah}</option>`;
+        }
+    }
+    
+    // ========================================
+    // الحصول على موقع المستخدم
+    // ========================================
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    initMiniMap();
+                    searchNearbyServices();
+                },
+                (error) => {
+                    console.log('Geolocation error:', error.message);
+                    initMiniMapFallback();
+                }
+            );
+        } else {
+            initMiniMapFallback();
+        }
+    }
+    
+    // ========================================
+    // تهيئة الخريطة
+    // ========================================
+    function initMiniMap() {
+        const mapContainer = document.getElementById('emergencyMiniMap');
+        if (!mapContainer) return;
+        
+        const center = userLocation || [36.7538, 3.0588];
+        map = L.map('emergencyMiniMap').setView([center.lat || 36.7538, center.lng || 3.0588], 13);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+            subdomains: 'abcd'
+        }).addTo(map);
+        
+        if (userLocation) {
+            marker = L.marker([userLocation.lat, userLocation.lng])
+                .bindPopup(currentLang === 'fr' ? 'Votre position' : 'موقعك الحالي')
+                .addTo(map);
+            selectedLocation = userLocation;
+        }
+        
+        map.on('click', (e) => {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([e.latlng.lat, e.latlng.lng])
+                .bindPopup(currentLang === 'fr' ? 'Position sélectionnée' : 'الموقع المحدد')
+                .addTo(map);
+            selectedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
+        });
+    }
+    
+    function initMiniMapFallback() {
+        const mapContainer = document.getElementById('emergencyMiniMap');
+        if (!mapContainer) return;
+        
+        map = L.map('emergencyMiniMap').setView([36.7538, 3.0588], 8);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+            subdomains: 'abcd'
+        }).addTo(map);
+        
+        map.on('click', (e) => {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+            selectedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
+        });
+    }
+    
+    // ========================================
+    // البحث عن خدمات قريبة
+    // ========================================
+    function searchNearbyServices() {
+        const container = document.getElementById('nearbyServicesList');
+        
+        setTimeout(() => {
+            const mockServices = [
+                { id: 'emerg1', business_name: 'صالون نسمة - طوارئ', logo_url: null, avg_rating: 4.9, distance: 1.2, is_online: true, emergency_available: true, service_type: 'salon_hair' },
+                { id: 'emerg2', business_name: 'حضانة أمان - طوارئ', logo_url: null, avg_rating: 4.8, distance: 2.5, is_online: true, emergency_available: true, service_type: 'home_service_childcare' },
+                { id: 'emerg3', business_name: 'طبخ منزلي - مريم', logo_url: null, avg_rating: 4.7, distance: 0.9, is_online: true, emergency_available: true, service_type: 'home_service_cooking' },
+                { id: 'emerg4', business_name: 'قفاطين ليلى - طوارئ', logo_url: null, avg_rating: 5.0, distance: 3.1, is_online: true, emergency_available: true, service_type: 'dress_rental' }
+            ];
+            nearbyServices = mockServices.filter(s => s.is_online && s.emergency_available);
+            
+            if (!nearbyServices.length) {
+                container.innerHTML = `<div class="no-results"><div style="font-size:3rem;">😔</div><p>${translations[currentLang].loadingText}</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="services-grid">
+                    ${nearbyServices.map(service => `
+                        <div class="service-card" onclick="selectNearbyService('${service.id}')">
+                            <img class="service-card-img" src="../assets/images/default-business.png" onerror="this.src='../assets/images/default-business.png'">
+                            <div class="service-card-info">
+                                <div class="service-card-name">${service.business_name}</div>
+                                <div class="service-card-distance">📍 ${service.distance} ${currentLang === 'fr' ? 'km' : 'كم'}</div>
+                                <div class="service-card-rating">⭐ ${service.avg_rating}</div>
+                                <div class="service-card-emergency">🚨 ${currentLang === 'fr' ? 'Urgence disponible' : 'طوارئ متاحة'}</div>
+                            </div>
+                            <div class="emergency-badge">${currentLang === 'fr' ? 'Urgence' : 'طوارئ'}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }, 500);
+    }
+    
+    window.selectNearbyService = function(serviceId) {
+        const service = nearbyServices.find(s => s.id === serviceId);
+        if (service) {
+            document.getElementById('emergencyServiceType').value = service.service_type;
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Service sélectionné' : 'تم اختيار الخدمة', 'success');
+        }
+    };
+    
+    // ========================================
+    // تهيئة أزرار الطوارئ
+    // ========================================
+    function initEmergencyCards() {
+        document.querySelectorAll('.emergency-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.emergency-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                const type = card.getAttribute('data-type');
+                const serviceMap = {
+                    hair: 'mobile_hair',
+                    beauty: 'salon_beauty',
+                    childcare: 'home_service_childcare',
+                    cooking: 'home_service_cooking',
+                    cleaning: 'home_service_cleaning',
+                    dress: 'dress_rental'
+                };
+                if (serviceMap[type]) {
+                    document.getElementById('emergencyServiceType').value = serviceMap[type];
+                }
+            });
+        });
+    }
+    
+    // ========================================
+    // إرسال طلب الطوارئ
+    // ========================================
+    async function submitEmergencyRequest() {
+        const profile = window.auth ? window.auth.getCurrentProfile() : null;
+        
+        if (!profile) {
+            if (confirm(currentLang === 'fr' ? 'Veuillez vous connecter d\'abord' : 'الرجاء تسجيل الدخول أولاً')) {
+                if (window.auth) await window.auth.signInWithGoogle();
+            }
+            return;
+        }
+        
+        const serviceType = document.getElementById('emergencyServiceType').value;
+        const wilaya = document.getElementById('emergencyWilaya').value;
+        const daira = document.getElementById('emergencyDaira').value;
+        const baladiyah = document.getElementById('emergencyBaladiyah').value;
+        const address = document.getElementById('emergencyAddress').value.trim();
+        const instructions = document.getElementById('emergencyInstructions').value;
+        const phone = document.getElementById('emergencyPhone').value.trim();
+        
+        if (!serviceType) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Choisissez le service' : 'الرجاء اختيار نوع الخدمة', 'error');
+            return;
+        }
+        if (!wilaya) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Choisissez la wilaya' : 'الرجاء اختيار الولاية', 'error');
+            return;
+        }
+        if (!daira) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Choisissez la daïra' : 'الرجاء اختيار الدائرة', 'error');
+            return;
+        }
+        if (!baladiyah) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Choisissez la commune' : 'الرجاء اختيار البلدية', 'error');
+            return;
+        }
+        if (!address) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Entrez l\'adresse' : 'الرجاء إدخال العنوان', 'error');
+            return;
+        }
+        if (!phone) {
+            if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Entrez votre numéro' : 'الرجاء إدخال رقم الهاتف', 'error');
+            return;
+        }
+        
+        console.log('Emergency request:', { serviceType, wilaya, daira, baladiyah, address, instructions, phone, location: selectedLocation });
+        
+        if (window.utils) window.utils.showToast(currentLang === 'fr' ? 'Envoi de la demande...' : 'جاري إرسال الطلب...', 'info');
+        
+        setTimeout(() => {
+            document.getElementById('confirmModal').classList.add('show');
+            document.getElementById('emergencyAddress').value = '';
+            document.getElementById('emergencyInstructions').value = '';
+            document.getElementById('emergencyPhone').value = '';
+            document.getElementById('emergencyPhoneAlt').value = '';
+            document.getElementById('emergencyServiceType').value = '';
+            document.getElementById('emergencyWilaya').value = '';
+            document.getElementById('emergencyDaira').disabled = true;
+            document.getElementById('emergencyDaira').innerHTML = '<option value="">-- اختر الدائرة أولاً --</option>';
+            document.getElementById('emergencyBaladiyah').disabled = true;
+            document.getElementById('emergencyBaladiyah').innerHTML = '<option value="">-- اختر البلدية --</option>';
+            document.querySelectorAll('.emergency-card').forEach(c => c.classList.remove('selected'));
+        }, 1500);
+    }
+    
+    // ========================================
+    // إغلاق المودال
+    // ========================================
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+        window.location.href = '../index.html';
+    }
+    
+    // ========================================
+    // المودال والموسيقى
+    // ========================================
+    function initDevModal() {
+        const devModal = document.getElementById('devModal');
+        const openBtn = document.getElementById('openDevBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        if (openBtn) openBtn.onclick = () => devModal.classList.add('show');
+        if (closeBtn) closeBtn.onclick = () => devModal.classList.remove('show');
+        if (devModal) devModal.onclick = (e) => { if (e.target === devModal) devModal.classList.remove('show'); };
+    }
+    
+    function initMusicToggle() {
+        const musicBtn = document.getElementById('musicToggleBtn');
+        let audio = null, playing = false;
+        if (musicBtn) {
+            musicBtn.onclick = () => {
+                if (!audio) { audio = new Audio('../assets/music/bg.mp3'); audio.loop = true; audio.volume = 0.3; }
+                if (playing) { audio.pause(); musicBtn.textContent = '🔇'; }
+                else { audio.play().catch(() => {}); musicBtn.textContent = '🔊'; }
+                playing = !playing;
+            };
+        }
+    }
+    
+    // ========================================
+    // التهيئة
+    // ========================================
+    async function initPage() {
+        await loadWilayas();
+        getUserLocation();
+        initEmergencyCards();
+        initDevModal();
+        initMusicToggle();
+        
+        document.getElementById('onEmergencySubmit').onclick = submitEmergencyRequest;
+        document.getElementById('closeConfirmBtn').onclick = closeConfirmModal;
+        
+        // أزرار اللغة
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.onclick = () => {
+                const lang = btn.getAttribute('data-lang');
+                applyLanguage(lang);
+                updateWilayaSelectLanguage();
+            };
+        });
+        
+        // تحميل اللغة المحفوظة
+        const savedLang = localStorage.getItem('lila_lang') || 'ar';
+        applyLanguage(savedLang);
+        
+        if (window.particles && typeof window.particles.init === 'function') {
+            window.particles.init();
+        }
+        
+        console.log('[Emergency] Page initialized');
+    }
+    
+    document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>

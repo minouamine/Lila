@@ -1,0 +1,62 @@
+{
+  "16-1": [
+    { "code": "1601", "name_ar": "الجزائر الوسطى", "name_fr": "Alger Centre" },
+    { "code": "1602", "name_ar": "سيدي امحمد", "name_fr": "Sidi M'Hamed" }
+  ],
+  "16-2": [
+    { "code": "1603", "name_ar": "القصبة", "name_fr": "Casbah" },
+    { "code": "1604", "name_ar": "الأبيار", "name_fr": "El Biar" }
+  ],
+  "16-3": [
+    { "code": "1605", "name_ar": "باب الوادي", "name_fr": "Bab El Oued" },
+    { "code": "1606", "name_ar": "بولزاقين", "name_fr": "Bologhine" },
+    { "code": "1607", "name_ar": "وادي قريش", "name_fr": "Oued Koriche" }
+  ],
+  "16-4": [
+    { "code": "1608", "name_ar": "الحراش", "name_fr": "El Harrach" },
+    { "code": "1609", "name_ar": "برج الكيفان", "name_fr": "Bordj El Kiffan" }
+  ],
+  "16-5": [
+    { "code": "1610", "name_ar": "بئر مراد رايس", "name_fr": "Bir Mourad Raïs" },
+    { "code": "1611", "name_ar": "حيدرة", "name_fr": "Hydra" }
+  ],
+  "16-6": [
+    { "code": "1612", "name_ar": "بئر خادم", "name_fr": "Bir Khadem" },
+    { "code": "1613", "name_ar": "سحاولة", "name_fr": "Sahaoula" }
+  ],
+  "16-7": [
+    { "code": "1614", "name_ar": "الرويبة", "name_fr": "Rouïba" },
+    { "code": "1615", "name_ar": "الرويسات", "name_fr": "Reghaïa" }
+  ],
+  "16-8": [
+    { "code": "1616", "name_ar": "براقي", "name_fr": "Baraki" },
+    { "code": "1617", "name_ar": "الحراش", "name_fr": "Les Eucalyptus" }
+  ],
+  "16-9": [
+    { "code": "1618", "name_ar": "الدار البيضاء", "name_fr": "Dar El Beïda" },
+    { "code": "1619", "name_ar": "باب الزوار", "name_fr": "Bab Ezzouar" }
+  ],
+  "31-1": [
+    { "code": "3101", "name_ar": "وهران", "name_fr": "Oran" },
+    { "code": "3102", "name_ar": "السانية", "name_fr": "Es Sénia" }
+  ],
+  "31-2": [
+    { "code": "3103", "name_ar": "عين الترك", "name_fr": "Aïn El Turck" },
+    { "code": "3104", "name_ar": "مرسى الكبير", "name_fr": "Mers El Kébir" }
+  ],
+  "31-3": [
+    { "code": "3105", "name_ar": "أرزيو", "name_fr": "Arzew" },
+    { "code": "3106", "name_ar": "بطيوة", "name_fr": "Boutlélis" }
+  ],
+  "25-1": [
+    { "code": "2501", "name_ar": "قسنطينة", "name_fr": "Constantine" }
+  ],
+  "25-2": [
+    { "code": "2502", "name_ar": "الخروب", "name_fr": "El Khroub" },
+    { "code": "2503", "name_ar": "عين سمارة", "name_fr": "Aïn Smara" }
+  ],
+  "25-3": [
+    { "code": "2504", "name_ar": "زيغود يوسف", "name_fr": "Zighoud Youcef" },
+    { "code": "2505", "name_ar": "بني حميدان", "name_fr": "Beni Hamidene" }
+  ]
+}

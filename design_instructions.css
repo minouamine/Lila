@@ -1,0 +1,104 @@
+/* ========================================
+   DESIGN INSTRUCTIONS FILE (LILA)
+   مستوحى بالكامل من main.css الأصلي
+   ======================================== */
+
+/*
+  1. الألوان (Color Palette)
+  --------------------------
+  الخلفيات:
+    --bg-deep:       #040810
+    --bg-mid:        #080f1c
+    --bg-surface:    #0d1628
+    --bg-raised:     #111d35
+    --bg-card:       #0f1a2e
+    --bg-card-hover: #162038
+
+  النصوص:
+    --text-primary:   #d8e4f0
+    --text-secondary: #7a9ab8
+    --text-dim:       #3d5a78
+
+  الألوان البرتقالية (Accent):
+    --accent-orange:  #ef4444  (عدّلناها لبرتقالي ناري)
+    --accent-gold:    #dc2626
+    --accent-amber:   #f87171
+    --glow-orange:    rgba(255, 140, 0, 0.35)
+    --glow-gold:      rgba(255, 215, 0, 0.2)
+
+  ألوان مساعدة:
+    --blue:   #1e6fff
+    --green:  #00c87a
+    --purple: #7c3aed
+    --pink:   #db2777
+    --teal:   #0ea5e9
+    --red:    #ef4444
+
+  2. الخطوط (Typography)
+  ----------------------
+    العربية:  'Cairo', sans-serif
+    اللاتينية: 'Rajdhani', 'Times New Roman', serif
+    الأحجام الأساسية:
+      عنوان رئيسي: 2.4rem
+      عنوان فرعي: 0.7rem
+      نص عادي: 0.95rem
+      أزرار: 0.88rem
+
+  3. اتجاه النص (Direction)
+  --------------------------
+    اللغة العربية: dir="rtl", text-align: right
+    اللغة الفرنسية: dir="ltr", text-align: left
+    خاصية CSS [dir="ltr"] تُستخدم لعكس بعض المواضع (مثل أيقونة البحث)
+
+  4. الوضع الليلي (Dark Mode)
+  ----------------------------
+    دائم، لا يوجد تبديل. جميع الألوان مصممة للخلفية الداكنة.
+    تأثيرات الإضاءة:
+      - box-shadow مع glow برتقالي
+      - border بدرجات شفافة
+      - scanline animation
+
+  5. الأنيميشن (Animations)
+  -------------------------
+    - scanlineScroll: تمرير خط المسح
+    - gridPan: تحرك شبكة الخلفية
+    - titlePulse: نبض العنوان
+    - ripple: تأثير التموج عند النقر
+    - btnReveal: ظهور الأزرار بتأخير
+    - appFadeIn: ظهور التطبيق الرئيسي
+
+  6. أيقونات الأزرار (Button Icons)
+  ---------------------------------
+    كل زر في buttons-grid يحتوي على <img> مع onerror fallback.
+    الصور توضع في assets/icons/ بأسماء:
+      btn_doctors.png, btn_vocabulary.png, btn_ai.png, btn_donation.png, btn_about.png, btn_settings.png
+
+  7. خلفية الجسيمات (Particles)
+  ------------------------------
+    canvas#particleCanvas يُنشأ 120 جسيمًا بألوان برتقالية وزرقاء.
+    يتم تحديثها في requestAnimationFrame.
+
+  8. التوافق مع الجوال (Responsive)
+  ---------------------------------
+    @media (max-width: 600px):
+      - padding أصغر
+      - buttons-grid: 3 أعمدة → 2 أعمدة
+      - ارتفاع الأزرار: 130px → 110px
+      - خطوط أصغر
+
+  9. زر الصوت (Music Toggle)
+  --------------------------
+    ثابت في أسفل اليسار (RTL) أو اليمين (LTR).
+    ملف الصوت: assets/music/bg.mp3
+    أيقونات: 🔇 (موقف) / 🔊 (مشغل)
+
+  10. مودال المطور (Dev Modal)
+  -----------------------------
+    يظهر عند النقر على زر "التواصل مع المطور".
+    صورة المطور: assets/images/developer.jpg (بديل via.placeholder.com)
+*/
+
+/* ملاحظة: تم الاحتفاظ بكل الـ CSS من main.css الأصلي.
+   فقط تم تغيير اسم التطبيق من "طبيبي" إلى "ليلى Lila" في ملف HTML.
+   جميع الكلاسات والأنيميشن والمتغيرات لم تُمس.
+*/

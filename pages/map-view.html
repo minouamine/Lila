@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>عرض الخريطة - ليلى</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Marker Cluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <style>
+        /* أنماط إضافية لصفحة الخريطة */
+        .map-container {
+            padding: 0;
+        }
+        
+        #fullMap {
+            height: 70vh;
+            width: 100%;
+            border-radius: 16px;
+            z-index: 1;
+        }
+        
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .map-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .map-filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-active);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        
+        .map-filter-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: white;
+        }
+        
+        .map-filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .service-stats {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .stat-item-map {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .stat-dot.salon { background: #1e6fff; }
+        .stat-dot.home { background: #00c87a; }
+        .stat-dot.mobile { background: #c084fc; }
+        .stat-dot.product { background: #f472b6; }
+        .stat-dot.dress { background: gold; }
+        
+        .location-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-active);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .location-btn:hover {
+            background: var(--accent-orange);
+            color: white;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            padding: 10px 15px;
+            border-radius: 12px;
+            z-index: 1000;
+            font-size: 0.7rem;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        @media (max-width: 600px) {
+            #fullMap { height: 60vh; }
+            .map-header { flex-direction: column; }
+            .legend { bottom: 10px; right: 10px; font-size: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<div class="scanline-overlay"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">الخريطة التفاعلية</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">ابحثي عن الخدمات بالقرب منك</div>
+    </div>
+
+    <div class="main-content map-container">
+        <div class="map-header">
+            <div class="map-filters">
+                <button class="map-filter-btn active" data-filter="all">🗺️ الكل</button>
+                <button class="map-filter-btn" data-filter="salon_hair">💇 صالونات حلاقة</button>
+                <button class="map-filter-btn" data-filter="salon_beauty">💅 صالونات تجميل</button>
+                <button class="map-filter-btn" data-filter="home_hair">🏠 حلاقة في المنزل</button>
+                <button class="map-filter-btn" data-filter="mobile_hair">🚗 حلاقة متنقلة</button>
+                <button class="map-filter-btn" data-filter="product_seller">🛍️ بائعات منتجات</button>
+                <button class="map-filter-btn" data-filter="dress_rental">👗 تأجير أزياء</button>
+                <button class="map-filter-btn" data-filter="home_service">🏠 خدمات منزلية</button>
+            </div>
+            <div class="location-btn" id="locateUserBtn" title="الموقع الحالي">📍</div>
+        </div>
+        
+        <!-- الخريطة الكاملة -->
+        <div id="fullMap"></div>
+        
+        <!-- إحصائيات الخدمات -->
+        <div class="service-stats" id="serviceStats">
+            <div class="stat-item-map"><span class="stat-dot salon"></span> صالونات: <span id="countSalon">0</span></div>
+            <div class="stat-item-map"><span class="stat-dot home"></span> حلاقة منزلية: <span id="countHome">0</span></div>
+            <div class="stat-item-map"><span class="stat-dot mobile"></span> حلاقة متنقلة: <span id="countMobile">0</span></div>
+            <div class="stat-item-map"><span class="stat-dot product"></span> بائعات منتجات: <span id="countProduct">0</span></div>
+            <div class="stat-item-map"><span class="stat-dot dress"></span> تأجير أزياء: <span id="countDress">0</span></div>
+        </div>
+        
+        <!-- ليجند -->
+        <div class="legend">
+            <div>📍 <strong>الخدمات المتاحة</strong></div>
+            <div>🔵 صالونات</div>
+            <div>🟢 حلاقة منزلية</div>
+            <div>🟣 حلاقة متنقلة</div>
+            <div>🩷 بائعات منتجات</div>
+            <div>🟡 تأجير أزياء</div>
+        </div>
+    </div>
+</div>
+
+<script>src="js/debug.js"</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+    let map = null;
+    let markerCluster = null;
+    let allMarkers = [];
+    let allBusinesses = [];
+    let currentFilter = 'all';
+    let userMarker = null;
+    
+    // أيقونات مخصصة حسب نوع الخدمة
+    const iconColors = {
+        salon_hair: '#1e6fff',
+        salon_beauty: '#1e6fff',
+        home_hair: '#00c87a',
+        mobile_hair: '#c084fc',
+        product_seller: '#f472b6',
+        dress_rental: '#ffd700',
+        home_service: '#f87171'
+    };
+    
+    function getIconUrl(serviceType) {
+        // استخدام أيقونات افتراضية (سيتم استبدالها بأيقونات مخصصة)
+        const color = iconColors[serviceType] || '#ff8c00';
+        return `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color.substring(1)}.png`;
+    }
+    
+    function createCustomIcon(serviceType) {
+        return L.divIcon({
+            html: `<div style="background: ${iconColors[serviceType] || '#ff8c00'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px black;"></div>`,
+            iconSize: [12, 12],
+            className: 'custom-marker'
+        });
+    }
+    
+    // تحميل جميع الحسابات التجارية
+    async function loadAllBusinesses() {
+        const businesses = await lilaAPI.getBusinessProfiles({}, 200, 0);
+        allBusinesses = businesses.filter(b => b.latitude && b.longitude);
+        updateServiceStats();
+        renderMapMarkers();
+    }
+    
+    function updateServiceStats() {
+        const counts = {
+            salon: allBusinesses.filter(b => b.services?.includes('salon_hair') || b.services?.includes('salon_beauty')).length,
+            home: allBusinesses.filter(b => b.services?.includes('home_hair')).length,
+            mobile: allBusinesses.filter(b => b.services?.includes('mobile_hair')).length,
+            product: allBusinesses.filter(b => b.services?.includes('product_seller')).length,
+            dress: allBusinesses.filter(b => b.services?.includes('dress_rental')).length
+        };
+        
+        document.getElementById('countSalon').textContent = counts.salon;
+        document.getElementById('countHome').textContent = counts.home;
+        document.getElementById('countMobile').textContent = counts.mobile;
+        document.getElementById('countProduct').textContent = counts.product;
+        document.getElementById('countDress').textContent = counts.dress;
+    }
+    
+    function renderMapMarkers() {
+        if (!map) return;
+        
+        // إزالة المجموعة القديمة
+        if (markerCluster) {
+            map.removeLayer(markerCluster);
+        }
+        
+        markerCluster = L.markerClusterGroup({
+            chunkedLoading: true,
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false
+        });
+        
+        let filteredBusinesses = allBusinesses;
+        if (currentFilter !== 'all') {
+            filteredBusinesses = allBusinesses.filter(b => 
+                b.services?.includes(currentFilter)
+            );
+        }
+        
+        filteredBusinesses.forEach(business => {
+            const serviceType = business.services?.[0] || 'salon_hair';
+            const marker = L.marker([business.latitude, business.longitude], {
+                icon: createCustomIcon(serviceType)
+            });
+            
+            marker.bindPopup(`
+                <div style="text-align: center; min-width: 200px;">
+                    <img src="${business.logo_url || '../assets/images/default-business.png'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;">
+                    <h4 style="margin: 5px 0;">${business.business_name}</h4>
+                    <div style="font-size: 0.8rem; color: gold;">⭐ ${(business.avg_rating || 0).toFixed(1)}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim);">${business.services?.slice(0, 2).join(' • ') || ''}</div>
+                    <a href="business-profile.html?id=${business.id}" style="display: inline-block; margin-top: 8px; color: #ff8c00; text-decoration: none;">عرض التفاصيل →</a>
+                </div>
+            `);
+            
+            markerCluster.addLayer(marker);
+        });
+        
+        map.addLayer(markerCluster);
+    }
+    
+    // تهيئة الخريطة
+    function initMap() {
+        map = L.map('fullMap').setView([36.7538, 3.0588], 8);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+        
+        loadAllBusinesses();
+    }
+    
+    // تحديد موقع المستخدم
+    function locateUser() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    map.setView([userLat, userLng], 13);
+                    
+                    if (userMarker) {
+                        map.removeLayer(userMarker);
+                    }
+                    
+                    userMarker = L.marker([userLat, userLng], {
+                        icon: L.divIcon({
+                            html: `<div style="background: var(--accent-orange); width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px var(--accent-orange);"></div>`,
+                            iconSize: [16, 16]
+                        })
+                    }).bindPopup('📍 موقعك الحالي').addTo(map);
+                },
+                (error) => {
+                    utils.showToast('تعذر تحديد موقعك. يرجى تفعيل خدمات الموقع.', 'error');
+                }
+            );
+        } else {
+            utils.showToast('متصفحك لا يدعم تحديد الموقع', 'error');
+        }
+    }
+    
+    // تبديل الفلتر
+    function initFilters() {
+        document.querySelectorAll('.map-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderMapMarkers();
+            });
+        });
+    }
+    
+    // التهيئة
+    document.addEventListener('DOMContentLoaded', () => {
+        initMap();
+        initFilters();
+        
+        document.getElementById('locateUserBtn').addEventListener('click', locateUser);
+        
+        if (typeof particles !== 'undefined') particles.init();
+    });
+</script>
+</body>
+</html>

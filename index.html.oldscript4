@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ليلى - دليل صالونات وخدمات النساء في الجزائرA</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="dark-mode">
+
+<!-- Particle Canvas Background -->
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+<!-- Scanline overlay -->
+<div class="scanline-overlay"></div>
+
+<!-- زر الصوت -->
+<button class="music-toggle" id="musicToggleBtn">🔇</button>
+
+<div class="app">
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="header-corner top-right"></div>
+        <div class="header-corner top-left"></div>
+        <div class="header-corner bottom-right"></div>
+        <div class="header-corner bottom-left"></div>
+
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">ليلى</span>
+            <span class="title-sep"> · </span>
+            <span class="title-fr">Lila</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">دليل صالونات وخدمات النساء في الجزائر</div>
+    </div>
+
+    <!-- ===== LANG BAR ===== -->
+    <div class="lang-bar" dir="ltr">
+        <button class="lang-btn active" data-lang="ar">
+            <span class="lang-flag">🇩🇿</span>
+            <span>عربي</span>
+        </button>
+        <button class="lang-btn" data-lang="fr">
+            <span class="lang-flag">🇫🇷</span>
+            <span>Français</span>
+        </button>
+        <button class="dev-btn" id="openDevBtn">
+            <span class="dev-btn-icon">👩‍💻</span>
+            <span data-ar="التواصل مع المطورة" data-fr="Contacter la développeuse">التواصل مع المطورة</span>
+        </button>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <!-- بحث -->
+        <div class="search-wrapper">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="searchInput" class="search-input"
+                data-placeholder-ar="ابحث عن صالون، حلاقة، فستان، ولاية..."
+                data-placeholder-fr="Rechercher un salon, coiffure, robe, wilaya..."
+                placeholder="ابحث عن صالون، حلاقة، فستان، ولاية...">
+            <div class="search-pulse"></div>
+        </div>
+
+        <!-- أزرار الأقسام الرئيسية -->
+        <div class="buttons-grid">
+
+            <!-- البحث عن صالونات -->
+            <button class="action-btn" data-index="0" onclick="location.href='pages/search.html'">
+                <img src="assets/icons/btn_salons.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="صالونات وحلاقات" data-fr="Salons & Coiffure">صالونات وحلاقات</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <!-- بائعات المنتجات -->
+            <button class="action-btn" data-index="1" onclick="location.href='pages/products.html'">
+                <img src="assets/icons/btn_products.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="منتجات تجميل وعطور" data-fr="Produits beauté & parfums">منتجات تجميل وعطور</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <!-- تأجير الأزياء -->
+            <button class="action-btn" data-index="2" onclick="location.href='pages/rentals.html'">
+                <img src="assets/icons/btn_rentals.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="تأجير قفاطين وفساتين" data-fr="Location kaftans & robes">تأجير قفاطين وفساتين</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <!-- خدمات منزلية -->
+            <button class="action-btn" data-index="3" onclick="location.href='pages/home-services.html'">
+                <img src="assets/icons/btn_home_services.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="خدمات منزلية" data-fr="Services à domicile">خدمات منزلية</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <!-- حسابي / دخول -->
+            <button class="action-btn" data-index="4" onclick="location.href='pages/my-account.html'">
+                <img src="assets/icons/btn_account.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="حسابي" data-fr="Mon compte">حسابي</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <!-- طوارئ نسائية -->
+            <button class="action-btn" data-index="5" onclick="location.href='pages/emergency.html'">
+                <img src="assets/icons/btn_emergency.png"
+                     onerror="this.style.display='none'"
+                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;filter:brightness(0.7) saturate(1.2);">
+                <span class="btn-text" data-ar="طوارئ نسائية" data-fr="Urgence féminine">طوارئ نسائية</span>
+                <div class="btn-glow"></div>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== مودال التواصل مع المطورة ===== -->
+<div id="devModal" class="dev-modal">
+    <div class="dev-card">
+        <div class="dev-card-deco"></div>
+        <div class="dev-avatar">
+            <div class="avatar-ring"></div>
+            <img src="assets/images/developer.jpg"
+                 alt="المطورة"
+                 onerror="this.src='https://via.placeholder.com/120?text=Dev'">
+        </div>
+        <div class="dev-info">
+            <h3 data-ar="اسم المطورة" data-fr="Nom de la développeuse">اسم المطورة</h3>
+            <p data-ar="مطورة تطبيقات | الجزائر" data-fr="Développeuse d'applications | Algérie">مطورة تطبيقات | الجزائر</p>
+            <div class="dev-contacts">
+                <a href="mailto:dev@lila.dz" class="dev-contact-btn">📧 البريد الإلكتروني</a>
+                <a href="https://t.me/lila_app" class="dev-contact-btn">✈️ Telegram</a>
+            </div>
+        </div>
+        <button id="closeModalBtn">
+            <span>✕</span>
+            <span data-ar="إغلاق" data-fr="Fermer">إغلاق</span>
+        </button>
+    </div>
+</div>
+
+<!-- Supabase CDN -->
+<script src="../js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+
+<script>
+(function () {
+
+    // ===== PARTICLES =====
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Particle() { this.reset(); }
+    Particle.prototype.reset = function () {
+        this.x       = Math.random() * canvas.width;
+        this.y       = Math.random() * canvas.height;
+        this.size    = Math.random() * 1.5 + 0.3;
+        this.speedX  = (Math.random() - 0.5) * 0.3;
+        this.speedY  = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        this.color   = Math.random() > 0.7 ? '#ff8c00' : '#c084fc'; // برتقالي وبنفسجي
+    };
+    Particle.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+    };
+    Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle    = this.color;
+        ctx.globalAlpha  = this.opacity;
+        ctx.fill();
+    };
+
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ===== RIPPLE EFFECT =====
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            const rect   = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className   = 'ripple-effect';
+            ripple.style.left  = (e.clientX - rect.left)  + 'px';
+            ripple.style.top   = (e.clientY - rect.top)   + 'px';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 700);
+        });
+    });
+
+    // ===== LANG SWITCH =====
+    let currentLang = 'ar';
+
+    function applyLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('[data-ar]').forEach(el => {
+            el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.fr;
+        });
+
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.placeholder = lang === 'ar'
+                ? input.dataset.placeholderAr
+                : input.dataset.placeholderFr;
+        }
+
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.lang === lang);
+        });
+
+        localStorage.setItem('lila_lang', lang);
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    });
+
+    const savedLang = localStorage.getItem('lila_lang') || 'ar';
+    applyLang(savedLang);
+
+    // ===== DEV MODAL =====
+    const devModal  = document.getElementById('devModal');
+    const openBtn   = document.getElementById('openDevBtn');
+    const closeBtn  = document.getElementById('closeModalBtn');
+
+    openBtn.addEventListener('click',  () => devModal.classList.add('show'));
+    closeBtn.addEventListener('click', () => devModal.classList.remove('show'));
+    devModal.addEventListener('click', e => { if (e.target === devModal) devModal.classList.remove('show'); });
+
+    // ===== MUSIC TOGGLE =====
+    const musicBtn = document.getElementById('musicToggleBtn');
+    let audio = null;
+    let playing = false;
+
+    musicBtn.addEventListener('click', () => {
+        if (!audio) {
+            audio = new Audio('assets/music/bg.mp3');
+            audio.loop   = true;
+            audio.volume = 0.3;
+        }
+        if (playing) {
+            audio.pause();
+            musicBtn.textContent = '🔇';
+        } else {
+            audio.play().catch(() => {});
+            musicBtn.textContent = '🔊';
+        }
+        playing = !playing;
+    });
+
+})();
+</script>
+
+</body>
+</html>

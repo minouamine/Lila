@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سكرابر حقيقي - أفضل العطور النسائية من Fragrantica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            color: #eee;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e94560;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .scrape-btn {
+            display: block;
+            width: 280px;
+            margin: 0 auto 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #e94560, #c62a40);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .scrape-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .scrape-btn:disabled {
+            background: #555;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .logs-container {
+            background-color: #0f0f1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid #222;
+        }
+
+        .log-error { color: #ff6b6b; }
+        .log-success { color: #51cf66; }
+        .log-info { color: #74c0fc; }
+        .log-warning { color: #ffd43b; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #e94560;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .perfumes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .perfume-card {
+            background-color: #16213e;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #2c3e50;
+            transition: transform 0.3s;
+        }
+
+        .perfume-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .perfume-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e94560, #c62a40);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .perfume-info {
+            padding: 20px;
+        }
+
+        .perfume-number {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .perfume-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .perfume-brand {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .perfume-notes {
+            font-size: 0.85rem;
+            color: #bbb;
+            line-height: 1.5;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #2c3e50;
+        }
+
+        .perfume-rating {
+            color: #ffd700;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        .error-banner {
+            background-color: #c0392b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .stats {
+            background-color: #0f0f1a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .source-badge {
+            background-color: #e94560;
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 سكرابر حقيقي - أفضل العطور النسائية</h1>
+        <p class="subtitle">Scraping مباشر من Fragrantica (نفس طريقة سكريبت الأبراج التي تعمل)</p>
+
+        <button class="scrape-btn" id="scrapeBtn">✨ ابدأ السكرابينج ✨</button>
+
+        <div class="stats" id="stats">
+            📊 جاهز - اضغط على الزر لبدء الاستخراج الحقيقي
+        </div>
+
+        <div class="logs-container" id="logsContainer">
+            <div class="log-entry log-info">📋 [البدء] الصفحة جاهزة - سيتم scraping حقيقي من Fragrantica</div>
+            <div class="log-entry log-info">📍 الموقع المستهدف: https://www.fragrantica.com/perfume/</div>
+            <div class="log-entry log-info">🔧 نفس طريقة الـ Proxy التي نجحت مع سكريبت الأبراج</div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>جاري scraping Fragrantica... هذا قد يستغرق 30 ثانية</p>
+        </div>
+
+        <div id="perfumesContainer"></div>
+        <footer>
+            ⚠️ سكرابينج حقيقي - لا بيانات افتراضية<br>
+            البيانات مستخرجة مباشرة من https://www.fragrantica.com/perfume/
+        </footer>
+    </div>
+
+    <script>
+        // ========== بنفس طريقة سكريبت الأبراج ==========
+        const PROXY = "https://corsproxy.io/?url=";
+        
+        // قائمة بأشهر العطور النسائية - روابط حقيقية من Fragrantica
+        const PERFUME_URLS = [
+            { url: "https://www.fragrantica.com/perfume/Chanel/Chance-Eau-Tendre-5090.html", name: "Chanel Chance Eau Tendre", brand: "Chanel" },
+            { url: "https://www.fragrantica.com/perfume/Lancome/La-Vie-Est-Belle-22227.html", name: "Lancome La Vie Est Belle", brand: "Lancome" },
+            { url: "https://www.fragrantica.com/perfume/Dior/Miss-Dior-1165.html", name: "Miss Dior", brand: "Dior" },
+            { url: "https://www.fragrantica.com/perfume/Yves-Saint-Laurent/Black-Opium-33285.html", name: "Black Opium", brand: "Yves Saint Laurent" },
+            { url: "https://www.fragrantica.com/perfume/Viktor-Rolf/Flowerbomb-1221.html", name: "Flowerbomb", brand: "Viktor & Rolf" },
+            { url: "https://www.fragrantica.com/perfume/Carolina-Herrera/Good-Girl-46164.html", name: "Good Girl", brand: "Carolina Herrera" },
+            { url: "https://www.fragrantica.com/perfume/Marc-Jacobs/Daisy-4370.html", name: "Daisy", brand: "Marc Jacobs" },
+            { url: "https://www.fragrantica.com/perfume/Giorgio-Armani/Si-18884.html", name: "Si", brand: "Giorgio Armani" },
+            { url: "https://www.fragrantica.com/perfume/Gucci/Gucci-Bloom-46227.html", name: "Gucci Bloom", brand: "Gucci" },
+            { url: "https://www.fragrantica.com/perfume/Paco-Rabanne/Olympea-31824.html", name: "Olympea", brand: "Paco Rabanne" }
+        ];
+
+        let logs = [];
+        let scrapedPerfumes = [];
+
+        function addLog(message, type = "info") {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ time: timestamp, message, type });
+            const logsContainer = document.getElementById('logsContainer');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry log-${type}`;
+            logDiv.innerHTML = `[${timestamp}] ${message}`;
+            logsContainer.appendChild(logDiv);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            
+            const stats = document.getElementById('stats');
+            const errors = logs.filter(l => l.type === 'error').length;
+            const successes = logs.filter(l => l.type === 'success').length;
+            stats.innerHTML = `📊 scraping حقيقي من Fragrantica | ✅ نجاح: ${successes} | ❌ خطأ: ${errors} | 🎯 العطور المستخرجة: ${scrapedPerfumes.length}/10`;
+        }
+
+        // ========== استخراج البيانات من صفحة العطر (نفس طريقة استخراج الأبراج) ==========
+        function extractPerfumeData(doc, perfumeInfo) {
+            addLog(`🔍 استخراج بيانات ${perfumeInfo.name}...`, "info");
+            
+            let notes = [];
+            let rating = "";
+            let imageUrl = "";
+            
+            // استخراج المكونات العطرية (Pyramid)
+            const notesContainers = doc.querySelectorAll('.pyramid-item, .note-accordion, .notes');
+            for (const container of notesContainers) {
+                const noteElements = container.querySelectorAll('.note, .note-item, .note-line');
+                for (const el of noteElements) {
+                    const noteText = el.textContent.trim();
+                    if (noteText && noteText.length > 1 && noteText.length < 50) {
+                        notes.push(noteText);
+                    }
+                }
+            }
+            
+            // استخراج التقييم
+            const ratingElement = doc.querySelector('.rating-value, .average-rating, .rating-num');
+            if (ratingElement) {
+                rating = ratingElement.textContent.trim();
+            }
+            
+            // استخراج صورة الزجاجة
+            const imgElement = doc.querySelector('.photo img, .bottle img, .bottle-pic img, .foto img');
+            if (imgElement) {
+                imageUrl = imgElement.getAttribute('src');
+                if (imageUrl && !imageUrl.startsWith('http')) {
+                    imageUrl = 'https://www.fragrantica.com' + imageUrl;
+                }
+            }
+            
+            // إذا لم نجد مكونات، نبحث في نص الصفحة عن "Top Notes", "Middle Notes", "Base Notes"
+            const bodyText = doc.body?.textContent || "";
+            if (notes.length === 0) {
+                const topMatch = bodyText.match(/Top Notes?:?\s*([^•\n]+)/i);
+                const middleMatch = bodyText.match(/Middle Notes?:?\s*([^•\n]+)/i);
+                const baseMatch = bodyText.match(/Base Notes?:?\s*([^•\n]+)/i);
+                
+                if (topMatch) notes.push(`نتائج عليا: ${topMatch[1].trim()}`);
+                if (middleMatch) notes.push(`نتائج قلبية: ${middleMatch[1].trim()}`);
+                if (baseMatch) notes.push(`نتائج قاعدة: ${baseMatch[1].trim()}`);
+            }
+            
+            if (notes.length === 0) {
+                notes.push("لم يتم العثور على المكونات في الصفحة");
+            }
+            
+            addLog(`✅ ${perfumeInfo.name}: تم استخراج ${notes.length} مكون`, "success");
+            
+            return {
+                name: perfumeInfo.name,
+                brand: perfumeInfo.brand,
+                notes: notes.slice(0, 8),
+                rating: rating,
+                imageUrl: imageUrl,
+                source: "Fragrantica"
+            };
+        }
+
+        // ========== جلب صفحة العطر عبر Proxy (نفس طريقة سكريبت الأبراج) ==========
+        async function fetchPerfumePage(perfumeInfo) {
+            const fullUrl = PROXY + encodeURIComponent(perfumeInfo.url);
+            addLog(`🌐 جلب ${perfumeInfo.name} من: ${perfumeInfo.url}`, "info");
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
+                const response = await fetch(fullUrl, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        'Accept': 'text/html,application/xhtml+xml'
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+                }
+                
+                const html = await response.text();
+                addLog(`📄 ${perfumeInfo.name}: تم استلام ${html.length} حرف`, "success");
+                
+                if (html.length < 500) {
+                    throw new Error("الصفحة فارغة أو تم حظر الطلب");
+                }
+                
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                return extractPerfumeData(doc, perfumeInfo);
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error(`انتهت المهلة (15 ثانية) لـ ${perfumeInfo.name}`);
+                }
+                throw error;
+            }
+        }
+
+        // ========== scraping جميع العطور ==========
+        async function scrapeAllPerfumes() {
+            const btn = document.getElementById('scrapeBtn');
+            const loadingDiv = document.getElementById('loading');
+            const container = document.getElementById('perfumesContainer');
+            
+            btn.disabled = true;
+            loadingDiv.style.display = 'block';
+            container.innerHTML = '';
+            scrapedPerfumes = [];
+            document.getElementById('logsContainer').innerHTML = '';
+            logs = [];
+            
+            addLog("🔥 بدء scraping حقيقي من Fragrantica...", "info");
+            addLog(`📋 سيتم scraping ${PERFUME_URLS.length} عطر`, "info");
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (let i = 0; i < PERFUME_URLS.length; i++) {
+                const perfume = PERFUME_URLS[i];
+                addLog(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`, "info");
+                addLog(`📌 [${i+1}/${PERFUME_URLS.length}] جلب: ${perfume.name}`, "info");
+                
+                try {
+                    const data = await fetchPerfumePage(perfume);
+                    scrapedPerfumes.push({
+                        number: scrapedPerfumes.length + 1,
+                        ...data
+                    });
+                    successCount++;
+                    
+                    // تحديث العرض المباشر
+                    displayPerfumes(scrapedPerfumes);
+                    
+                } catch (error) {
+                    failCount++;
+                    addLog(`❌ فشل ${perfume.name}: ${error.message}`, "error");
+                }
+                
+                // انتظار قليل بين الطلبات لتجنب الحظر
+                await new Promise(r => setTimeout(r, 1500));
+            }
+            
+            loadingDiv.style.display = 'none';
+            
+            addLog(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`, "info");
+            addLog(`🎉 اكتمل scraping!`, "success");
+            addLog(`✅ نجاح: ${successCount} عطر`, "success");
+            addLog(`❌ فشل: ${failCount} عطر`, "error");
+            
+            if (scrapedPerfumes.length === 0) {
+                container.innerHTML = `
+                    <div class="error-banner">
+                        <h3>⚠️ فشل scraping من Fragrantica</h3>
+                        <p>تمت المحاولة على ${PERFUME_URLS.length} عطر ولكن جميعها فشلت.</p>
+                        <p><strong>الأسباب المحتملة:</strong></p>
+                        <ul style="text-align:right;margin-top:15px;padding-right:20px;">
+                            <li>Proxy قد يكون محظوراً مؤقتاً</li>
+                            <li>الموقع قد يكون غير متاح</li>
+                            <li>مشكلة في الاتصال بالإنترنت</li>
+                        </ul>
+                        <p style="margin-top:15px;">يرجى إعادة المحاولة بعد بضع دقائق.</p>
+                    </div>
+                `;
+            }
+            
+            btn.disabled = false;
+        }
+
+        function displayPerfumes(perfumes) {
+            const container = document.getElementById('perfumesContainer');
+            
+            if (!perfumes || perfumes.length === 0) return;
+            
+            let html = '<div class="perfumes-grid">';
+            
+            for (const p of perfumes) {
+                const imageHtml = p.imageUrl ? 
+                    `<img src="${p.imageUrl}" class="perfume-image" style="object-fit:contain;background:#1a1a2e;padding:10px;" 
+                          onerror="this.parentElement.innerHTML='<div class=\'perfume-image\' style=\'display:flex;align-items:center;justify-content:center;\'>🌸</div>'">` :
+                    `<div class="perfume-image" style="display:flex;align-items:center;justify-content:center;">🌸</div>`;
+                
+                html += `
+                    <div class="perfume-card">
+                        ${imageHtml}
+                        <div class="perfume-info">
+                            <div class="perfume-number">${p.number}</div>
+                            <div class="perfume-name">${escapeHtml(p.name)}</div>
+                            <div class="perfume-brand">🏷️ ${escapeHtml(p.brand)}</div>
+                            <div class="perfume-notes">
+                                <strong>📝 المكونات العطرية:</strong><br>
+                                ${p.notes.map(n => `• ${escapeHtml(n)}`).join('<br>')}
+                            </div>
+                            ${p.rating ? `<div class="perfume-rating">⭐ التقييم: ${escapeHtml(p.rating)}</div>` : ''}
+                            <div class="source-badge">📌 ${escapeHtml(p.source)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('scrapeBtn').addEventListener('click', scrapeAllPerfumes);
+        
+        addLog("✨ الصفحة جاهزة - اضغط على الزر لبدء scraping Fragrantica", "success");
+        addLog("⚠️ هذه بيانات حقيقية مستخرجة من الموقع - لا بيانات افتراضية", "warning");
+    </script>
+</body>
+</html>

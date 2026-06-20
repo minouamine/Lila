@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ليلى Lila | أبراج اليوم</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* تعديلات إضافية للأبراج */
+    .action-btn .btn-icon-img {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(255,140,0,0.5));
+      transition: 0.2s;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .action-btn:hover .btn-icon-img {
+      transform: translateX(-50%) scale(1.08);
+    }
+    .horoscope-result-card {
+      background: rgba(13, 22, 40, 0.85);
+      border: 1px solid var(--border-active);
+      border-radius: 20px;
+      margin-top: 28px;
+      overflow: hidden;
+    }
+    .horoscope-header {
+      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.05));
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .horoscope-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffc107, var(--accent-orange));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .horoscope-content {
+      padding: 24px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+    .loading-state, .error-state {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    .error-state { color: var(--red); }
+    .refresh-horoscope {
+      background: rgba(255,140,0,0.1);
+      border: 1px solid var(--border-active);
+      border-radius: 30px;
+      padding: 8px 18px;
+      cursor: pointer;
+      color: var(--accent-orange);
+    }
+    @media (max-width: 600px) {
+      .action-btn .btn-icon-img { width: 40px; height: 40px; top: 12px; }
+      .horoscope-title { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas" class="particle-canvas"></canvas>
+  <div class="scanline-overlay"></div>
+
+  <div class="app">
+    <div class="header">
+      <div class="header-grid-lines"></div>
+      <div class="header-corner top-right"></div>
+      <div class="header-corner top-left"></div>
+      <div class="header-corner bottom-right"></div>
+      <div class="header-corner bottom-left"></div>
+      <div class="app-title">
+        <div class="title-line"></div>
+        <span class="title-ar">ليلى</span>
+        <span class="title-sep">✨</span>
+        <span class="title-fr">LILA</span>
+        <div class="title-line"></div>
+      </div>
+      <div class="header-sub">أبراج اليوم – توقعات دقيقة</div>
+    </div>
+
+    <div class="lang-bar">
+      <button class="lang-btn active" data-lang="ar"><span class="lang-flag">🇸🇦</span> العربية</button>
+      <button class="lang-btn" data-lang="fr"><span class="lang-flag">🇫🇷</span> Français</button>
+      <button class="dev-btn" id="devContactBtn"><span>👨‍💻 المطور</span></button>
+    </div>
+
+    <div class="main-content">
+      <div class="buttons-grid" id="zodiacGrid"></div>
+      <div id="horoscopeDisplay"></div>
+      <div class="footer-note" style="text-align:center; font-size:0.7rem; color:var(--text-dim); margin-top:20px;">
+        🔮 توقعات من اليوم السابع • تحديث يومي
+      </div>
+    </div>
+  </div>
+
+  <div id="devModal" class="dev-modal">
+    <div class="dev-card">
+      <div class="dev-card-deco"></div>
+      <div class="dev-avatar">
+        <div class="avatar-ring"></div>
+        <img src="https://via.placeholder.com/100?text=LILA" alt="المطور">
+      </div>
+      <div class="dev-info">
+        <h3>تطبيق ليلى</h3>
+        <p>أبراج وتوقعات</p>
+      </div>
+      <div class="dev-contacts">
+        <a href="#" class="dev-contact-btn">📧 contact@lila.dz</a>
+      </div>
+      <button id="closeModalBtn">✖ إغلاق</button>
+    </div>
+  </div>
+
+  <button id="musicToggleBtn" class="music-toggle">🔇</button>
+
+  <script src="js/debug.js"></script>
+  <script src="js/abraj.js"></script>
+</body>
+</html>

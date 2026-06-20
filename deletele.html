@@ -1,0 +1,189 @@
+<div id="surveyModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
+  
+  <div id="surveyToast" style="display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#833AB4;color:white;padding:10px 20px;border-radius:12px;z-index:10000;font-family:'Times New Roman',serif;font-size:0.85rem;text-align:center;">
+    لقد أجريتِ الاستبيان من قبل 💜
+  </div>
+  
+  <div style="background:#121212;border-radius:20px;padding:24px;width:100%;max-width:360px;border:1px solid #2a2a2a;direction:rtl;box-sizing:border-box;font-family:'Times New Roman',serif;position:relative;max-height:85vh;display:flex;flex-direction:column;">
+    
+    <button data-action="closeSurveyModal" style="position:absolute;top:12px;left:12px;background:#1e1e1e;border:1px solid #333;color:#aaa;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    
+    <h3 style="color:white;text-align:center;margin:0 0 20px;font-size:1rem;font-family:'Times New Roman',serif;flex-shrink:0;">💜 شارك في تطوير التطبيق</h3>
+    
+    <div style="overflow-y:auto;flex:1;padding-left:4px;">
+      
+      <div style="margin-bottom:10px;">
+        <button onclick="toggleSection('section1')" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:white;padding:12px 16px;border-radius:12px;cursor:pointer;font-family:'Times New Roman',serif;font-size:0.9rem;text-align:right;display:flex;align-items:center;justify-content:space-between;">
+          <span>✨ إضافة ميزة جديدة</span>
+          <span id="arrow1" style="color:#C13584;transition:transform 0.3s;">▼</span>
+        </button>
+        <div id="section1" style="display:none;padding:12px;background:#181818;border-radius:0 0 12px 12px;border:1px solid #2a2a2a;border-top:none;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="تجربة حذاء بالذكاء الاصطناعي" style="accent-color:#C13584;"> تجربة حذاء بالذكاء الاصطناعي</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="وصفات شهية" style="accent-color:#C13584;"> وصفات شهية</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="ذكاء اصطناعي متخصص في القانون" style="accent-color:#C13584;"> ذكاء اصطناعي للقانون</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قصص من الواقع" style="accent-color:#C13584;"> قصص من الواقع</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="تفسير الاحلام" style="accent-color:#C13584;"> تفسير الأحلام</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قائمة الصيدليات المناوبة" style="accent-color:#C13584;"> الصيدليات المناوبة</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="مواعيد المسلسلات والبرامج" style="accent-color:#C13584;"> مواعيد المسلسلات</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="ترند الموضة" style="accent-color:#C13584;"> ترند الموضة</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="وصفات طبيعية للعناية بالبشرة والشعر" style="accent-color:#C13584;"> وصفات العناية بالبشرة</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="دليل قاعات الافراح والحفلات" style="accent-color:#C13584;"> دليل قاعات الأفراح</label>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:10px;">
+        <button onclick="toggleSection('section2')" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:white;padding:12px 16px;border-radius:12px;cursor:pointer;font-family:'Times New Roman',serif;font-size:0.9rem;text-align:right;display:flex;align-items:center;justify-content:space-between;">
+          <span>🔧 تحسين ميزة موجودة</span>
+          <span id="arrow2" style="color:#C13584;transition:transform 0.3s;">▼</span>
+        </button>
+        <div id="section2" style="display:none;padding:12px;background:#181818;border-radius:0 0 12px 12px;border:1px solid #2a2a2a;border-top:none;">
+          <div id="improveFeaturesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قسم صالونات الحلاقة" style="accent-color:#C13584;" onchange="toggleImproveNote(this)"> صالونات الحلاقة</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قسم تجربة الملابس بالذكاء الاصطناعي" style="accent-color:#C13584;" onchange="toggleImproveNote(this)"> تجربة الملابس بالذكاء الاصطناعي</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قسم اسماء المواليد" style="accent-color:#C13584;" onchange="toggleImproveNote(this)"> أسماء المواليد</label>
+            <label style="display:flex;align-items:center;gap:5px;background:#1e1e1e;padding:7px 10px;border-radius:20px;cursor:pointer;color:white;font-size:0.78rem;border:1px solid #2a2a2a;font-family:'Times New Roman',serif;"><input type="checkbox" value="قسم الابراج" style="accent-color:#C13584;" onchange="toggleImproveNote(this)"> الأبراج</label>
+          </div>
+          <textarea id="improveNote" placeholder="اكتب ما تودّ تحسينه..." style="display:none;width:100%;background:#1e1e1e;border:1px solid #C13584;border-radius:10px;padding:8px;color:white;font-size:0.8rem;resize:none;box-sizing:border-box;font-family:'Times New Roman',serif;" rows="3" maxlength="300"></textarea>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <button onclick="toggleSection('section3')" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:white;padding:12px 16px;border-radius:12px;cursor:pointer;font-family:'Times New Roman',serif;font-size:0.9rem;text-align:right;display:flex;align-items:center;justify-content:space-between;">
+          <span>🐛 تصحيح خطأ</span>
+          <span id="arrow3" style="color:#C13584;transition:transform 0.3s;">▼</span>
+        </button>
+        <div id="section3" style="display:none;padding:12px;background:#181818;border-radius:0 0 12px 12px;border:1px solid #2a2a2a;border-top:none;">
+          <textarea id="bugDescription" placeholder="اكتب وصفاً للخطأ..." style="width:100%;background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:8px;color:white;font-size:0.8rem;resize:none;box-sizing:border-box;font-family:'Times New Roman',serif;" rows="4" maxlength="500"></textarea>
+        </div>
+      </div>
+      
+    </div>
+    
+    <div style="flex-shrink:0;padding-top:12px;">
+      <button id="submitSurveyBtn" style="width:100%;background:linear-gradient(135deg,#833AB4,#C13584,#E1306C);color:white;border:none;padding:11px;border-radius:12px;font-weight:bold;font-size:0.95rem;cursor:pointer;font-family:'Times New Roman',serif;">
+        إرسال 💜
+      </button>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+  (function() {
+    
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      const index = id.replace('section', '');
+      const arrow = document.getElementById('arrow' + index);
+      const isOpen = section.style.display === 'block';
+      section.style.display = isOpen ? 'none' : 'block';
+      arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+    window.toggleSection = toggleSection;
+    
+    function toggleImproveNote() {
+      const note = document.getElementById('improveNote');
+      const anyChecked = document.querySelectorAll('#improveFeaturesList input:checked').length > 0;
+      note.style.display = anyChecked ? 'block' : 'none';
+    }
+    window.toggleImproveNote = toggleImproveNote;
+    
+    function sanitizeText(text) {
+      return text
+        .replace(/[<>'"`;]/g, '')
+        .replace(/(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/gi, '')
+        .trim()
+        .slice(0, 500);
+    }
+    
+    function getSurveyData() {
+      const newFeatures = Array.from(document.querySelectorAll('#section1 input:checked')).map(i => i.value);
+      const improveFeatures = Array.from(document.querySelectorAll('#improveFeaturesList input:checked')).map(i => i.value);
+      const improveNote = sanitizeText(document.getElementById('improveNote')?.value || '');
+      const bugDescription = sanitizeText(document.getElementById('bugDescription')?.value || '');
+      return { newFeatures, improveFeatures, improveNote, bugDescription };
+    }
+    
+    function hasAnything() {
+      const d = getSurveyData();
+      return d.newFeatures.length > 0 || d.improveFeatures.length > 0 || d.improveNote.length > 0 || d.bugDescription.length > 0;
+    }
+    
+    // حماية من الاستدعاء المزدوج
+    let isSubmitting = false;
+    
+    async function submitSurvey() {
+  if (isSubmitting) {
+    console.log('⛔ جاري الإرسال بالفعل، تجاهل');
+    return;
+  }
+  
+  if (!hasAnything()) {
+    console.log('⛔ لا يوجد بيانات');
+    return;
+  }
+  
+  isSubmitting = true;
+  
+  let deviceId = localStorage.getItem('lila_device_id');
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem('lila_device_id', deviceId);
+  }
+  console.log('📱 deviceId:', deviceId);
+  
+  // التحقق من localStorage أولاً
+  if (localStorage.getItem('lila_survey_done')) {
+    console.log('⛔ أجريتِ الاستبيان من قبل');
+    const toast = document.getElementById('surveyToast');
+    if (toast) {
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+    isSubmitting = false;
+    return;
+  }
+  
+  const client = window.supabaseClient;
+  const data = getSurveyData();
+  
+  const { error } = await client
+    .from('survey_results')
+    .upsert({
+      id: deviceId,
+      new_features: data.newFeatures,
+      improve_feature: data.improveFeatures.join(', ') || null,
+      improve_note: data.improveNote || null,
+      bug_description: data.bugDescription || null
+    }, { onConflict: 'id', ignoreDuplicates: true });
+  
+  isSubmitting = false;
+  
+  if (error) {
+    console.error('❌ خطأ في الإرسال:', error.message);
+    return;
+  }
+  
+  console.log('✅ تم الإرسال بنجاح');
+  localStorage.setItem('lila_survey_done', 'true');
+  const successToast = document.createElement('div');
+successToast.textContent = 'تم استلام اقتراحاتك 💜';
+successToast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#833AB4,#C13584);color:white;padding:12px 24px;border-radius:12px;z-index:10000;font-family:Times New Roman,serif;font-size:0.9rem;text-align:center;box-shadow:0 4px 20px rgba(193,53,132,0.4);transition:opacity 0.4s;';
+document.body.appendChild(successToast);
+setTimeout(() => {
+  successToast.style.opacity = '0';
+  setTimeout(() => successToast.remove(), 400);
+}, 2000);
+  window.closeSurveyModal();
+}
+    
+    // ربط الزر مرة واحدة فقط
+    const btn = document.getElementById('submitSurveyBtn');
+    if (btn) {
+      btn.addEventListener('click', submitSurvey);
+    }
+    
+  })();
+</script>

@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ليلى - تأجير قفاطين وفساتين</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* أنماط إضافية لصفحة تأجير الأزياء */
+        .rentals-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .btn-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+        
+        /* شريط الفلاتر */
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-arabic);
+            font-size: 0.9rem;
+        }
+        
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 2px var(--glow-orange);
+        }
+        
+        .dress-type-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .dress-type-btn {
+            padding: 6px 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .dress-type-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: white;
+        }
+        
+        .price-range {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .price-range input {
+            width: 80px;
+        }
+        
+        .online-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        
+        .online-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00c87a;
+            display: inline-block;
+            animation: onlinePulse 1.5s infinite;
+        }
+        
+        @keyframes onlinePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, var(--accent-orange), #ff4500);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--glow-orange);
+        }
+        
+        /* تبديل عرض القائمة / الخريطة */
+        .view-toggle {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .view-btn {
+            padding: 8px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-active);
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-arabic);
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: white;
+        }
+        
+        /* عرض القائمة */
+        .results-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .results-list.active {
+            display: grid;
+        }
+        
+        .rental-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .rental-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-orange);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .rental-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: var(--bg-surface);
+        }
+        
+        .rental-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 12px 0 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .gold-badge {
+            color: gold;
+            font-size: 0.9rem;
+        }
+        
+        .online-badge {
+            background: #00c87a;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        
+        .rental-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 8px 0;
+        }
+        
+        .stars {
+            color: gold;
+            font-size: 0.9rem;
+        }
+        
+        .dress-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .dress-tag {
+            background: rgba(255,140,0,0.15);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        
+        .rental-price {
+            color: var(--accent-orange);
+            font-weight: bold;
+            font-size: 1rem;
+            margin: 8px 0;
+        }
+        
+        .rental-distance {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        
+        .rental-location {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* عرض الخريطة */
+        .map-view {
+            display: none;
+            height: 550px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .map-view.active {
+            display: block;
+        }
+        
+        /* حالة عدم وجود نتائج */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+        }
+        
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .no-results h3 {
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+        }
+        
+        /* مؤشر التحميل */
+        .loading-results {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-active);
+            border-top-color: var(--accent-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .rentals-container { padding: 12px; }
+            .filters-bar { flex-direction: column; }
+            .filter-group { min-width: auto; }
+            .online-checkbox { margin-top: 0; }
+            .search-btn { margin-top: 10px; }
+            .results-list { grid-template-columns: 1fr; }
+            .view-toggle { justify-content: center; }
+            .price-range { flex-direction: column; }
+            .price-range input { width: 100%; }
+            .dress-type-group { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Particle Canvas Background -->
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+<!-- Scanline overlay -->
+<div class="scanline-overlay"></div>
+
+<!-- زر الصوت -->
+<button class="music-toggle" id="musicToggleBtn">🔇</button>
+
+<div class="app">
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="header-corner top-right"></div>
+        <div class="header-corner top-left"></div>
+        <div class="header-corner bottom-right"></div>
+        <div class="header-corner bottom-left"></div>
+
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar" data-ar="تأجير قفاطين وفساتين" data-fr="Location de Kaftans & Robes">تأجير قفاطين وفساتين</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub" data-ar="أحدث وأجمل الأزياء للمناسبات الخاصة" data-fr="Les plus belles tenues pour vos occasions spéciales">أحدث وأجمل الأزياء للمناسبات الخاصة</div>
+    </div>
+
+    <!-- ===== LANG BAR ===== -->
+    <div class="lang-bar" dir="ltr">
+        <button class="lang-btn active" data-lang="ar">
+            <span class="lang-flag">🇩🇿</span>
+            <span>عربي</span>
+        </button>
+        <button class="lang-btn" data-lang="fr">
+            <span class="lang-flag">🇫🇷</span>
+            <span>Français</span>
+        </button>
+        <button class="dev-btn" id="openDevBtn">
+            <span class="dev-btn-icon">👩‍💻</span>
+            <span data-ar="التواصل مع المطورة" data-fr="Contacter la développeuse">التواصل مع المطورة</span>
+        </button>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+        <div class="rentals-container">
+            <a href="../index.html" class="btn-back" data-ar="← العودة إلى الرئيسية" data-fr="← Retour à l'accueil">← العودة إلى الرئيسية</a>
+            
+            <!-- شريط الفلاتر -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label data-ar="📍 الولاية" data-fr="📍 Wilaya">📍 الولاية</label>
+                    <select id="filterWilaya">
+                        <option value="" data-ar="جميع الولايات" data-fr="Toutes les wilayas">جميع الولايات</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label data-ar="👗 نوع الزي" data-fr="👗 Type de tenue">👗 نوع الزي</label>
+                    <div class="dress-type-group" id="dressTypeGroup">
+                        <button class="dress-type-btn active" data-type="all" data-ar="الكل" data-fr="Tous">الكل</button>
+                        <button class="dress-type-btn" data-type="kaftan" data-ar="قفطان" data-fr="Kaftan">قفطان</button>
+                        <button class="dress-type-btn" data-type="karakou" data-ar="كراكو" data-fr="Karakou">كراكو</button>
+                        <button class="dress-type-btn" data-type="wedding" data-ar="فستان أفراح" data-fr="Robe de mariage">فستان أفراح</button>
+                        <button class="dress-type-btn" data-type="accessories" data-ar="إكسسوارات" data-fr="Accessoires">إكسسوارات</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label data-ar="💰 السعر" data-fr="💰 Prix">💰 السعر</label>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" placeholder="Min" data-ar-placeholder="الحد الأدنى" data-fr-placeholder="Min">
+                        <span>-</span>
+                        <input type="number" id="maxPrice" placeholder="Max" data-ar-placeholder="الحد الأعلى" data-fr-placeholder="Max">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label data-ar="📊 ترتيب حسب" data-fr="📊 Trier par">📊 ترتيب حسب</label>
+                    <select id="filterSort">
+                        <option value="rating" data-ar="⭐ الأعلى تقييماً" data-fr="⭐ Les mieux notés">⭐ الأعلى تقييماً</option>
+                        <option value="nearest" data-ar="📍 الأقرب إليك" data-fr="📍 Les plus proches">📍 الأقرب إليك</option>
+                        <option value="followers" data-ar="👥 الأكثر متابعة" data-fr="👥 Les plus suivis">👥 الأكثر متابعة</option>
+                    </select>
+                </div>
+                <div class="filter-group online-checkbox">
+                    <input type="checkbox" id="filterOnline">
+                    <label style="margin:0; display: flex; align-items: center; gap: 6px;">
+                        <span class="online-dot"></span>
+                        <span data-ar="متاحة الآن" data-fr="Disponible maintenant">متاحة الآن</span>
+                    </label>
+                </div>
+                <div class="filter-group">
+                    <button id="searchBtn" class="search-btn" data-ar="🔍 بحث" data-fr="🔍 Rechercher">🔍 بحث</button>
+                </div>
+            </div>
+            
+            <!-- تبديل العرض -->
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="list" data-ar="📋 عرض القائمة" data-fr="📋 Vue liste">📋 عرض القائمة</button>
+                <button class="view-btn" data-view="map" data-ar="🗺️ عرض الخريطة" data-fr="🗺️ Vue carte">🗺️ عرض الخريطة</button>
+            </div>
+            
+            <!-- قائمة النتائج -->
+            <div id="listView" class="results-list active">
+                <div class="loading-results">
+                    <div class="spinner"></div>
+                    <p data-ar="جاري تحميل خدمات تأجير الأزياء..." data-fr="Chargement des services de location de tenues...">جاري تحميل خدمات تأجير الأزياء...</p>
+                </div>
+            </div>
+            
+            <!-- عرض الخريطة -->
+            <div id="mapView" class="map-view"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== مودال التواصل مع المطورة ===== -->
+<div id="devModal" class="dev-modal">
+    <div class="dev-card">
+        <div class="dev-card-deco"></div>
+        <div class="dev-avatar">
+            <div class="avatar-ring"></div>
+            <img src="../assets/images/developer.jpg" alt="المطورة" onerror="this.src='https://via.placeholder.com/120?text=Dev'">
+        </div>
+        <div class="dev-info">
+            <h3 data-ar="اسم المطورة" data-fr="Nom de la développeuse">اسم المطورة</h3>
+            <p data-ar="مطورة تطبيقات | الجزائر" data-fr="Développeuse d'applications | Algérie">مطورة تطبيقات | الجزائر</p>
+            <div class="dev-contacts">
+                <a href="mailto:dev@lila.dz" class="dev-contact-btn">📧 البريد الإلكتروني</a>
+                <a href="https://t.me/lila_app" class="dev-contact-btn">✈️ Telegram</a>
+            </div>
+        </div>
+        <button id="closeModalBtn">
+            <span>✕</span>
+            <span data-ar="إغلاق" data-fr="Fermer">إغلاق</span>
+        </button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+<script src="../js/particles.js"></script>
+<script src="../js/dark-mode.js"></script>
+
+<script>
+    // ========================================
+    // المتغيرات العامة
+    // ========================================
+    let map = null;
+    let markers = [];
+    let results = [];
+    let userLocation = null;
+    let wilayasList = [];
+    let selectedDressType = 'all';
+    
+    // ========================================
+    // تحميل قائمة الولايات من ملف JSON
+    // ========================================
+    async function loadWilayas() {
+        try {
+            const response = await fetch('../assets/data/wilayas.json');
+            if (!response.ok) {
+                throw new Error('Failed to load wilayas.json');
+            }
+            wilayasList = await response.json();
+            
+            const select = document.getElementById('filterWilaya');
+            select.innerHTML = '<option value="" data-ar="جميع الولايات" data-fr="Toutes les wilayas">جميع الولايات</option>';
+            
+            const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
+            wilayasList.forEach(wilaya => {
+                const option = document.createElement('option');
+                option.value = wilaya.code;
+                option.textContent = currentLang === 'fr' ? wilaya.name_fr : wilaya.name_ar;
+                option.setAttribute('data-ar', wilaya.name_ar);
+                option.setAttribute('data-fr', wilaya.name_fr);
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading wilayas:', error);
+        }
+    }
+    
+    // ========================================
+    // تحديث النصوص عند تغيير اللغة
+    // ========================================
+    function updateLanguageForSelects() {
+        const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
+        
+        // تحديث خيارات الولاية
+        const wilayaSelect = document.getElementById('filterWilaya');
+        Array.from(wilayaSelect.options).forEach(option => {
+            if (option.value === '') {
+                option.textContent = currentLang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات';
+            } else {
+                const arText = option.getAttribute('data-ar');
+                const frText = option.getAttribute('data-fr');
+                if (arText && frText) {
+                    option.textContent = currentLang === 'fr' ? frText : arText;
+                }
+            }
+        });
+        
+        // تحديث خيارات الترتيب
+        const sortSelect = document.getElementById('filterSort');
+        Array.from(sortSelect.options).forEach(option => {
+            const arText = option.getAttribute('data-ar');
+            const frText = option.getAttribute('data-fr');
+            if (arText && frText) {
+                option.textContent = currentLang === 'fr' ? frText : arText;
+            }
+        });
+        
+        // تحديث أزرار أنواع الأزياء
+        document.querySelectorAll('.dress-type-btn').forEach(btn => {
+            const arText = btn.getAttribute('data-ar');
+            const frText = btn.getAttribute('data-fr');
+            if (arText && frText) {
+                btn.textContent = currentLang === 'fr' ? frText : arText;
+            }
+        });
+        
+        // تحديث placeholder لحقول السعر
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        minPrice.placeholder = currentLang === 'fr' ? 'Min' : 'الحد الأدنى';
+        maxPrice.placeholder = currentLang === 'fr' ? 'Max' : 'الحد الأعلى';
+    }
+    
+    // ========================================
+    // تهيئة أزرار أنواع الأزياء
+    // ========================================
+    function initDressTypeButtons() {
+        document.querySelectorAll('.dress-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dress-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedDressType = btn.getAttribute('data-type');
+                performSearch();
+            });
+        });
+    }
+    
+    // ========================================
+    // الحصول على موقع المستخدم الحالي
+    // ========================================
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    console.log('User location obtained:', userLocation);
+                },
+                (error) => {
+                    console.log('Geolocation error:', error.message);
+                }
+            );
+        }
+    }
+    
+    // ========================================
+    // حساب المسافة بين نقطتين (Haversine formula)
+    // ========================================
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+    
+    // ========================================
+    // البحث عن خدمات تأجير الأزياء
+    // ========================================
+    async function performSearch() {
+        // إظهار مؤشر التحميل
+        const listContainer = document.getElementById('listView');
+        listContainer.innerHTML = `
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p data-ar="جاري البحث عن خدمات تأجير الأزياء..." data-fr="Recherche de services de location de tenues...">جاري البحث عن خدمات تأجير الأزياء...</p>
+            </div>
+        `;
+        if (window.lang) window.lang.updateAllTranslations();
+        
+        // الحصول على قيم الفلاتر
+        const wilaya = document.getElementById('filterWilaya').value;
+        const minPrice = document.getElementById('minPrice').value;
+        const maxPrice = document.getElementById('maxPrice').value;
+        const onlineOnly = document.getElementById('filterOnline').checked;
+        const sortBy = document.getElementById('filterSort').value;
+        
+        // بناء كائن الفلاتر - فقط خدمات تأجير الأزياء
+        let filters = { services: ['dress_rental'] };
+        if (wilaya) filters.wilaya_code = parseInt(wilaya);
+        if (onlineOnly) filters.is_online = true;
+        
+        try {
+            // محاولة جلب البيانات من Supabase
+            if (window.lilaAPI && typeof window.lilaAPI.getBusinessProfiles === 'function') {
+                results = await window.lilaAPI.getBusinessProfiles(filters, 100, 0);
+            } else {
+                // بيانات تجريبية في حالة عدم وجود Supabase
+                console.warn('lilaAPI not available, using mock data');
+                results = getMockData();
+                if (wilaya) results = results.filter(r => r.wilaya_code == wilaya);
+            }
+            
+            // ترتيب النتائج
+            if (sortBy === 'rating') {
+                results.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0));
+            } else if (sortBy === 'followers') {
+                results.sort((a, b) => (b.followers_count || 0) - (a.followers_count || 0));
+            } else if (sortBy === 'nearest' && userLocation) {
+                results.forEach(r => {
+                    if (r.latitude && r.longitude) {
+                        r.distance = calculateDistance(userLocation.lat, userLocation.lng, r.latitude, r.longitude);
+                    } else {
+                        r.distance = Infinity;
+                    }
+                });
+                results.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+            }
+            
+            // عرض النتائج
+            renderListView();
+            renderMapView();
+            
+        } catch (error) {
+            console.error('Search error:', error);
+            listContainer.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">⚠️</div>
+                    <h3 data-ar="حدث خطأ" data-fr="Une erreur est survenue">حدث خطأ</h3>
+                    <p data-ar="فشل الاتصال بقاعدة البيانات. يرجى المحاولة مرة أخرى." data-fr="Échec de connexion à la base de données. Veuillez réessayer.">فشل الاتصال بقاعدة البيانات. يرجى المحاولة مرة أخرى.</p>
+                </div>
+            `;
+            if (window.lang) window.lang.updateAllTranslations();
+        }
+    }
+    
+    // ========================================
+    // بيانات تجريبية لخدمات تأجير الأزياء
+    // ========================================
+    function getMockData() {
+        return [
+            {
+                id: 'rental1',
+                business_name: 'قفاطين الأميرة',
+                username: 'amira_kaftan',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 4.9,
+                reviews_count: 234,
+                followers_count: 1250,
+                services: ['dress_rental'],
+                wilaya_code: 16,
+                wilaya_name: 'الجزائر',
+                is_online: true,
+                has_gold_badge: true,
+                latitude: 36.7538,
+                longitude: 3.0588,
+                dress_types: ['kaftan', 'karakou'],
+                price_range: '5000-15000 دج'
+            },
+            {
+                id: 'rental2',
+                business_name: 'فساتين الأفراح - وهران',
+                username: 'waha_wedding',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 4.8,
+                reviews_count: 167,
+                followers_count: 890,
+                services: ['dress_rental'],
+                wilaya_code: 31,
+                wilaya_name: 'وهران',
+                is_online: true,
+                has_gold_badge: true,
+                latitude: 35.6969,
+                longitude: -0.6331,
+                dress_types: ['wedding', 'kaftan'],
+                price_range: '8000-25000 دج'
+            },
+            {
+                id: 'rental3',
+                business_name: 'كراكو قسنطينة',
+                username: 'constantine_karakou',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 4.7,
+                reviews_count: 98,
+                followers_count: 450,
+                services: ['dress_rental'],
+                wilaya_code: 25,
+                wilaya_name: 'قسنطينة',
+                is_online: false,
+                has_gold_badge: false,
+                latitude: 36.3650,
+                longitude: 6.6147,
+                dress_types: ['karakou', 'accessories'],
+                price_range: '3000-8000 دج'
+            },
+            {
+                id: 'rental4',
+                business_name: 'إكسسوارات العروس',
+                username: 'bridal_accessories',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 4.6,
+                reviews_count: 76,
+                followers_count: 320,
+                services: ['dress_rental'],
+                wilaya_code: 16,
+                wilaya_name: 'الجزائر',
+                is_online: true,
+                has_gold_badge: false,
+                latitude: 36.7638,
+                longitude: 3.0688,
+                dress_types: ['accessories', 'wedding'],
+                price_range: '1000-5000 دج'
+            },
+            {
+                id: 'rental5',
+                business_name: 'قفاطين ليلى',
+                username: 'lila_kaftan',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 5.0,
+                reviews_count: 312,
+                followers_count: 2100,
+                services: ['dress_rental'],
+                wilaya_code: 16,
+                wilaya_name: 'الجزائر',
+                is_online: true,
+                has_gold_badge: true,
+                latitude: 36.7438,
+                longitude: 3.0488,
+                dress_types: ['kaftan', 'wedding', 'accessories'],
+                price_range: '10000-30000 دج'
+            },
+            {
+                id: 'rental6',
+                business_name: 'الزي التقليدي - بجاية',
+                username: 'bejaia_traditional',
+                logo_url: null,
+                cover_photo_url: null,
+                avg_rating: 4.5,
+                reviews_count: 54,
+                followers_count: 210,
+                services: ['dress_rental'],
+                wilaya_code: 6,
+                wilaya_name: 'بجاية',
+                is_online: true,
+                has_gold_badge: false,
+                latitude: 36.7500,
+                longitude: 5.0833,
+                dress_types: ['karakou', 'kaftan'],
+                price_range: '4000-12000 دج'
+            }
+        ];
+    }
+    
+    // ========================================
+    // عرض قائمة النتائج
+    // ========================================
+    function renderListView() {
+        const container = document.getElementById('listView');
+        const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
+        
+        let filteredResults = results;
+        
+        // فلترة حسب نوع الزي
+        if (selectedDressType !== 'all') {
+            filteredResults = results.filter(b => 
+                b.dress_types && b.dress_types.includes(selectedDressType)
+            );
+        }
+        
+        if (!filteredResults || filteredResults.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">👗</div>
+                    <h3 data-ar="لا توجد نتائج" data-fr="Aucun résultat">لا توجد نتائج</h3>
+                    <p data-ar="لم نعثر على خدمات تأجير أزياء في هذه المنطقة" data-fr="Aucun service de location de tenues dans cette région">لم نعثر على خدمات تأجير أزياء في هذه المنطقة</p>
+                    <button onclick="document.getElementById('searchBtn').click()" style="margin-top:15px;padding:8px 20px;background:var(--accent-orange);border:none;border-radius:8px;color:white;cursor:pointer;" data-ar="بحث جديد" data-fr="Nouvelle recherche">بحث جديد</button>
+                </div>
+            `;
+            if (window.lang) window.lang.updateAllTranslations();
+            return;
+        }
+        
+        const dressTypeNames = {
+            ar: {
+                kaftan: '👘 قفطان',
+                karakou: '👗 كراكو',
+                wedding: '💍 فستان أفراح',
+                accessories: '💎 إكسسوارات'
+            },
+            fr: {
+                kaftan: '👘 Kaftan',
+                karakou: '👗 Karakou',
+                wedding: '💍 Robe de mariage',
+                accessories: '💎 Accessoires'
+            }
+        };
+        
+        container.innerHTML = filteredResults.map(business => {
+            const ratingStars = '★'.repeat(Math.floor(business.avg_rating || 0)) + '☆'.repeat(5 - Math.floor(business.avg_rating || 0));
+            const langDressNames = currentLang === 'fr' ? dressTypeNames.fr : dressTypeNames.ar;
+            
+            return `
+                <div class="rental-card" onclick="window.location.href='business-profile.html?id=${business.id}'">
+                    <img class="rental-image" src="${business.cover_photo_url || business.logo_url || '../assets/images/default-business.png'}" onerror="this.src='https://via.placeholder.com/300x200?text=Location+Tenues'" alt="${business.business_name}">
+                    <div class="rental-name">
+                        ${DOMPurify.sanitize(business.business_name)}
+                        ${business.has_gold_badge ? '<span class="gold-badge">⭐ ' + (currentLang === 'fr' ? 'Certifié' : 'موثوق') + '</span>' : ''}
+                        ${business.is_online ? '<span class="online-badge">🟢 ' + (currentLang === 'fr' ? 'Disponible' : 'متاحة الآن') + '</span>' : ''}
+                    </div>
+                    <div class="rental-rating">
+                        <span class="stars">${ratingStars}</span>
+                        <span>(${business.reviews_count || 0})</span>
+                    </div>
+                    <div class="dress-types">
+                        ${(business.dress_types || ['kaftan']).slice(0, 3).map(t => `<span class="dress-tag">${langDressNames[t] || t}</span>`).join('')}
+                    </div>
+                    <div class="rental-price">💰 ${business.price_range || (currentLang === 'fr' ? 'Prix non spécifié' : 'سعر غير محدد')}</div>
+                    <div class="rental-location">📍 ${business.wilaya_name || (currentLang === 'fr' ? 'Wilaya non spécifiée' : 'ولاية غير محددة')}</div>
+                    <div class="rental-followers">👥 ${business.followers_count || 0} ${currentLang === 'fr' ? 'abonné(e)s' : 'متابع'}</div>
+                    ${business.distance ? `<div class="rental-distance">📍 ${business.distance.toFixed(1)} ${currentLang === 'fr' ? 'km' : 'كم'}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ========================================
+    // عرض الخريطة
+    // ========================================
+    function renderMapView() {
+        const mapContainer = document.getElementById('mapView');
+        
+        if (!mapContainer) return;
+        
+        // تهيئة الخريطة إذا لم تكن موجودة
+        if (!map) {
+            map = L.map('mapView').setView([36.7538, 3.0588], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+                subdomains: 'abcd'
+            }).addTo(map);
+        }
+        
+        // إزالة العلامات القديمة
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+        
+        let filteredResults = results;
+        if (selectedDressType !== 'all') {
+            filteredResults = results.filter(b => 
+                b.dress_types && b.dress_types.includes(selectedDressType)
+            );
+        }
+        
+        // إضافة علامات جديدة
+        let bounds = null;
+        
+        filteredResults.forEach(business => {
+            if (business.latitude && business.longitude) {
+                // أيقونة مخصصة لخدمات تأجير الأزياء (ذهبية)
+                const rentalIcon = L.divIcon({
+                    html: `<div style="background: #ffd700; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                    iconSize: [14, 14],
+                    className: 'rental-marker'
+                });
+                
+                const marker = L.marker([business.latitude, business.longitude], { icon: rentalIcon })
+                    .bindPopup(`
+                        <div style="text-align: center; min-width: 180px;">
+                            <img src="${business.logo_url || '../assets/images/default-business.png'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;" onerror="this.src='https://via.placeholder.com/50'">
+                            <h4 style="margin: 5px 0;">${DOMPurify.sanitize(business.business_name)}</h4>
+                            <div style="color: gold;">⭐ ${business.avg_rating || 0}</div>
+                            <div style="font-size: 0.8rem;">👗 ${window.lang && window.lang.getCurrentLang() === 'fr' ? 'Location de tenues' : 'تأجير أزياء'}</div>
+                            <div>💰 ${business.price_range || ''}</div>
+                            <a href="business-profile.html?id=${business.id}" style="display: inline-block; margin-top: 8px; color: #ff8c00; text-decoration: none;">${window.lang && window.lang.getCurrentLang() === 'fr' ? 'Voir détails →' : 'عرض التفاصيل →'}</a>
+                        </div>
+                    `)
+                    .addTo(map);
+                markers.push(marker);
+                
+                if (!bounds) {
+                    bounds = L.latLngBounds([business.latitude, business.longitude]);
+                } else {
+                    bounds.extend([business.latitude, business.longitude]);
+                }
+            }
+        });
+        
+        // توسيع الخريطة لتناسب جميع العلامات
+        if (bounds && markers.length > 0) {
+            map.fitBounds(bounds.pad(0.1));
+        } else if (userLocation) {
+            map.setView([userLocation.lat, userLocation.lng], 10);
+        } else {
+            map.setView([36.7538, 3.0588], 6);
+        }
+    }
+    
+    // ========================================
+    // تبديل عرض القائمة / الخريطة
+    // ========================================
+    function initViewToggle() {
+        const listView = document.getElementById('listView');
+        const mapView = document.getElementById('mapView');
+        
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const view = btn.getAttribute('data-view');
+                
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (view === 'list') {
+                    listView.classList.add('active');
+                    mapView.classList.remove('active');
+                } else {
+                    listView.classList.remove('active');
+                    mapView.classList.add('active');
+                    setTimeout(() => {
+                        if (map) map.invalidateSize();
+                    }, 100);
+                }
+            });
+        });
+    }
+    
+    // ========================================
+    // مودال المطور
+    // ========================================
+    function initDevModal() {
+        const devModal = document.getElementById('devModal');
+        const openBtn = document.getElementById('openDevBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        
+        if (openBtn) openBtn.addEventListener('click', () => devModal.classList.add('show'));
+        if (closeBtn) closeBtn.addEventListener('click', () => devModal.classList.remove('show'));
+        if (devModal) devModal.addEventListener('click', e => { if (e.target === devModal) devModal.classList.remove('show'); });
+    }
+    
+    // ========================================
+    // موسيقى الخلفية
+    // ========================================
+    function initMusicToggle() {
+        const musicBtn = document.getElementById('musicToggleBtn');
+        let audio = null;
+        let playing = false;
+        
+        if (musicBtn) {
+            musicBtn.addEventListener('click', () => {
+                if (!audio) {
+                    audio = new Audio('../assets/music/bg.mp3');
+                    audio.loop = true;
+                    audio.volume = 0.3;
+                }
+                if (playing) {
+                    audio.pause();
+                    musicBtn.textContent = '🔇';
+                } else {
+                    audio.play().catch(() => {});
+                    musicBtn.textContent = '🔊';
+                }
+                playing = !playing;
+            });
+        }
+    }
+    
+    // ========================================
+    // التهيئة عند تحميل الصفحة
+    // ========================================
+    async function initPage() {
+        // تحميل قائمة الولايات
+        await loadWilayas();
+        
+        // الحصول على موقع المستخدم
+        getUserLocation();
+        
+        // تهيئة أزرار أنواع الأزياء
+        initDressTypeButtons();
+        
+        // تهيئة أزرار التبديل
+        initViewToggle();
+        
+        // تهيئة مودال المطور
+        initDevModal();
+        
+        // تهيئة زر الموسيقى
+        initMusicToggle();
+        
+        // تهيئة زر البحث
+        document.getElementById('searchBtn').addEventListener('click', performSearch);
+        
+        // الاستماع لتغيير اللغة
+        if (window.lang) {
+            window.lang.addLangListener(() => {
+                updateLanguageForSelects();
+                renderListView();
+                if (window.lang.updateAllTranslations) window.lang.updateAllTranslations();
+            });
+        }
+        
+        // تنفيذ بحث أولي
+        await performSearch();
+        
+        // تحديث الترجمة
+        if (window.lang) {
+            window.lang.updateAllTranslations();
+        }
+        
+        // تهيئة الجسيمات
+        if (window.particles && typeof window.particles.init === 'function') {
+            window.particles.init();
+        }
+        
+        console.log('[Rentals] Page initialized successfully');
+    }
+    
+    // تشغيل التهيئة عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>

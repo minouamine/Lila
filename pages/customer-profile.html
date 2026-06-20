@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ملفي الشخصي - ليلى</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        /* أنماط صفحة الملف الشخصي للمستخدمة */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-orange);
+            margin-bottom: 15px;
+        }
+        
+        .profile-name-large {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .profile-email {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-orange);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        
+        /* أقسام الملف */
+        .profile-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* قوائم */
+        .business-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .business-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: var(--bg-surface);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .business-item:hover {
+            transform: translateX(5px);
+            background: var(--bg-raised);
+        }
+        
+        .business-item-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .business-item-info {
+            flex: 1;
+        }
+        
+        .business-item-name {
+            font-weight: 600;
+        }
+        
+        .business-item-rating {
+            font-size: 0.8rem;
+            color: gold;
+        }
+        
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        /* قائمة الحجوزات */
+        .booking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-dim);
+            flex-wrap: wrap;
+        }
+        
+        .booking-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        
+        /* التبويبات */
+        .profile-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .profile-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .profile-tab.active {
+            color: var(--accent-orange);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* زر تسجيل الخروج */
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239,68,68,0.15);
+            border: 1px solid var(--red);
+            border-radius: 12px;
+            color: var(--red);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: var(--red);
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-row { gap: 15px; }
+            .booking-item { flex-direction: column; gap: 8px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<div class="scanline-overlay"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">ملفي الشخصي</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">حسابي، حجوزاتي، مفضلاتي</div>
+    </div>
+
+    <div class="main-content">
+        <div class="profile-container" id="profileContainer">
+            <div style="text-align: center; padding: 50px;">جاري تحميل الملف الشخصي...</div>
+        </div>
+    </div>
+</div>
+
+<script>src="js/debug.js"</script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+    let userProfile = null;
+    let favorites = [];
+    let following = [];
+    let bookings = [];
+    let activeTab = 'bookings';
+    
+    // تحميل بيانات المستخدم
+    async function loadCustomerProfile() {
+        const profile = window.auth.getCurrentProfile();
+        
+        if (!profile) {
+            document.getElementById('profileContainer').innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <div style="font-size: 3rem;">🔐</div>
+                    <h3>الرجاء تسجيل الدخول</h3>
+                    <p>لتتمكني من رؤية ملفك الشخصي وحجوزاتك</p>
+                    <button onclick="window.auth.signInWithGoogle()" class="lang-btn" style="margin-top: 15px;">تسجيل الدخول عبر Google</button>
+                </div>
+            `;
+            return;
+        }
+        
+        userProfile = profile;
+        await Promise.all([
+            loadFavorites(),
+            loadFollowing(),
+            loadBookings()
+        ]);
+        
+        renderProfile();
+    }
+    
+    // تحميل المفضلة
+    async function loadFavorites() {
+        const { data, error } = await supabaseClient
+            .from('favorites')
+            .select('*, business_profiles(*)')
+            .eq('customer_id', userProfile.id);
+        
+        if (!error && data) {
+            favorites = data.map(f => f.business_profiles);
+        }
+    }
+    
+    // تحميل الحسابات التي تتابعها
+    async function loadFollowing() {
+        const { data, error } = await supabaseClient
+            .from('follows')
+            .select('*, business_profiles(*)')
+            .eq('follower_id', userProfile.id);
+        
+        if (!error && data) {
+            following = data.map(f => f.business_profiles);
+        }
+    }
+    
+    // تحميل الحجوزات
+    async function loadBookings() {
+        const { data, error } = await supabaseClient
+            .from('bookings')
+            .select('*, business_profiles(business_name, logo_url)')
+            .eq('customer_id', userProfile.id)
+            .order('booking_date', { ascending: false });
+        
+        if (!error && data) {
+            bookings = data;
+        }
+    }
+    
+    // إزالة من المفضلة
+    async function removeFromFavorites(businessId) {
+        await supabaseClient
+            .from('favorites')
+            .delete()
+            .eq('customer_id', userProfile.id)
+            .eq('business_id', businessId);
+        
+        await loadFavorites();
+        renderTabContent();
+        utils.showToast('تمت الإزالة من المفضلة', 'success');
+    }
+    
+    // إلغاء متابعة
+    async function unfollowBusiness(businessId) {
+        await supabaseClient
+            .from('follows')
+            .delete()
+            .eq('follower_id', userProfile.id)
+            .eq('following_id', businessId);
+        
+        await loadFollowing();
+        renderTabContent();
+        utils.showToast('تم إلغاء المتابعة', 'success');
+    }
+    
+    // عرض الملف الشخصي
+    function renderProfile() {
+        const container = document.getElementById('profileContainer');
+        
+        container.innerHTML = `
+            <div class="profile-header">
+                <img class="profile-avatar-large" src="${userProfile.avatar_url || '../assets/images/default-avatar.png'}" alt="${userProfile.full_name}">
+                <div class="profile-name-large">${userProfile.full_name || 'مستخدمة'}</div>
+                <div class="profile-email">${userProfile.email || ''}</div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number">${following.length}</div>
+                        <div class="stat-label">متابعة</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${favorites.length}</div>
+                        <div class="stat-label">مفضلة</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${bookings.length}</div>
+                        <div class="stat-label">حجوزات</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-tabs">
+                <div class="profile-tab ${activeTab === 'bookings' ? 'active' : ''}" data-tab="bookings">📅 حجوزاتي</div>
+                <div class="profile-tab ${activeTab === 'favorites' ? 'active' : ''}" data-tab="favorites">⭐ مفضلاتي</div>
+                <div class="profile-tab ${activeTab === 'following' ? 'active' : ''}" data-tab="following">👥 حسابات أتابعها</div>
+                <div class="profile-tab ${activeTab === 'settings' ? 'active' : ''}" data-tab="settings">⚙️ إعدادات</div>
+            </div>
+            
+            <div id="tabContent"></div>
+        `;
+        
+        // إضافة مستمعي التبويبات
+        document.querySelectorAll('.profile-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                activeTab = tab.dataset.tab;
+                renderTabContent();
+                document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        renderTabContent();
+    }
+    
+    function renderTabContent() {
+        const container = document.getElementById('tabContent');
+        
+        if (activeTab === 'bookings') {
+            if (!bookings.length) {
+                container.innerHTML = '<div class="profile-section" style="text-align: center;">📭 لا توجد حجوزات بعد</div>';
+                return;
+            }
+            container.innerHTML = `
+                <div class="profile-section">
+                    <div class="section-title">📅 حجوزاتي</div>
+                    ${bookings.map(booking => `
+                        <div class="booking-item">
+                            <div>
+                                <strong>${booking.business_profiles?.business_name || 'غير معروف'}</strong>
+                                <div>📅 ${new Date(booking.booking_date).toLocaleDateString()} | 🕐 ${booking.booking_time}</div>
+                            </div>
+                            <div>
+                                <span class="booking-status status-${booking.status}">${getStatusText(booking.status)}</span>
+                            </div>
+                            <div>
+                                <button onclick="window.location.href='business-profile.html?id=${booking.business_id}'" class="lang-btn" style="padding: 4px 12px;">عرض الحساب</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        else if (activeTab === 'favorites') {
+            if (!favorites.length) {
+                container.innerHTML = '<div class="profile-section" style="text-align: center;">⭐ لا توجد حسابات في المفضلة</div>';
+                return;
+            }
+            container.innerHTML = `
+                <div class="profile-section">
+                    <div class="section-title">⭐ مفضلاتي</div>
+                    <div class="business-list">
+                        ${favorites.map(business => `
+                            <div class="business-item" onclick="window.location.href='business-profile.html?id=${business.id}'">
+                                <img class="business-item-img" src="${business.logo_url || '../assets/images/default-business.png'}" alt="${business.business_name}">
+                                <div class="business-item-info">
+                                    <div class="business-item-name">${business.business_name}</div>
+                                    <div class="business-item-rating">⭐ ${(business.avg_rating || 0).toFixed(1)}</div>
+                                </div>
+                                <button class="remove-btn" onclick="event.stopPropagation(); removeFromFavorites('${business.id}')">🗑️</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        else if (activeTab === 'following') {
+            if (!following.length) {
+                container.innerHTML = '<div class="profile-section" style="text-align: center;">👥 لا تتابعين أي حسابات بعد</div>';
+                return;
+            }
+            container.innerHTML = `
+                <div class="profile-section">
+                    <div class="section-title">👥 حسابات أتابعها</div>
+                    <div class="business-list">
+                        ${following.map(business => `
+                            <div class="business-item" onclick="window.location.href='business-profile.html?id=${business.id}'">
+                                <img class="business-item-img" src="${business.logo_url || '../assets/images/default-business.png'}" alt="${business.business_name}">
+                                <div class="business-item-info">
+                                    <div class="business-item-name">${business.business_name}</div>
+                                    <div class="business-item-rating">⭐ ${(business.avg_rating || 0).toFixed(1)}</div>
+                                </div>
+                                <button class="remove-btn" onclick="event.stopPropagation(); unfollowBusiness('${business.id}')">🔕</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        else if (activeTab === 'settings') {
+            container.innerHTML = `
+                <div class="profile-section">
+                    <div class="section-title">⚙️ إعدادات الحساب</div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>🔔 الإشعارات</span>
+                            <input type="checkbox" id="notificationsToggle" checked>
+                        </label>
+                    </div>
+                    <button class="logout-btn" onclick="logoutUser()">🚪 تسجيل الخروج</button>
+                </div>
+            `;
+        }
+    }
+    
+    function getStatusText(status) {
+        const map = { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغي' };
+        return map[status] || status;
+    }
+    
+    async function logoutUser() {
+        await window.auth.signOut();
+        window.location.href = '../index.html';
+    }
+    
+    // التهيئة
+    document.addEventListener('DOMContentLoaded', async () => {
+        await window.auth.getCurrentSession();
+        await loadCustomerProfile();
+        if (typeof particles !== 'undefined') particles.init();
+    });
+</script>
+</body>
+</html>

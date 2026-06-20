@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>لوحة التحكم - ليلى</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        /* أنماط إضافية للوحة التحكم */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* تبويبات */
+        .dashboard-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-arabic);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab-btn:hover {
+            color: var(--accent-orange);
+            background: rgba(255,140,0,0.1);
+        }
+        
+        .tab-btn.active {
+            color: var(--accent-orange);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active-tab {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* بطاقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-orange);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        /* قوائم الحجوزات والمنشورات */
+        .bookings-list, .posts-list, .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .booking-card, .post-card, .review-card {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .booking-customer {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .booking-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .status-pending { background: #f87171; color: white; }
+        .status-confirmed { background: #00c87a; color: white; }
+        .status-completed { background: #1e6fff; color: white; }
+        .status-cancelled { background: #64748b; color: white; }
+        
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .btn-confirm, .btn-complete, .btn-cancel {
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .btn-confirm { background: var(--green); border: none; color: white; }
+        .btn-complete { background: var(--blue); border: none; color: white; }
+        .btn-cancel { background: var(--red); border: none; color: white; }
+        
+        /* نموذج منشور جديد */
+        .new-post-form {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .new-post-form textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-arabic);
+            resize: vertical;
+        }
+        
+        .post-images-preview {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .post-images-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        /* التقييمات */
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .review-stars {
+            color: gold;
+            font-size: 1.1rem;
+        }
+        
+        .review-reply {
+            background: var(--bg-raised);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            border-right: 3px solid var(--accent-orange);
+        }
+        
+        .reply-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .reply-input input {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-active);
+            border-radius: 8px;
+            color: var(--text-primary);
+        }
+        
+        /* الإحصائيات المتقدمة (ذهبي/بلاتيني) */
+        .analytics-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-raised));
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .analytics-chart {
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+        }
+        
+        /* الإشعارات */
+        .notification-badge {
+            position: relative;
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--red);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .dashboard-tabs { gap: 2px; }
+            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<div class="scanline-overlay"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="header-grid-lines"></div>
+        <div class="app-title">
+            <span class="title-line"></span>
+            <span class="title-ar">لوحة التحكم</span>
+            <span class="title-line"></span>
+        </div>
+        <div class="header-sub">إدارة حسابك التجاري</div>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- تبويبات لوحة التحكم -->
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="overview">📊 نظرة عامة</button>
+                <button class="tab-btn" data-tab="bookings">📅 الحجوزات</button>
+                <button class="tab-btn" data-tab="posts">📝 المنشورات</button>
+                <button class="tab-btn" data-tab="reviews">⭐ التقييمات</button>
+                <button class="tab-btn" data-tab="stories">📸 القصص</button>
+                <button class="tab-btn" data-tab="analytics">📈 الإحصائيات</button>
+                <button class="tab-btn" data-tab="settings">⚙️ الإعدادات</button>
+            </div>
+            
+            <!-- تبويب نظرة عامة -->
+            <div id="tab-overview" class="tab-content active-tab">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statBookingsToday">0</div>
+                        <div class="stat-label">حجوزات اليوم</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotalBookings">0</div>
+                        <div class="stat-label">إجمالي الحجوزات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statFollowers">0</div>
+                        <div class="stat-label">المتابِعات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statRating">0</div>
+                        <div class="stat-label">التقييم العام</div>
+                    </div>
+                </div>
+                
+                <div class="form-section" style="background: var(--bg-card); border-radius: 16px; padding: 20px;">
+                    <h2 style="color: var(--accent-orange); margin-bottom: 15px;">👋 مرحباً بكِ في لوحة التحكم</h2>
+                    <p>من هنا يمكنك إدارة جميع جوانب حسابك التجاري: استقبال الحجوزات، نشر المحتوى، الرد على التقييمات، ومتابعة إحصائياتك.</p>
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(255,140,0,0.1); border-radius: 8px;">
+                        <strong>💡 تذكير:</strong> إذا كان لديك حساب ذهبي أو بلاتيني، يمكنك الاستفادة من الميزات الإضافية مثل القصص والإحصائيات المتقدمة.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- تبويب الحجوزات -->
+            <div id="tab-bookings" class="tab-content">
+                <div class="new-post-form">
+                    <h3 style="margin-bottom: 15px;">📅 إعدادات الحجوزات</h3>
+                    <div class="form-group">
+                        <label>الحد الأقصى للحجوزات اليومية</label>
+                        <input type="number" id="dailyBookingLimit" value="10" min="1" max="50">
+                    </div>
+                    <button class="btn-confirm" onclick="updateBookingSettings()">حفظ الإعدادات</button>
+                </div>
+                <div class="bookings-list" id="bookingsList">
+                    <div class="booking-card" style="text-align: center; color: var(--text-dim);">جاري تحميل الحجوزات...</div>
+                </div>
+            </div>
+            
+            <!-- تبويب المنشورات -->
+            <div id="tab-posts" class="tab-content">
+                <div class="new-post-form">
+                    <h3 style="margin-bottom: 15px;">✏️ منشور جديد</h3>
+                    <textarea id="postContent" rows="4" placeholder="اكتب منشورك هنا... (لا يتعدى 500 كلمة)"></textarea>
+                    <div class="post-images-preview" id="postImagesPreview"></div>
+                    <div class="image-upload" id="postImagesUpload" style="margin: 10px 0;">
+                        <span>📷 أضف صوراً</span>
+                        <input type="file" id="postImageFiles" accept="image/*" multiple style="display:none;">
+                    </div>
+                    <button class="btn-submit" onclick="publishPost()" style="width: auto; padding: 10px 24px;">📢 نشر</button>
+                </div>
+                <div class="posts-list" id="postsList">
+                    <div style="text-align: center; color: var(--text-dim);">جاري تحميل المنشورات...</div>
+                </div>
+            </div>
+            
+            <!-- تبويب التقييمات -->
+            <div id="tab-reviews" class="tab-content">
+                <div class="reviews-list" id="reviewsList">
+                    <div style="text-align: center; color: var(--text-dim);">جاري تحميل التقييمات...</div>
+                </div>
+            </div>
+            
+            <!-- تبويب القصص (ذهبي/بلاتيني فقط) -->
+            <div id="tab-stories" class="tab-content">
+                <div class="new-post-form">
+                    <h3 style="margin-bottom: 15px;">📸 قصة جديدة (24 ساعة)</h3>
+                    <div class="image-upload" id="storyUpload">
+                        <span>📷 اضغطي لرفع صورة أو فيديو</span>
+                        <input type="file" id="storyFile" accept="image/*,video/*" style="display:none;">
+                    </div>
+                    <div id="storyPreview"></div>
+                    <button class="btn-submit" onclick="publishStory()" style="width: auto; padding: 10px 24px; margin-top: 10px;">✨ نشر القصة</button>
+                </div>
+                <h3 style="margin: 20px 0 10px;">القصص النشطة</h3>
+                <div class="posts-list" id="storiesList">
+                    <div style="text-align: center; color: var(--text-dim);">لا توجد قصص نشطة</div>
+                </div>
+            </div>
+            
+            <!-- تبويب الإحصائيات (ذهبي/بلاتيني فقط) -->
+            <div id="tab-analytics" class="tab-content">
+                <div class="analytics-section">
+                    <h3>📊 أداء حسابك</h3>
+                    <div class="analytics-chart" id="analyticsChart">
+                        📈 سيتم عرض الإحصائيات المتقدمة هنا
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p><strong>عدد مرات الظهور هذا الشهر:</strong> <span id="impressions">0</span></p>
+                        <p><strong>عدد النقرات على الحجز:</strong> <span id="bookingClicks">0</span></p>
+                        <p><strong>معدل التحويل:</strong> <span id="conversionRate">0%</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- تبويب الإعدادات -->
+            <div id="tab-settings" class="tab-content">
+                <div class="form-section">
+                    <h2>⚙️ إعدادات الحساب</h2>
+                    <div class="form-group">
+                        <label>مواعيد العمل</label>
+                        <div id="workingHoursContainer"></div>
+                        <button class="btn-confirm" onclick="saveWorkingHours()">حفظ مواعيد العمل</button>
+                    </div>
+                    <div class="form-group">
+                        <label>حالة الاتصال (متاحة الآن)</label>
+                        <label><input type="checkbox" id="isOnlineToggle"> أنا متاحة الآن</label>
+                    </div>
+                    <div class="form-group">
+                        <label>إجازة مؤقتة</label>
+                        <label><input type="checkbox" id="vacationToggle"> تفعيل وضع الإجازة</label>
+                        <input type="date" id="vacationUntil" style="margin-top: 8px; display: none;">
+                    </div>
+                    <hr style="margin: 20px 0; border-color: var(--border-dim);">
+                    <h3>💰 الاشتراك الحالي</h3>
+                    <p id="subscriptionInfo">جاري التحميل...</p>
+                    <button class="btn-submit" onclick="upgradeSubscription()" style="width: auto;">🔄 ترقية الاشتراك</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/lang.js"></script>
+
+<script>
+    let businessId = null;
+    let businessData = null;
+    let currentUserProfile = null;
+    
+    // تبديل التبويبات
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+            
+            // تحميل البيانات حسب التبويب
+            if (tabId === 'bookings') loadBookings();
+            if (tabId === 'posts') loadPosts();
+            if (tabId === 'reviews') loadReviews();
+            if (tabId === 'stories' && businessData?.subscription_tier !== 'silver') loadStories();
+            if (tabId === 'analytics' && businessData?.subscription_tier !== 'silver') loadAnalytics();
+        });
+    });
+    
+    // تحميل بيانات الحساب التجاري
+    async function loadBusinessData() {
+        const profile = window.auth.getCurrentProfile();
+        if (!profile || profile.user_type !== 'business') {
+            utils.showToast('هذه الصفحة مخصصة للحسابات التجارية فقط', 'error');
+            setTimeout(() => window.location.href = '../index.html', 2000);
+            return;
+        }
+        
+        currentUserProfile = profile;
+        businessId = profile.id;
+        
+        const data = await lilaAPI.getBusinessProfileById(businessId);
+        if (data) {
+            businessData = data;
+            updateOverviewStats();
+            updateSubscriptionInfo();
+            loadWorkingHours();
+        }
+    }
+    
+    function updateOverviewStats() {
+        document.getElementById('statFollowers').textContent = businessData?.followers_count || 0;
+        // باقي الإحصائيات سيتم تحميلها من API
+    }
+    
+    function updateSubscriptionInfo() {
+        const tier = businessData?.subscription_tier || 'silver';
+        const tierNames = { silver: '🥈 فضي', gold: '🥇 ذهبي', platinum: '💎 بلاتيني' };
+        const expires = businessData?.subscription_expires_at ? new Date(businessData.subscription_expires_at).toLocaleDateString() : 'غير محدد';
+        document.getElementById('subscriptionInfo').innerHTML = `
+            <strong>${tierNames[tier]}</strong><br>
+            ${tier !== 'silver' ? `ينتهي في: ${expires}` : '0 دج - 3 حجوزات يومياً'}
+        `;
+        
+        // إظهار/إخفاء التبويبات المدفوعة
+        const isPremium = tier !== 'silver';
+        document.querySelector('[data-tab="stories"]').style.display = isPremium ? 'block' : 'none';
+        document.querySelector('[data-tab="analytics"]').style.display = isPremium ? 'block' : 'none';
+    }
+    
+    // تحميل الحجوزات
+    async function loadBookings() {
+        const bookings = await lilaAPI.getBusinessBookings(businessId);
+        const container = document.getElementById('bookingsList');
+        
+        if (!bookings.length) {
+            container.innerHTML = '<div class="booking-card" style="text-align: center;">📭 لا توجد حجوزات حالياً</div>';
+            return;
+        }
+        
+        container.innerHTML = bookings.map(booking => `
+            <div class="booking-card" data-id="${booking.id}">
+                <div class="booking-header">
+                    <span class="booking-customer">👩 ${booking.profiles?.full_name || 'مستخدمة'}</span>
+                    <span class="booking-status status-${booking.status}">${getStatusText(booking.status)}</span>
+                </div>
+                <div>📅 ${new Date(booking.booking_date).toLocaleDateString()} | 🕐 ${booking.booking_time}</div>
+                <div>📝 ${booking.customer_notes || 'لا توجد ملاحظات'}</div>
+                ${booking.is_emergency ? '<div style="color: var(--red);">🚨 طوارئ نسائية</div>' : ''}
+                <div class="booking-actions">
+                    ${booking.status === 'pending' ? `<button class="btn-confirm" onclick="updateBooking('${booking.id}', 'confirmed')">تأكيد</button>` : ''}
+                    ${booking.status === 'confirmed' ? `<button class="btn-complete" onclick="updateBooking('${booking.id}', 'completed')">إكمال</button>` : ''}
+                    ${booking.status !== 'cancelled' && booking.status !== 'completed' ? `<button class="btn-cancel" onclick="updateBooking('${booking.id}', 'cancelled')">إلغاء</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    window.updateBooking = async (bookingId, status) => {
+        const result = await lilaAPI.updateBookingStatus(bookingId, status);
+        if (result) {
+            utils.showToast(`تم ${status === 'confirmed' ? 'تأكيد' : status === 'completed' ? 'إكمال' : 'إلغاء'} الحجز`, 'success');
+            loadBookings();
+        }
+    };
+    
+    function getStatusText(status) {
+        const map = { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغي' };
+        return map[status] || status;
+    }
+    
+    // تحميل المنشورات
+    async function loadPosts() {
+        const posts = await lilaAPI.getPostsByBusiness(businessId);
+        const container = document.getElementById('postsList');
+        
+        if (!posts.length) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-dim);">📝 لا توجد منشورات بعد. أضف منشورك الأول!</div>';
+            return;
+        }
+        
+        container.innerHTML = posts.map(post => `
+            <div class="post-card">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>📅 ${new Date(post.created_at).toLocaleDateString()}</span>
+                    <button onclick="deletePost('${post.id}')" style="background: none; border: none; color: var(--red); cursor: pointer;">🗑️</button>
+                </div>
+                <p style="margin: 10px 0;">${post.content}</p>
+                ${post.image_urls?.length ? `<div style="display: flex; gap: 8px; flex-wrap: wrap;">${post.image_urls.map(url => `<img src="${url}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">`).join('')}</div>` : ''}
+            </div>
+        `).join('');
+    }
+    
+    window.publishPost = async () => {
+        const content = document.getElementById('postContent').value.trim();
+        if (!content) {
+            utils.showToast('الرجاء كتابة محتوى المنشور', 'error');
+            return;
+        }
+        
+        // رفع الصور أولاً (تبسيطاً)
+        const postData = { business_id: businessId, content: content, image_urls: [] };
+        const result = await lilaAPI.createPost(postData);
+        if (result) {
+            utils.showToast('تم نشر المنشور بنجاح', 'success');
+            document.getElementById('postContent').value = '';
+            loadPosts();
+        }
+    };
+    
+    window.deletePost = async (postId) => {
+        if (confirm('هل أنت متأكدة من حذف هذا المنشور؟')) {
+            await lilaAPI.deletePost(postId);
+            loadPosts();
+            utils.showToast('تم حذف المنشور', 'success');
+        }
+    };
+    
+    // تحميل التقييمات
+    async function loadReviews() {
+        const reviews = await lilaAPI.getReviewsByBusiness(businessId);
+        const container = document.getElementById('reviewsList');
+        
+        if (!reviews.length) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-dim);">⭐ لا توجد تقييمات بعد</div>';
+            return;
+        }
+        
+        container.innerHTML = reviews.map(review => `
+            <div class="review-card" data-id="${review.id}">
+                <div class="review-header">
+                    <span><strong>${review.profiles?.full_name || 'مستخدمة'}</strong></span>
+                    <span class="review-stars">${'★'.repeat(review.rating_overall)}${'☆'.repeat(5-review.rating_overall)}</span>
+                </div>
+                <div>جودة: ${'★'.repeat(review.rating_quality)} | سعر: ${'★'.repeat(review.rating_price)} | معاملة: ${'★'.repeat(review.rating_manners)}</div>
+                <p style="margin: 10px 0;">${review.comment}</p>
+                ${review.reply_from_business ? `<div class="review-reply"><strong>ردك:</strong> ${review.reply_from_business}</div>` : `
+                    <div class="reply-input">
+                        <input type="text" id="reply-${review.id}" placeholder="اكتبي ردك على هذا التقييم...">
+                        <button class="btn-confirm" onclick="submitReply('${review.id}')">إرسال الرد</button>
+                    </div>
+                `}
+            </div>
+        `).join('');
+    }
+    
+    window.submitReply = async (reviewId) => {
+        const replyInput = document.getElementById(`reply-${reviewId}`);
+        const reply = replyInput?.value.trim();
+        if (!reply) {
+            utils.showToast('الرجاء كتابة الرد', 'error');
+            return;
+        }
+        const result = await lilaAPI.replyToReview(reviewId, reply);
+        if (result) {
+            utils.showToast('تم إرسال الرد بنجاح', 'success');
+            loadReviews();
+        }
+    };
+    
+    // قصص 24 ساعة
+    window.publishStory = async () => {
+        if (businessData?.subscription_tier === 'silver') {
+            utils.showToast('هذه الميزة متاحة فقط للحسابات الذهبية والبلاتينية', 'error');
+            return;
+        }
+        utils.showToast('جاري نشر القصة...', 'info');
+        // سيتم تنفيذ رفع القصة إلى Supabase
+    };
+    
+    function loadStories() {
+        // تحميل القصص النشطة
+    }
+    
+    function loadAnalytics() {
+        if (businessData?.subscription_tier === 'silver') return;
+        document.getElementById('impressions').textContent = Math.floor(Math.random() * 1000);
+        document.getElementById('bookingClicks').textContent = Math.floor(Math.random() * 200);
+        document.getElementById('conversionRate').textContent = (Math.random() * 30).toFixed(1) + '%';
+    }
+    
+    // إعدادات العمل
+    function loadWorkingHours() {
+        const container = document.getElementById('workingHoursContainer');
+        const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+        container.innerHTML = days.map(day => `
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                <span style="width: 80px;">${day}</span>
+                <input type="time" id="start-${day}" placeholder="09:00" style="padding: 8px;">
+                <span>إلى</span>
+                <input type="time" id="end-${day}" placeholder="18:00" style="padding: 8px;">
+                <label><input type="checkbox" id="closed-${day}> مغلق</label>
+            </div>
+        `).join('');
+    }
+    
+    window.saveWorkingHours = () => {
+        utils.showToast('تم حفظ مواعيد العمل', 'success');
+    };
+    
+    window.updateBookingSettings = () => {
+        utils.showToast('تم تحديث إعدادات الحجوزات', 'success');
+    };
+    
+    window.upgradeSubscription = () => {
+    const currentTier = businessData?.subscription_tier;
+    const expiresAt = businessData?.subscription_expires_at;
+    
+    // اختيار الاشتراك المستهدف
+    const targetTier = currentTier === 'gold' ? 'platinum' : 'gold';
+    const fullPrice = targetTier === 'gold' ? 3000 : 6000;
+    
+    // حساب المبلغ المخصوم إذا كان الاشتراك الحالي ذهبي ولم ينته
+    let amountToPay = fullPrice;
+    let discountMessage = '';
+    
+    if (currentTier === 'gold' && expiresAt) {
+        const now = new Date();
+        const expires = new Date(expiresAt);
+        const daysRemaining = Math.max(0, Math.ceil((expires - now) / (1000 * 60 * 60 * 24)));
+        
+        if (daysRemaining > 0) {
+            // 3000 دج على 90 يوماً
+            const dailyRate = 3000 / 90;
+            const remainingValue = Math.round(daysRemaining * dailyRate);
+            amountToPay = Math.max(0, fullPrice - remainingValue);
+            discountMessage = `\nلديكِ ${daysRemaining} يوماً متبقية من الذهبي (قيمتها ${remainingValue} دج)\nالمبلغ المطلوب: ${amountToPay} دج`;
+        }
+    }
+    
+    const message = currentTier === 'silver' ?
+        `ترقية إلى ${targetTier === 'gold' ? 'ذهبي' : 'بلاتيني'}\nالمبلغ: ${amountToPay} دج` :
+        `ترقية من ذهبي إلى بلاتيني${discountMessage}`;
+    
+    showToast(message, 'info', 6000);
+    
+    // حفظ المبلغ المحسوب في localStorage لاستخدامه في صفحة الدفع
+    localStorage.setItem('upgrade_target_tier', targetTier);
+    localStorage.setItem('upgrade_amount', amountToPay);
+    
+    window.location.href = 'upgrade.html';
+};
+    
+    // التهيئة
+    document.addEventListener('DOMContentLoaded', async () => {
+        await window.auth.getCurrentSession();
+        await loadBusinessData();
+        loadBookings();
+        loadPosts();
+        loadReviews();
+        
+        // رفع الصور
+        const uploadDiv = document.getElementById('postImagesUpload');
+        const fileInput = document.getElementById('postImageFiles');
+        uploadDiv?.addEventListener('click', () => fileInput.click());
+        
+        const storyUpload = document.getElementById('storyUpload');
+        const storyFile = document.getElementById('storyFile');
+        storyUpload?.addEventListener('click', () => storyFile.click());
+        
+        if (typeof particles !== 'undefined') particles.init();
+    });
+</script>
+</body>
+</html>

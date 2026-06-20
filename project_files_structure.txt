@@ -1,0 +1,34 @@
+lila_app/
+├── index.html # الصفحة الرئيسية (بوابة التطبيق)
+├── css/
+│ └── main.css # التصميم الموحد (مأخوذ من main.css مع تعديلات الاسم)
+├── js/
+│ ├── supabase.js # تهيئة Supabase client (URL + anon key)
+│ ├── auth.js # تسجيل الدخول بـ Google، إدارة الجلسة
+│ ├── lang.js # نظام الترجمة (عربي/فرنسي)
+│ ├── dark-mode.js # الوضع الليلي (موجود أصلاً)
+│ ├── particles.js # خلفية الجسيمات
+│ └── utils.js # دوال مساعدة (تنسيق الوقت، فلترة الكلمات البذيئة)
+├── pages/
+│ ├── business-register.html # إنشاء حساب تجاري (نموذج طويل)
+│ ├── business-dashboard.html # لوحة تحكم صاحبة الحساب التجاري
+│ ├── business-profile.html # عرض ملف حساب تجاري (عام)
+│ ├── search-results.html # نتائج البحث مع الفلاتر والخريطة
+│ ├── customer-profile.html # ملف المستخدمة العادية
+│ ├── admin-dashboard.html # لوحة تحكم الأدمن (قبول الحسابات، إدارة)
+│ ├── bookings.html # صفحة الحجوزات (للعميلة وللتاجرة)
+│ ├── emergency.html # طلب طوارئ نسائية
+│ ├── map-view.html # عرض الخريطة التفاعلية
+│ └── statistics.html # إحصائيات الولاية العامة
+├── assets/
+│ ├── images/ # صور ثابتة (لوجو، أيقونات، صور المطور)
+│ ├── icons/ # أيقونات الأزرار (btn_*.png)
+│ ├── music/
+│ │ └── bg.mp3 # موسيقى خلفية اختيارية
+│ └── data/
+│ ├── wilayas.json # قائمة الولايات الـ 58
+│ ├── dairas.json # الدوائر حسب كل ولاية
+│ ├── baladiyahs.json # البلديات حسب كل دائرة
+│ └── badwords.json # كلمات بذيئة (عربي/فرنسي)
+└── supabase/
+└── migrations/ # ملفات SQL للتحديثات المستقبلية

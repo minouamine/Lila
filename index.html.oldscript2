@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ليلى - دليل صالونات وخدمات النساء في الجزائر</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<!-- Particle Canvas Background -->
+<canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+<div class="app">
+
+    <!-- ===== HEADER (Instagram Style) ===== -->
+    <div class="header">
+        <div class="app-title">
+            <span class="title-ar">ليلى</span>
+            <span class="title-sep">·</span>
+            <span class="title-fr">Lila</span>
+        </div>
+
+        <button class="settings-btn" id="openSettingsBtn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="header-actions">
+            <button class="header-icon-btn" onclick="location.href='pages/notifications.html'">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+            <button class="header-icon-btn" onclick="location.href='pages/messages.html'">
+                <i class="fa-regular fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== STORIES BAR ===== -->
+    <div class="stories-bar">
+        <div class="story-item">
+            <div class="story-avatar-ring">
+                <div class="story-avatar">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+            </div>
+            <span class="story-label">قريب منك</span>
+        </div>
+        <div class="story-item">
+            <div class="story-avatar-ring">
+                <div class="story-avatar">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <span class="story-label">الأعلى تقييماً</span>
+        </div>
+        <div class="story-item">
+            <div class="story-avatar-ring">
+                <div class="story-avatar">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+            </div>
+            <span class="story-label">الأكثر حجزاً</span>
+        </div>
+        <div class="story-item">
+            <div class="story-avatar-ring">
+                <div class="story-avatar">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+            </div>
+            <span class="story-label">عروض اليوم</span>
+        </div>
+        <div class="story-item">
+            <div class="story-avatar-ring">
+                <div class="story-avatar">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+            </div>
+            <span class="story-label">VIP</span>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <!-- بحث -->
+        <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="searchInput" class="search-input"
+                data-placeholder-ar="ابحث عن صالون، حلاقة، ولاية..."
+                data-placeholder-fr="Rechercher un salon, coiffure, wilaya..."
+                placeholder="ابحث عن صالون، حلاقة، ولاية...">
+        </div>
+
+        <!-- ===== حاوية البحث (سيتم تحميل محتوى search.html هنا) ===== -->
+        <div id="searchContainer"></div>
+        
+        
+        
+        <!-- شريط الفلاتر الأفقي -->
+<div class="filters-scroll-bar" style="display:flex;gap:10px;overflow-x:auto;padding:8px 16px;scrollbar-width:none;">
+    <button class="filter-chip active" data-service="" onclick="filterSalons(this)">🌟 الكل</button>
+    <button class="filter-chip" data-service="salon_hair" onclick="filterSalons(this)">💇 حلاقة</button>
+    <button class="filter-chip" data-service="salon_beauty" onclick="filterSalons(this)">💅 تجميل</button>
+    <button class="filter-chip" data-service="home_hair" onclick="filterSalons(this)">🏠 منزلية</button>
+    <button class="filter-chip" data-service="dress_rental" onclick="filterSalons(this)">👗 أزياء</button>
+    <button class="filter-chip" data-service="product_seller" onclick="filterSalons(this)">🛍️ منتجات</button>
+    <button class="filter-chip" data-online="true" onclick="filterSalons(this)">🟢 متاحة الآن</button>
+</div>
+
+<!-- شبكة الصالونات القابلة للتمرير -->
+<div id="salonsGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:12px 16px;overflow-y:auto;max-height:calc(100vh - 320px);">
+</div>
+
+
+
+
+    </div>
+
+    <!-- ===== EXPLORE FIXED BAR ===== -->
+    <div id="exploreFixedBar">
+        <div class="section-header">
+            <h2 class="section-title" data-ar="استكشف" data-fr="Explorer">استكشف</h2>
+        </div>
+
+        <div class="highlights-row">
+            <button class="highlight-item" onclick="location.href='pages/products.html'">
+                <div class="highlight-circle">
+                    <div class="highlight-inner">
+                        <img src="assets/icons/btn_products.png" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;background:transparent;">
+                        <i class="fa-solid fa-spray-can-sparkles highlight-icon-fallback"></i>
+                    </div>
+                </div>
+                <span data-ar="منتجات تجميل" data-fr="Beauté">منتجات تجميل</span>
+            </button>
+
+            <button class="highlight-item" onclick="location.href='pages/rentals.html'">
+                <div class="highlight-circle">
+                    <div class="highlight-inner">
+                        <img src="assets/icons/btn_rentals.png" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <i class="fa-solid fa-vest highlight-icon-fallback"></i>
+                    </div>
+                </div>
+                <span data-ar="تأجير أزياء" data-fr="Location">تأجير أزياء</span>
+            </button>
+
+            <button class="highlight-item" onclick="location.href='pages/home-services.html'">
+                <div class="highlight-circle">
+                    <div class="highlight-inner">
+                        <img src="assets/icons/btn_home_services.png" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <i class="fa-solid fa-house highlight-icon-fallback"></i>
+                    </div>
+                </div>
+                <span data-ar="خدمات منزلية" data-fr="À domicile">خدمات منزلية</span>
+            </button>
+
+            <button class="highlight-item" onclick="location.href='pages/my-account.html'">
+                <div class="highlight-circle">
+                    <div class="highlight-inner">
+                        <img src="assets/icons/btn_account.png" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <i class="fa-solid fa-user highlight-icon-fallback"></i>
+                    </div>
+                </div>
+                <span data-ar="حسابي" data-fr="Mon compte">حسابي</span>
+            </button>
+
+            <button class="highlight-item" onclick="location.href='pages/emergency.html'">
+                <div class="highlight-circle emergency-highlight">
+                    <div class="highlight-inner">
+                        <img src="assets/icons/btn_emergency.png" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <i class="fa-solid fa-triangle-exclamation highlight-icon-fallback"></i>
+                    </div>
+                </div>
+                <span data-ar="طوارئ" data-fr="Urgence">طوارئ</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM NAV BAR ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="location.href='index.html'">
+            <i class="fa-solid fa-house"></i>
+        </button>
+        <button class="nav-item" onclick="location.href='pages/search.html'">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="nav-item nav-add" onclick="location.href='pages/add-salon.html'">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        <button class="nav-item" onclick="location.href='pages/notifications.html'">
+            <i class="fa-regular fa-heart"></i>
+        </button>
+        <button class="nav-item" onclick="location.href='pages/my-account.html'">
+            <i class="fa-regular fa-user"></i>
+        </button>
+    </nav>
+
+</div>
+
+<!-- ===== درج الإعدادات ===== -->
+<div id="settingsDrawer" class="settings-drawer">
+    <div class="settings-backdrop" id="settingsBackdrop"></div>
+    <div class="settings-panel">
+        <div class="settings-handle"></div>
+
+        <div class="settings-section">
+            <p class="settings-section-label" data-ar="اللغة" data-fr="Langue">اللغة</p>
+            <div class="settings-lang-row">
+                <button class="settings-lang-btn active" data-lang="ar">
+                    <span>🇩🇿</span>
+                    <span>عربي</span>
+                </button>
+                <button class="settings-lang-btn" data-lang="fr">
+                    <span>🇫🇷</span>
+                    <span>Français</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-section">
+            <p class="settings-section-label" data-ar="التواصل" data-fr="Contact">التواصل</p>
+            <button class="settings-row-btn" id="openDevBtn">
+                <i class="fa-solid fa-code"></i>
+                <span data-ar="التواصل مع المطورة" data-fr="Contacter la développeuse">التواصل مع المطورة</span>
+                <i class="fa-solid fa-chevron-left settings-chevron"></i>
+            </button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <button class="settings-close-btn" id="closeSettingsBtn">
+            <span data-ar="إغلاق" data-fr="Fermer">إغلاق</span>
+        </button>
+    </div>
+</div>
+
+<!-- ===== مودال التواصل مع المطورة ===== -->
+<div id="devModal" class="dev-modal">
+    <div class="dev-card">
+        <div class="dev-card-deco"></div>
+        <div class="dev-avatar">
+            <div class="avatar-ring"></div>
+            <img src="assets/images/developer.jpg"
+                 alt="المطورة"
+                 onerror="this.src='https://via.placeholder.com/120?text=Dev'">
+        </div>
+        <div class="dev-info">
+            <h3 data-ar="اسم المطورة" data-fr="Nom de la développeuse">اسم المطورة</h3>
+            <p data-ar="مطورة تطبيقات | الجزائر" data-fr="Développeuse d'applications | Algérie">مطورة تطبيقات | الجزائر</p>
+            <div class="dev-contacts">
+                <a href="mailto:dev@lila.dz" class="dev-contact-btn">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>البريد الإلكتروني</span>
+                </a>
+                <a href="https://t.me/lila_app" class="dev-contact-btn">
+                    <i class="fa-brands fa-telegram"></i>
+                    <span>Telegram</span>
+                </a>
+            </div>
+        </div>
+        <button id="closeModalBtn">
+            <i class="fa-solid fa-xmark"></i>
+            <span data-ar="إغلاق" data-fr="Fermer">إغلاق</span>
+        </button>
+    </div>
+</div>
+
+<!-- ===== سكربتات ===== -->
+<script src="../js/debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/search-loader.js"></script>
+
+<script>
+(function () {
+
+    // ===== PARTICLES =====
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Particle() { this.reset(); }
+    Particle.prototype.reset = function () {
+        this.x       = Math.random() * canvas.width;
+        this.y       = Math.random() * canvas.height;
+        this.size    = Math.random() * 1.5 + 0.3;
+        this.speedX  = (Math.random() - 0.5) * 0.3;
+        this.speedY  = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        this.color   = Math.random() > 0.7 ? '#ff8c00' : '#c084fc';
+    };
+    Particle.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+    };
+    Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle    = this.color;
+        ctx.globalAlpha  = this.opacity;
+        ctx.fill();
+    };
+
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ===== LANG SWITCH =====
+    let currentLang = 'ar';
+
+    function applyLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('[data-ar]').forEach(el => {
+            el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.fr;
+        });
+
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.placeholder = lang === 'ar'
+                ? input.dataset.placeholderAr
+                : input.dataset.placeholderFr;
+        }
+
+        document.querySelectorAll('.lang-btn, .settings-lang-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.lang === lang);
+        });
+
+        localStorage.setItem('lila_lang', lang);
+    }
+
+    document.querySelectorAll('.settings-lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    });
+
+    const savedLang = localStorage.getItem('lila_lang') || 'ar';
+    applyLang(savedLang);
+
+    // ===== SETTINGS DRAWER =====
+    const settingsDrawer   = document.getElementById('settingsDrawer');
+    const openSettingsBtn  = document.getElementById('openSettingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const settingsBackdrop = document.getElementById('settingsBackdrop');
+
+    function openSettings()  { settingsDrawer.classList.add('open'); }
+    function closeSettings() { settingsDrawer.classList.remove('open'); }
+
+    openSettingsBtn.addEventListener('click',  openSettings);
+    closeSettingsBtn.addEventListener('click', closeSettings);
+    settingsBackdrop.addEventListener('click', closeSettings);
+
+    // ===== DEV MODAL =====
+    const devModal  = document.getElementById('devModal');
+    const openBtn   = document.getElementById('openDevBtn');
+    const closeBtn  = document.getElementById('closeModalBtn');
+
+    openBtn.addEventListener('click',  () => { closeSettings(); devModal.classList.add('show'); });
+    closeBtn.addEventListener('click', () => devModal.classList.remove('show'));
+    devModal.addEventListener('click', e => { if (e.target === devModal) devModal.classList.remove('show'); });
+
+    // ===== TOGGLE SALONS (عرض الكل / طي) =====
+    let isExpanded = false;
+    const toggleBtn = document.getElementById('toggleSalonsBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const scrollWrapper = document.getElementById('salonsScrollWrapper');
+    const gridContainer = document.getElementById('salonsGrid');
+
+    toggleBtn.addEventListener('click', function() {
+        isExpanded = !isExpanded;
+        
+        if (isExpanded) {
+            scrollWrapper.style.display = 'none';
+            gridContainer.style.display = 'grid';
+            toggleIcon.className = 'fa-solid fa-chevron-up';
+            const span = toggleBtn.querySelector('span');
+            span.textContent = currentLang === 'ar' ? 'طي' : 'Réduire';
+        } else {
+            scrollWrapper.style.display = 'block';
+            gridContainer.style.display = 'none';
+            toggleIcon.className = 'fa-solid fa-chevron-down';
+            const span = toggleBtn.querySelector('span');
+            span.textContent = currentLang === 'ar' ? 'عرض الكل' : 'Voir tout';
+        }
+    });
+
+    // ===== جلب الصالونات من Supabase =====
+    async function loadSalons() {
+        const container = document.getElementById('salonsContainer');
+        const grid = document.getElementById('salonsGrid');
+        if (!container || !grid) return;
+        
+        try {
+            const { data: salons, error } = await supabaseClient
+                .from('business_profiles')
+                .select('*')
+                .eq('verification_status', 'approved')
+                .order('created_at', { ascending: false })
+                .limit(12);
+            
+            if (error) throw error;
+            if (!salons || salons.length === 0) {
+                container.innerHTML = '<p class="salons-empty">لا توجد صالونات مسجلة بعد</p>';
+                grid.innerHTML = '<p class="salons-empty">لا توجد صالونات مسجلة بعد</p>';
+                return;
+            }
+            
+            // بناء عناصر الشريط الأفقي
+            container.innerHTML = '';
+            salons.forEach(salon => {
+                const card = document.createElement('div');
+                card.className = 'salon-scroll-item';
+                card.onclick = () => location.href = `pages/search.html?id=${salon.id}`;
+                
+                const imgSrc = salon.logo_url || '';
+                const name = DOMPurify.sanitize(salon.business_name || 'صالون');
+                
+                card.innerHTML = `
+                    <div class="salon-scroll-avatar">
+                        ${imgSrc
+                            ? `<img src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.parentElement.classList.add('no-img')">`
+                            : `<div class="salon-scroll-no-img"><i class="fa-solid fa-scissors"></i></div>`
+                        }
+                    </div>
+                    <span class="salon-scroll-name">${name}</span>
+                `;
+                container.appendChild(card);
+            });
+
+            // بناء الشبكة (عرض الكل)
+            grid.innerHTML = '';
+            salons.forEach(salon => {
+                const card = document.createElement('div');
+                card.className = 'salon-card';
+                card.onclick = () => location.href = `pages/search.html?id=${salon.id}`;
+                
+                const imgSrc = salon.logo_url || '';
+                const name = DOMPurify.sanitize(salon.business_name || 'صالون');
+                const city = DOMPurify.sanitize(salon.wilaya_name || '');
+                const rating = salon.avg_rating ? `<span class="salon-rating"><i class="fa-solid fa-star"></i> ${parseFloat(salon.avg_rating).toFixed(1)}</span>` : '';
+                
+                card.innerHTML = `
+                    <div class="salon-card-img">
+                        ${imgSrc
+                            ? `<img src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.parentElement.classList.add('no-img')">`
+                            : `<div class="salon-card-no-img"><i class="fa-solid fa-scissors"></i></div>`
+                        }
+                    </div>
+                    <div class="salon-card-info">
+                        <p class="salon-card-name">${name}</p>
+                        ${city ? `<p class="salon-card-city"><i class="fa-solid fa-location-dot"></i> ${city}</p>` : ''}
+                        ${rating}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+        } catch (err) {
+            console.error('خطأ في جلب الصالونات:', err);
+            container.innerHTML = `<p class="salons-empty">خطأ: ${err.message}</p>`;
+            grid.innerHTML = `<p class="salons-empty">خطأ: ${err.message}</p>`;
+        }
+    }
+
+    // تشغيل جلب الصالونات
+    loadSalons();
+
+})();
+</script>
+
+</body>
+</html>

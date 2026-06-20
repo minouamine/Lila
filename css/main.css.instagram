@@ -1,0 +1,1204 @@
+/* ========================================
+   LILA — Instagram Dark Mode Theme
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ========== CSS VARIABLES — Instagram Dark ========== */
+:root {
+    /* Instagram Dark Mode Exact Colors */
+    --ig-bg-primary:    #000000;
+    --ig-bg-secondary:  #121212;
+    --ig-bg-elevated:   #1c1c1c;
+    --ig-bg-card:       #1c1c1c;
+    --ig-bg-input:      #262626;
+    --ig-bg-hover:      #2a2a2a;
+
+    --ig-text-primary:   #f5f5f5;
+    --ig-text-secondary: #a8a8a8;
+    --ig-text-dim:       #555555;
+    --ig-text-link:      #e0f1ff;
+
+    --ig-border:         #262626;
+    --ig-border-light:   #363636;
+    --ig-separator:      #1a1a1a;
+
+    /* Instagram Gradient (Stories / Highlights ring) */
+    --ig-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    --ig-gradient-alt: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+
+    /* Accent */
+    --ig-blue:     #0095f6;
+    --ig-blue-dim: rgba(0, 149, 246, 0.15);
+    --ig-red:      #ed4956;
+    --ig-white:    #ffffff;
+
+    /* Typography */
+    --font-arabic: 'Times New Roman', serif;
+    --font-latin:  'Times New Roman', serif;
+
+    /* Easing */
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Sizing */
+    --nav-height: 60px;
+    --header-height: 56px;
+    --explore-bar-height: 60px;
+}
+
+/* ========== PARTICLE CANVAS ========== */
+.particle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+/* ========== BODY ========== */
+body {
+    font-family: 'Times New Roman', serif;
+    background-color: var(--ig-bg-primary);
+    color: var(--ig-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========== APP WRAPPER ========== */
+.app {
+    max-width: 470px;
+    margin: 0 auto;
+    background: var(--ig-bg-primary);
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    padding-bottom: calc(var(--nav-height) + var(--explore-bar-height) + 16px);
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-height);
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ig-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+}
+
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    font-family: 'Times New Roman', serif;
+    background: var(--ig-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.title-ar {
+    font-size: 1.55rem;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.title-sep {
+    font-size: 1.1rem;
+    opacity: 0.6;
+    font-style: normal;
+}
+
+.title-fr {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Settings button (hamburger) */
+.settings-btn {
+    background: none;
+    border: none;
+    color: var(--ig-text-primary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+.settings-btn:hover {
+    background: var(--ig-bg-hover);
+}
+
+/* Header action icons (heart + plane) */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.header-icon-btn {
+    background: none;
+    border: none;
+    color: var(--ig-text-primary);
+    font-size: 1.35rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+.header-icon-btn:hover {
+    background: var(--ig-bg-hover);
+}
+
+/* ========================================
+   STORIES BAR
+   ======================================== */
+.stories-bar {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--ig-separator);
+    background: var(--ig-bg-primary);
+}
+.stories-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.story-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s var(--ease);
+}
+.story-item:hover {
+    opacity: 0.85;
+}
+
+.story-avatar-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.story-avatar {
+    width: 57px;
+    height: 57px;
+    border-radius: 50%;
+    background: var(--ig-bg-elevated);
+    border: 2.5px solid var(--ig-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--ig-text-secondary);
+    overflow: hidden;
+}
+.story-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ig-text-primary);
+    text-align: center;
+    max-width: 68px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Times New Roman', serif;
+    font-style: normal;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.main-content {
+    padding: 14px 0 0;
+}
+
+/* ========== SEARCH ========== */
+.search-wrapper {
+    position: relative;
+    margin: 0 16px 16px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: var(--ig-text-dim);
+    pointer-events: none;
+    z-index: 1;
+}
+
+[dir="ltr"] .search-icon {
+    right: auto;
+    left: 14px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    font-size: 0.9rem;
+    font-family: 'Times New Roman', serif;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: var(--ig-bg-input);
+    color: var(--ig-text-primary);
+    transition: background 0.2s var(--ease);
+    -webkit-appearance: none;
+    font-style: normal;
+}
+
+[dir="ltr"] .search-input {
+    padding: 10px 16px 10px 40px;
+}
+
+.search-input::placeholder {
+    color: var(--ig-text-dim);
+    font-size: 0.88rem;
+    font-style: normal;
+}
+
+.search-input:focus {
+    background: var(--ig-bg-hover);
+    outline: none;
+}
+
+/* ========== SECTION HEADER ========== */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 10px;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ig-text-primary);
+    font-family: 'Times New Roman', serif;
+    letter-spacing: -0.2px;
+    font-style: normal;
+}
+
+.section-see-all {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ig-blue);
+    text-decoration: none;
+    font-family: 'Times New Roman', serif;
+    transition: opacity 0.2s var(--ease);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-style: normal;
+}
+.section-see-all:hover {
+    opacity: 0.75;
+}
+
+/* ========================================
+   SALONS SCROLL BAR (شريط تمرير أفقي)
+   ======================================== */
+.salons-scroll-wrapper {
+    background: #0d0d0d;
+    padding: 16px 0;
+    margin: 0 0 16px 0;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.salons-scroll-container {
+    display: flex;
+    gap: 16px;
+    padding: 0 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+}
+
+.salons-scroll-container::-webkit-scrollbar {
+    height: 4px;
+}
+.salons-scroll-container::-webkit-scrollbar-track {
+    background: #d0d0d0;
+    border-radius: 4px;
+}
+.salons-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--ig-border-light);
+    border-radius: 4px;
+}
+.salons-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--ig-text-dim);
+}
+
+.salon-scroll-item {
+    flex: 0 0 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform 0.2s var(--ease);
+}
+
+.salon-scroll-item:hover {
+    transform: scale(1.05);
+}
+
+.salon-scroll-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    border: 2.5px solid #bc1888;
+    background: var(--ig-bg-elevated);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.salon-scroll-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.salon-scroll-no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ig-text-dim);
+    font-size: 1.8rem;
+    background: var(--ig-bg-input);
+}
+
+.salon-scroll-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ig-text-primary);
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-style: normal;
+}
+
+/* Skeleton loading for scroll */
+.salon-skeleton {
+    flex: 0 0 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.salon-skeleton .salon-scroll-avatar {
+    animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.salon-skeleton .salon-scroll-name {
+    width: 70px;
+    height: 12px;
+    background: var(--ig-bg-elevated);
+    border-radius: 4px;
+    animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+
+/* ========================================
+   SALONS GRID (عرض الكل)
+   ======================================== */
+.salons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 6px;
+    padding: 0 0 10px 0;
+}
+
+/* Salon Card */
+.salon-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--ig-bg-elevated);
+    transition: opacity 0.2s var(--ease);
+}
+
+.salon-card:hover {
+    opacity: 0.88;
+}
+
+.salon-card:active {
+    opacity: 0.7;
+}
+
+.salon-card-img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+}
+
+.salon-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.salon-card-no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ig-bg-elevated);
+    color: var(--ig-text-dim);
+    font-size: 1.6rem;
+}
+
+/* Info overlay on hover */
+.salon-card-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    padding: 24px 8px 8px;
+    transform: translateY(100%);
+    transition: transform 0.25s var(--ease);
+}
+
+.salon-card:hover .salon-card-info {
+    transform: translateY(0);
+}
+
+.salon-card-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.3;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: normal;
+}
+
+.salon-card-city {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.75);
+    font-family: 'Times New Roman', serif;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-style: normal;
+}
+
+.salon-rating {
+    font-size: 0.65rem;
+    color: #ffd700;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+    font-style: normal;
+}
+
+/* Empty state */
+.salons-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ig-text-dim);
+    font-size: 0.9rem;
+    font-family: 'Times New Roman', serif;
+    font-style: normal;
+}
+
+/* ========================================
+   HIGHLIGHTS ROW (Explore Section)
+   ======================================== */
+.highlights-row {
+    display: flex;
+    gap: 18px;
+    padding: 4px 16px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.highlights-row::-webkit-scrollbar {
+    display: none;
+}
+
+.highlight-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    transition: opacity 0.2s var(--ease);
+    min-width: 68px;
+}
+.highlight-item:hover {
+    opacity: 0.8;
+}
+.highlight-item:active {
+    opacity: 0.6;
+    transform: scale(0.96);
+}
+
+.highlight-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.highlight-inner {
+    width: 57px;
+    height: 57px;
+    border-radius: 50%;
+    background: var(--ig-bg-elevated);
+    border: 2.5px solid var(--ig-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.highlight-inner img {
+    background: transparent !important;
+    mix-blend-mode: normal;
+}
+.highlight-inner i {
+    background: transparent !important;
+}
+
+.highlight-circle:hover {
+    border-color: var(--ig-text-secondary);
+}
+
+.emergency-highlight {
+    border-color: rgba(237, 73, 86, 0.5);
+    color: var(--ig-red);
+}
+.emergency-highlight:hover {
+    border-color: var(--ig-red);
+}
+
+.highlight-icon-fallback {
+    position: absolute;
+    font-size: 1.3rem;
+    z-index: 0;
+}
+.highlight-circle img {
+    position: relative;
+    z-index: 1;
+}
+.highlight-circle img[style*="display:none"] + .highlight-icon-fallback {
+    z-index: 2;
+}
+
+.highlight-item span {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ig-text-primary);
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.2;
+    max-width: 68px;
+    font-style: normal;
+}
+
+/* ========================================
+   EXPLORE FIXED BAR
+   ======================================== */
+#exploreFixedBar {
+    position: fixed;
+    bottom: var(--nav-height);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 470px;
+    background: var(--ig-bg-primary);
+    border-top: 1px solid var(--ig-separator);
+    z-index: 90;
+}
+
+/* ========================================
+   BOTTOM NAVIGATION BAR
+   ======================================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 470px;
+    height: var(--nav-height);
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--ig-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--ig-text-primary);
+    font-size: 1.35rem;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: all 0.2s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 48px;
+}
+
+.nav-item:hover {
+    background: var(--ig-bg-hover);
+}
+
+.nav-item.active {
+    color: var(--ig-white);
+}
+
+.nav-item.active i {
+    font-weight: 900;
+}
+
+.nav-item:not(.active) {
+    color: var(--ig-text-secondary);
+}
+
+.nav-add {
+    position: relative;
+}
+.nav-add i {
+    background: var(--ig-bg-elevated);
+    border: 1.5px solid var(--ig-border-light);
+    border-radius: 8px;
+    width: 30px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: var(--ig-text-primary);
+    transition: border-color 0.2s var(--ease);
+}
+.nav-add:hover i {
+    border-color: var(--ig-text-secondary);
+}
+
+/* ========================================
+   SETTINGS DRAWER
+   ======================================== */
+.settings-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+}
+
+.settings-drawer.open {
+    pointer-events: all;
+}
+
+.settings-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s var(--ease);
+}
+
+.settings-drawer.open .settings-backdrop {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.settings-panel {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: 100%;
+    max-width: 470px;
+    background: var(--ig-bg-elevated);
+    border-radius: 16px 16px 0 0;
+    padding: 12px 0 32px;
+    transition: transform 0.35s var(--ease);
+    border-top: 1px solid var(--ig-border-light);
+}
+
+.settings-drawer.open .settings-panel {
+    transform: translateX(-50%) translateY(0);
+}
+
+.settings-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ig-border-light);
+    margin: 0 auto 20px;
+}
+
+.settings-section {
+    padding: 0 0 4px;
+}
+
+.settings-section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ig-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 16px 8px;
+    font-family: 'Times New Roman', serif;
+    font-style: normal;
+}
+
+.settings-lang-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 16px 8px;
+}
+
+.settings-lang-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--ig-border-light);
+    background: var(--ig-bg-input);
+    color: var(--ig-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    font-style: normal;
+}
+
+.settings-lang-btn.active {
+    border-color: var(--ig-white);
+    color: var(--ig-white);
+    background: var(--ig-bg-hover);
+}
+
+.settings-lang-btn:hover:not(.active) {
+    background: var(--ig-bg-hover);
+    color: var(--ig-text-primary);
+}
+
+.settings-divider {
+    height: 1px;
+    background: var(--ig-border);
+    margin: 10px 0;
+}
+
+.settings-row-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    color: var(--ig-text-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.15s var(--ease);
+    font-style: normal;
+}
+
+[dir="ltr"] .settings-row-btn {
+    text-align: left;
+}
+
+.settings-row-btn:hover {
+    background: var(--ig-bg-hover);
+}
+
+.settings-row-btn i:first-child {
+    color: var(--ig-text-secondary);
+    font-size: 1.05rem;
+    width: 22px;
+    text-align: center;
+}
+
+.settings-chevron {
+    margin-right: auto;
+    color: var(--ig-text-dim);
+    font-size: 0.75rem;
+}
+
+[dir="ltr"] .settings-chevron {
+    margin-right: 0;
+    margin-left: auto;
+    transform: rotate(180deg);
+}
+
+.settings-close-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 8px 16px 0;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--ig-border-light);
+    background: var(--ig-bg-input);
+    color: var(--ig-text-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    text-align: center;
+    font-style: normal;
+}
+
+.settings-close-btn:hover {
+    background: var(--ig-bg-hover);
+    border-color: var(--ig-text-dim);
+}
+
+/* ========================================
+   DEV MODAL
+   ======================================== */
+.dev-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 300;
+    display: none;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 0;
+}
+
+.dev-modal.show {
+    display: flex;
+    animation: overlayIn 0.25s var(--ease);
+}
+
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.dev-card {
+    background: var(--ig-bg-elevated);
+    border-radius: 16px 16px 0 0;
+    padding: 28px 24px 40px;
+    text-align: center;
+    width: 100%;
+    max-width: 470px;
+    animation: slideUp 0.35s var(--ease-bounce);
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--ig-border-light);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.dev-card-deco {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ig-border-light);
+    margin: 0 auto 24px;
+}
+
+.dev-avatar {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 16px;
+}
+
+.avatar-ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: var(--ig-gradient);
+    z-index: 0;
+    animation: avatarRingSpin 4s linear infinite;
+}
+
+@keyframes avatarRingSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.dev-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--ig-bg-elevated);
+    position: relative;
+    z-index: 1;
+}
+
+.dev-info h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ig-text-primary);
+    margin-bottom: 4px;
+    font-family: 'Times New Roman', serif;
+    font-style: normal;
+}
+
+.dev-info p {
+    font-size: 0.82rem;
+    color: var(--ig-text-secondary);
+    margin-bottom: 20px;
+    font-family: 'Times New Roman', serif;
+    font-style: normal;
+}
+
+.dev-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.dev-contact-btn {
+    background: var(--ig-bg-input);
+    border: 1.5px solid var(--ig-border-light);
+    color: var(--ig-text-primary);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: 'Times New Roman', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s var(--ease);
+    font-style: normal;
+}
+
+.dev-contact-btn:hover {
+    background: var(--ig-bg-hover);
+    border-color: var(--ig-text-secondary);
+}
+
+.dev-contact-btn i {
+    font-size: 1rem;
+    color: var(--ig-text-secondary);
+}
+
+#closeModalBtn {
+    background: var(--ig-bg-input);
+    border: 1.5px solid var(--ig-border-light);
+    color: var(--ig-text-primary);
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-family: 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    font-style: normal;
+}
+
+#closeModalBtn:hover {
+    background: var(--ig-bg-hover);
+    border-color: var(--ig-text-secondary);
+}
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--ig-border-light);
+    border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ig-text-dim);
+}
+
+::selection {
+    background: rgba(0, 149, 246, 0.25);
+    color: var(--ig-text-primary);
+}
+
+/* ========================================
+   RESPONSIVE — Mobile First
+   ======================================== */
+@media (max-width: 470px) {
+    .app {
+        border-radius: 0;
+    }
+    .bottom-nav {
+        border-radius: 0;
+    }
+}
+
+@media (min-width: 471px) {
+    .app {
+        border-right: 1px solid var(--ig-border);
+        border-left: 1px solid var(--ig-border);
+    }
+    .bottom-nav {
+        border-right: 1px solid var(--ig-border);
+        border-left: 1px solid var(--ig-border);
+    }
+    #exploreFixedBar {
+        border-right: 1px solid var(--ig-border);
+        border-left: 1px solid var(--ig-border);
+    }
+}
+
+/* Safe area for notch phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+    }
+    #exploreFixedBar {
+        bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+    }
+}
+
+/* ========================================
+   RTL / LTR ADJUSTMENTS
+   ======================================== */
+[dir="ltr"] .app-title {
+    justify-content: flex-end;
+}
+
+[dir="ltr"] .settings-row-btn i:first-child {
+    order: 0;
+}
+
+[dir="ltr"] .settings-chevron {
+    order: 2;
+}
+
+/* ========================================
+   ANIMATION — Page Load
+   ======================================== */
+.main-content {
+    animation: contentFadeIn 0.4s var(--ease) both;
+}
+
+@keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.stories-bar {
+    animation: contentFadeIn 0.35s var(--ease) 0.05s both;
+}
