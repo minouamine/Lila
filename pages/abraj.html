@@ -4,133 +4,249 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>ليلى Lila | أبراج اليوم</title>
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="../css/main.css">
   <style>
-    /* تعديلات إضافية للأبراج */
-    .action-btn .btn-icon-img {
+    /* ========== OVERRIDE: full-bleed iframe child ========== */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--c-bg);
+      font-family: 'Cairo', sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0;
+    }
+    body::before {
+      display: none; /* parent already has ambient glow */
+    }
+
+    /* Container fills iframe */
+    .app {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      min-height: 100%;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      animation: none;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 14px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ========== ZODIAC GRID ========== */
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 400px) {
+      .buttons-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+    @media (min-width: 700px) {
+      .buttons-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .action-btn {
+      position: relative;
+      background: var(--c-card);
+      border: 1.5px solid var(--c-border);
+      border-radius: 16px;
+      padding: 52px 8px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.22s var(--ease-snap), border-color 0.22s, box-shadow 0.22s;
+      overflow: hidden;
+    }
+    .action-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: var(--c-border-act);
+      box-shadow: 0 8px 24px var(--c-glow-soft), 0 0 0 1px var(--c-border-act);
+    }
+    .action-btn:active { transform: scale(0.97); }
+
+    .btn-icon-img {
       position: absolute;
-      top: 20px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 44px;
       object-fit: contain;
-      filter: drop-shadow(0 0 8px rgba(255,140,0,0.5));
+      filter: drop-shadow(0 0 8px var(--c-glow));
       transition: 0.2s;
       pointer-events: none;
       z-index: 2;
     }
     .action-btn:hover .btn-icon-img {
-      transform: translateX(-50%) scale(1.08);
+      transform: translateX(-50%) scale(1.1);
     }
+
+    .btn-text {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--c-text);
+      text-align: center;
+      line-height: 1.3;
+      transition: color var(--t);
+    }
+    .btn-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: radial-gradient(circle at 50% 30%, var(--c-glow-soft) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .action-btn:hover .btn-glow { opacity: 1; }
+
+    /* ========== HOROSCOPE RESULT CARD ========== */
     .horoscope-result-card {
-      background: rgba(13, 22, 40, 0.85);
-      border: 1px solid var(--border-active);
+      background: var(--c-card);
+      border: 1px solid var(--c-border-act);
       border-radius: 20px;
-      margin-top: 28px;
       overflow: hidden;
+      flex-shrink: 0;
+      animation: cardIn 0.35s var(--ease-smooth) both;
     }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     .horoscope-header {
-      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.05));
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(135deg, var(--c-glow-soft), transparent);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--c-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
+      gap: 8px;
     }
     .horoscope-title {
-      font-size: 1.7rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #ffc107, var(--accent-orange));
+      background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
+      font-family: 'Cairo', sans-serif;
+    }
+    .horoscope-source-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--c-text-3);
+      background: var(--c-glow-soft);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--c-border);
     }
     .horoscope-content {
-      padding: 24px;
-      line-height: 1.7;
+      padding: 18px 20px;
+      line-height: 1.8;
       white-space: pre-wrap;
-      max-height: 450px;
+      max-height: 420px;
       overflow-y: auto;
+      color: var(--c-text);
+      font-size: 0.92rem;
     }
+    .horoscope-content::-webkit-scrollbar { width: 3px; }
+    .horoscope-content::-webkit-scrollbar-thumb {
+      background: var(--c-primary); border-radius: 3px;
+    }
+
+    /* ========== STATES ========== */
     .loading-state, .error-state {
-      padding: 40px;
+      padding: 32px 20px;
       text-align: center;
-      color: var(--text-secondary);
+      color: var(--c-text-2);
+      font-size: 0.9rem;
     }
-    .error-state { color: var(--red); }
+    .error-state { color: #ef4444; }
+
     .refresh-horoscope {
-      background: rgba(255,140,0,0.1);
-      border: 1px solid var(--border-active);
+      background: var(--c-glow-soft);
+      border: 1px solid var(--c-border-act);
       border-radius: 30px;
       padding: 8px 18px;
       cursor: pointer;
-      color: var(--accent-orange);
+      color: var(--c-primary);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      transition: all 0.2s;
     }
+    .refresh-horoscope:hover {
+      background: var(--c-primary);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--c-glow);
+    }
+
+    /* ========== FOOTER NOTE ========== */
+    .footer-note {
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--c-text-3);
+      margin-top: 4px;
+      padding-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* ========== RIPPLE ========== */
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 0.7s linear;
+      background-color: rgba(255,255,255,0.25);
+      pointer-events: none;
+    }
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ========== RESPONSIVE ========== */
     @media (max-width: 600px) {
-      .action-btn .btn-icon-img { width: 40px; height: 40px; top: 12px; }
-      .horoscope-title { font-size: 1.3rem; }
+      .main-content { padding: 10px 12px 16px; }
+      .action-btn { padding: 46px 6px 12px; }
+      .btn-icon-img { width: 38px; height: 38px; top: 10px; }
+      .horoscope-title { font-size: 1.1rem; }
+      .horoscope-content { padding: 14px 16px; font-size: 0.88rem; }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
-  <canvas id="particleCanvas" class="particle-canvas"></canvas>
-  <div class="scanline-overlay"></div>
 
   <div class="app">
-    <div class="header">
-      <div class="header-grid-lines"></div>
-      <div class="header-corner top-right"></div>
-      <div class="header-corner top-left"></div>
-      <div class="header-corner bottom-right"></div>
-      <div class="header-corner bottom-left"></div>
-      <div class="app-title">
-        <div class="title-line"></div>
-        <span class="title-ar">ليلى</span>
-        <span class="title-sep">✨</span>
-        <span class="title-fr">LILA</span>
-        <div class="title-line"></div>
-      </div>
-      <div class="header-sub">أبراج اليوم – توقعات دقيقة</div>
-    </div>
-
-    <div class="lang-bar">
-      <button class="lang-btn active" data-lang="ar"><span class="lang-flag">🇸🇦</span> العربية</button>
-      <button class="lang-btn" data-lang="fr"><span class="lang-flag">🇫🇷</span> Français</button>
-      <button class="dev-btn" id="devContactBtn"><span>👨‍💻 المطور</span></button>
-    </div>
-
     <div class="main-content">
       <div class="buttons-grid" id="zodiacGrid"></div>
       <div id="horoscopeDisplay"></div>
-      <div class="footer-note" style="text-align:center; font-size:0.7rem; color:var(--text-dim); margin-top:20px;">
-        🔮 توقعات من اليوم السابع • تحديث يومي
-      </div>
+      <div class="footer-note" id="footerNote">تحديث يومي</div>
     </div>
   </div>
 
-  <div id="devModal" class="dev-modal">
-    <div class="dev-card">
-      <div class="dev-card-deco"></div>
-      <div class="dev-avatar">
-        <div class="avatar-ring"></div>
-        <img src="https://via.placeholder.com/100?text=LILA" alt="المطور">
-      </div>
-      <div class="dev-info">
-        <h3>تطبيق ليلى</h3>
-        <p>أبراج وتوقعات</p>
-      </div>
-      <div class="dev-contacts">
-        <a href="#" class="dev-contact-btn">📧 contact@lila.dz</a>
-      </div>
-      <button id="closeModalBtn">✖ إغلاق</button>
-    </div>
-  </div>
-
-  <button id="musicToggleBtn" class="music-toggle">🔇</button>
-
-  <script src="js/debug.js"></script>
-  <script src="js/abraj.js"></script>
+  <script src="../js/abraj.js"></script>
 </body>
 </html>
