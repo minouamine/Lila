@@ -372,8 +372,8 @@
     // Load JSON from file
     async function loadNames(gender) {
         const filePath = gender === 'girls' 
-            ? 'assets/data/girls_names.json' 
-            : 'assets/data/boys_names.json';
+            ? '/assets/data/girls_names.json' 
+            : '/assets/data/boys_names.json';
         
         try {
             const response = await fetch(filePath);
