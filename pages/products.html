@@ -1,451 +1,491 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ليلى - منتجات تجميل وعطور</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        /* أنماط إضافية لصفحة المنتجات */
-        .products-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .btn-back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--accent-orange);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-back:hover {
-            text-decoration: underline;
-        }
-        
-        /* شريط الفلاتر */
-        .filters-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border-subtle);
-        }
-        
-        .filter-group {
-            flex: 1;
-            min-width: 140px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .filter-group select,
-        .filter-group input {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-active);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: var(--font-arabic);
-            font-size: 0.9rem;
-        }
-        
-        .filter-group select:focus,
-        .filter-group input:focus {
-            outline: none;
-            border-color: var(--accent-orange);
-            box-shadow: 0 0 0 2px var(--glow-orange);
-        }
-        
-        .price-range {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .price-range input {
-            width: 80px;
-        }
-        
-        .online-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 24px;
-        }
-        
-        .online-checkbox input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        .online-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #00c87a;
-            display: inline-block;
-            animation: onlinePulse 1.5s infinite;
-        }
-        
-        @keyframes onlinePulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-        }
-        
-        .search-btn {
-            background: linear-gradient(135deg, var(--accent-orange), #ff4500);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 24px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 24px;
-            transition: all 0.3s;
-        }
-        
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px var(--glow-orange);
-        }
-        
-        /* تبديل عرض القائمة / الخريطة */
-        .view-toggle {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .view-btn {
-            padding: 8px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-active);
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: var(--font-arabic);
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .view-btn.active {
-            background: var(--accent-orange);
-            border-color: var(--accent-orange);
-            color: white;
-        }
-        
-        /* عرض القائمة */
-        .results-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .results-list.active {
-            display: grid;
-        }
-        
-        .product-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid var(--border-subtle);
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-orange);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 12px;
-            background: var(--bg-surface);
-        }
-        
-        .product-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin: 12px 0 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .gold-badge {
-            color: gold;
-            font-size: 0.9rem;
-        }
-        
-        .online-badge {
-            background: #00c87a;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-        
-        .product-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin: 8px 0;
-        }
-        
-        .stars {
-            color: gold;
-            font-size: 0.9rem;
-        }
-        
-        .product-category {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .category-tag {
-            background: rgba(255,140,0,0.15);
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-        
-        .product-distance {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            margin-top: 8px;
-        }
-        
-        .product-location {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        /* عرض الخريطة */
-        .map-view {
-            display: none;
-            height: 550px;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        
-        .map-view.active {
-            display: block;
-        }
-        
-        /* حالة عدم وجود نتائج */
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--bg-card);
-            border-radius: 20px;
-        }
-        
-        .no-results-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-        }
-        
-        .no-results h3 {
-            color: var(--accent-orange);
-            margin-bottom: 10px;
-        }
-        
-        /* مؤشر التحميل */
-        .loading-results {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--border-active);
-            border-top-color: var(--accent-orange);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 600px) {
-            .products-container { padding: 12px; }
-            .filters-bar { flex-direction: column; }
-            .filter-group { min-width: auto; }
-            .online-checkbox { margin-top: 0; }
-            .search-btn { margin-top: 10px; }
-            .results-list { grid-template-columns: 1fr; }
-            .view-toggle { justify-content: center; }
-            .price-range { flex-direction: column; }
-            .price-range input { width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ليلى — منتجات تجميل وعطور</title>
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+/* =============================================
+   products.html — scoped only, inherits main.css
+   نفس بنية search.html، مع تصحيح هام جداً:
+   لا نحبس body بـ flex-column + overflow:hidden (هذا
+   تسبب باختفاء عناصر خارج حدود الشاشة على الموبايل في
+   business-register سابقاً). بدلاً من ذلك: body تأخذ
+   ارتفاع iframe كاملاً، والتمرير يحدث داخل منطقة
+   النتائج فقط (نفس فكرة search لكن بدون overflow:hidden
+   على html/body، فقط على results-area).
+   ============================================= */
+html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Cairo', sans-serif;
+}
+body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── شريط الفلاتر ── */
+.filters-strip {
+    width: 100%;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    padding: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    position: sticky;
+    top: 40px;
+    z-index: 10;
+    transition: background var(--t), border-color var(--t);
+}
+.filters-strip::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    max-width: 70px;
+}
+
+.filter-ring {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-grad);
+    transition: transform .22s var(--ease-snap), box-shadow .22s;
+    flex-shrink: 0;
+}
+.filter-chip.active .filter-ring,
+.filter-chip:hover  .filter-ring {
+    transform: scale(1.10);
+    box-shadow: 0 4px 14px var(--c-glow);
+}
+.filter-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem;
+    transition: background var(--t);
+}
+.filter-chip.active .filter-inner { background: var(--c-glow-soft); }
+
+.filter-label {
+    font-size: 0.50rem;
+    font-weight: 700;
+    color: var(--c-text-2);
+    white-space: nowrap;
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.filter-chip.active .filter-label { color: var(--c-primary); }
+
+/* dropdown */
+.dropdown-panel {
+    display: none;
+    position: fixed;
+    left: 8px; right: 8px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border-act);
+    border-radius: 12px;
+    padding: 14px;
+    z-index: 300;
+    box-shadow: 0 8px 30px rgba(0,0,0,.75), 0 0 20px var(--c-glow-soft);
+    animation: dropIn .18s ease;
+    transition: background var(--t);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.dropdown-panel.open { display: block; }
+@keyframes dropIn {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.dropdown-panel select,
+.dropdown-panel input {
+    width: 100%;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border-act);
+    border-radius: 8px;
+    color: var(--c-text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    outline: none;
+    margin-top: 4px;
+    box-sizing: border-box;
+    transition: border-color var(--t), background var(--t), color var(--t);
+}
+.dropdown-panel select:focus,
+.dropdown-panel input:focus { border-color: var(--c-primary); }
+.dp-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--c-text-3);
+    display: block;
+    margin-bottom: 2px;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.dp-price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dp-price-row input { width: 100%; }
+.dp-price-sep { color: var(--c-text-3); font-weight: 700; }
+
+/* online toggle */
+.online-row {
+    display: flex; align-items: center; gap: 8px; padding: 2px 0;
+}
+.online-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #00c87a;
+    animation: onlinePulse 1.5s infinite; flex-shrink: 0;
+}
+@keyframes onlinePulse {
+    0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)}
+}
+.online-row label {
+    font-size: .82rem; color: var(--c-text);
+    cursor: pointer; font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.toggle-sm {
+    width: 38px; height: 21px;
+    background: rgba(255,255,255,.1);
+    border-radius: 11px; position: relative;
+    cursor: pointer; border: 1.5px solid var(--c-border-act);
+    margin-right: auto; flex-shrink: 0;
+    transition: background .25s, border-color .25s;
+}
+.light-mode .toggle-sm { background: rgba(0,0,0,.10); }
+.toggle-sm.on { background: var(--c-primary); border-color: var(--c-primary); }
+.toggle-sm .knob {
+    position: absolute; top: 2px; right: 2px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    transition: right .22s var(--ease-snap);
+}
+.toggle-sm.on .knob { right: calc(100% - 15px); }
+
+/* ── أيقونة رجوع (بدل زر العودة للرئيسية) ── */
+.top-bar {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    flex-shrink: 0;
+    background: var(--c-bg);
+    transition: background var(--t);
+    position: sticky;
+    top: 0;
+    z-index: 11;
+    height: 40px;
+    box-sizing: border-box;
+}
+.back-arrow {
+    font-size: 1.3rem;
+    color: var(--c-primary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    line-height: 1;
+    transition: transform .2s var(--ease-snap);
+}
+.back-arrow:hover { transform: translateX(3px); }
+[dir="ltr"] .back-arrow:hover { transform: translateX(-3px); }
+
+/* ── شريط عرض القائمة/الخريطة ── */
+.view-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 5px 12px 2px;
+    flex-shrink: 0;
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+    transition: background var(--t), border-color var(--t);
+}
+.view-btn {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; cursor: pointer; background: none; border: none;
+    padding: 3px 6px; border-radius: 8px;
+}
+.view-btn-ring {
+    width: 30px; height: 30px; border-radius: 50%; padding: 2px;
+    background: var(--ig-grad);
+    transition: transform .2s var(--ease-snap), box-shadow .2s;
+}
+.view-btn.active .view-btn-ring,
+.view-btn:hover  .view-btn-ring {
+    transform: scale(1.12);
+    box-shadow: 0 3px 10px var(--c-glow);
+}
+.view-btn-inner {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: var(--c-surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .80rem; transition: background var(--t);
+}
+.view-btn.active .view-btn-inner { background: var(--c-glow-soft); }
+.view-btn-lbl {
+    font-size: .44rem; font-weight: 700; color: var(--c-text-2);
+    white-space: nowrap; font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+}
+.view-btn.active .view-btn-lbl { color: var(--c-primary); }
+
+/* ── منطقة النتائج ── */
+.results-area {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 10px 16px;
+    background: var(--c-bg);
+    transition: background var(--t);
+}
+
+/* عنوان الصف */
+.row-title {
+    font-size: .66rem; font-weight: 700;
+    color: var(--c-text-2); letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 12px 0 6px;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Cairo', sans-serif;
+    transition: color var(--t);
+    width: 100%;
+    box-sizing: border-box;
+}
+.row-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--c-border), transparent);
+}
+
+/* صف المنتجات — متمركز ويلتف بدلاً من الالتصاق بطرف واحد */
+.cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding-bottom: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* بطاقة منتج/بائعة */
+.product-card {
+    flex: 0 0 auto;
+    width: 148px;
+    background: var(--c-card);
+    border-radius: 14px;
+    border: 1.5px solid var(--c-primary);
+    box-shadow: 0 0 10px var(--c-glow-soft), inset 0 0 0 1px rgba(50,205,50,0.05);
+    overflow: hidden; cursor: pointer;
+    transition: transform .22s var(--ease-snap), box-shadow .22s,
+                border-color var(--t), background var(--t);
+    position: relative;
+}
+.product-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 0 22px var(--c-glow), inset 0 0 0 1px rgba(50,205,50,0.15);
+}
+.product-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--c-primary), transparent);
+    opacity: .75;
+}
+.card-avatar-wrap {
+    display: flex; justify-content: center; padding: 12px 0 5px;
+}
+.card-avatar-ring {
+    width: 60px; height: 60px; border-radius: 50%;
+    padding: 2.5px; background: var(--ig-grad); flex-shrink: 0;
+}
+.card-avatar-inner {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: var(--c-surface); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; transition: background var(--t);
+}
+.card-avatar-inner img {
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 50%; display: block;
+}
+.card-body { padding: 0 8px 12px; text-align: center; }
+.card-name {
+    font-size: .76rem; font-weight: 700; color: var(--c-text);
+    margin-bottom: 3px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+    transition: color var(--t);
+}
+.card-badges {
+    display: flex; flex-wrap: wrap; gap: 3px;
+    justify-content: center; margin-bottom: 4px;
+}
+.badge-gold   { font-size:.55rem; background:rgba(255,215,0,.15);  color:gold;    border-radius:10px; padding:1px 5px; }
+.badge-online { font-size:.55rem; background:rgba(0,200,122,.15);  color:#00c87a; border-radius:10px; padding:1px 5px; }
+.card-rating  { font-size:.62rem; color: gold; }
+.card-categories {
+    display: flex; flex-wrap: wrap; gap: 3px;
+    justify-content: center; margin-top: 4px;
+}
+.category-tag {
+    font-size: .53rem;
+    background: var(--c-glow-soft);
+    color: var(--c-primary);
+    border-radius: 10px;
+    padding: 1px 6px;
+}
+.card-location { font-size:.56rem; color: var(--c-text-3); margin-top:3px; transition: color var(--t); }
+.card-followers { font-size:.56rem; color: var(--c-text-3); margin-top:2px; transition: color var(--t); }
+.card-distance { font-size:.55rem; color: var(--c-text-3); margin-top:2px; transition: color var(--t); }
+
+/* loading / empty */
+.loading-state, .empty-state {
+    text-align: center; padding: 50px 20px;
+    color: var(--c-text-2);
+    transition: color var(--t);
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--c-border-act);
+    border-top-color: var(--c-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+/* خريطة */
+#mapView {
+    display: none;
+    width: 100%;
+    height: 420px;
+}
+#mapView.active { display: block; }
+</style>
 </head>
 <body>
 
-<!-- Particle Canvas Background -->
-<canvas id="particleCanvas" class="particle-canvas"></canvas>
+<!-- ── شريط علوي: سهم رجوع فقط ── -->
+<div class="top-bar">
+    <button class="back-arrow" id="backArrow" onclick="window.location.href='my-account.html'">←</button>
+</div>
 
-<!-- Scanline overlay -->
-<div class="scanline-overlay"></div>
+<!-- ── شريط الفلاتر ── -->
+<div class="filters-strip" id="filtersStrip">
 
-<!-- زر الصوت -->
-<button class="music-toggle" id="musicToggleBtn">🔇</button>
-
-<div class="app">
-    <!-- ===== HEADER ===== -->
-    <div class="header">
-        <div class="header-grid-lines"></div>
-        <div class="header-corner top-right"></div>
-        <div class="header-corner top-left"></div>
-        <div class="header-corner bottom-right"></div>
-        <div class="header-corner bottom-left"></div>
-
-        <div class="app-title">
-            <span class="title-line"></span>
-            <span class="title-ar" data-ar="منتجات تجميل وعطور" data-fr="Produits Beauté & Parfums">منتجات تجميل وعطور</span>
-            <span class="title-line"></span>
+    <div class="filter-chip" onclick="toggleDrop('drop-category', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🏷️</div></div>
+        <span class="filter-label" data-ar="الفئة" data-fr="Catégorie">الفئة</span>
+        <div class="dropdown-panel" id="drop-category">
+            <span class="dp-label" data-ar="فئة المنتج" data-fr="Catégorie de produit">فئة المنتج</span>
+            <select id="sel-category" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value=""             data-ar="جميع الفئات"          data-fr="Toutes les catégories">جميع الفئات</option>
+                <option value="cosmetics"    data-ar="💄 مستحضرات تجميل"    data-fr="💄 Cosmétiques">💄 مستحضرات تجميل</option>
+                <option value="perfumes"     data-ar="🌸 عطور"              data-fr="🌸 Parfums">🌸 عطور</option>
+                <option value="supplements"  data-ar="💊 مكملات غذائية"     data-fr="💊 Compléments alimentaires">💊 مكملات غذائية</option>
+                <option value="tools"        data-ar="✂️ أدوات عناية"       data-fr="✂️ Outils de soin">✂️ أدوات عناية</option>
+            </select>
         </div>
-        <div class="header-sub" data-ar="أحدث المنتجات في عالم التجميل والعطور" data-fr="Les derniers produits de beauté et parfums">أحدث المنتجات في عالم التجميل والعطور</div>
     </div>
 
-    <!-- ===== LANG BAR ===== -->
-    <div class="lang-bar" dir="ltr">
-        <button class="lang-btn active" data-lang="ar">
-            <span class="lang-flag">🇩🇿</span>
-            <span>عربي</span>
-        </button>
-        <button class="lang-btn" data-lang="fr">
-            <span class="lang-flag">🇫🇷</span>
-            <span>Français</span>
-        </button>
-        <button class="dev-btn" id="openDevBtn">
-            <span class="dev-btn-icon">👩‍💻</span>
-            <span data-ar="التواصل مع المطورة" data-fr="Contacter la développeuse">التواصل مع المطورة</span>
-        </button>
+    <div class="filter-chip" onclick="toggleDrop('drop-wilaya', this, event)">
+        <div class="filter-ring"><div class="filter-inner">📍</div></div>
+        <span class="filter-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
+        <div class="dropdown-panel" id="drop-wilaya">
+            <span class="dp-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
+            <select id="sel-wilaya" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
     </div>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="main-content">
-        <div class="products-container">
-            <a href="../index.html" class="btn-back" data-ar="← العودة إلى الرئيسية" data-fr="← Retour à l'accueil">← العودة إلى الرئيسية</a>
-            
-            <!-- شريط الفلاتر -->
-            <div class="filters-bar">
-                <div class="filter-group">
-                    <label data-ar="📍 الولاية" data-fr="📍 Wilaya">📍 الولاية</label>
-                    <select id="filterWilaya">
-                        <option value="" data-ar="جميع الولايات" data-fr="Toutes les wilayas">جميع الولايات</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label data-ar="🏷️ فئة المنتج" data-fr="🏷️ Catégorie">🏷️ فئة المنتج</label>
-                    <select id="filterCategory">
-                        <option value="" data-ar="جميع الفئات" data-fr="Toutes les catégories">جميع الفئات</option>
-                        <option value="cosmetics" data-ar="💄 مستحضرات تجميل" data-fr="💄 Cosmétiques">💄 مستحضرات تجميل</option>
-                        <option value="perfumes" data-ar="🌸 عطور" data-fr="🌸 Parfums">🌸 عطور</option>
-                        <option value="supplements" data-ar="💊 مكملات غذائية" data-fr="💊 Compléments alimentaires">💊 مكملات غذائية</option>
-                        <option value="tools" data-ar="✂️ أدوات عناية" data-fr="✂️ Outils de soin">✂️ أدوات عناية</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label data-ar="💰 السعر" data-fr="💰 Prix">💰 السعر</label>
-                    <div class="price-range">
-                        <input type="number" id="minPrice" placeholder="Min" data-ar-placeholder="الحد الأدنى" data-fr-placeholder="Min">
-                        <span>-</span>
-                        <input type="number" id="maxPrice" placeholder="Max" data-ar-placeholder="الحد الأعلى" data-fr-placeholder="Max">
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label data-ar="📊 ترتيب حسب" data-fr="📊 Trier par">📊 ترتيب حسب</label>
-                    <select id="filterSort">
-                        <option value="rating" data-ar="⭐ الأعلى تقييماً" data-fr="⭐ Les mieux notés">⭐ الأعلى تقييماً</option>
-                        <option value="nearest" data-ar="📍 الأقرب إليك" data-fr="📍 Les plus proches">📍 الأقرب إليك</option>
-                        <option value="followers" data-ar="👥 الأكثر متابعة" data-fr="👥 Les plus suivis">👥 الأكثر متابعة</option>
-                    </select>
-                </div>
-                <div class="filter-group online-checkbox">
-                    <input type="checkbox" id="filterOnline">
-                    <label style="margin:0; display: flex; align-items: center; gap: 6px;">
-                        <span class="online-dot"></span>
-                        <span data-ar="متاحة الآن" data-fr="Disponible maintenant">متاحة الآن</span>
-                    </label>
-                </div>
-                <div class="filter-group">
-                    <button id="searchBtn" class="search-btn" data-ar="🔍 بحث" data-fr="🔍 Rechercher">🔍 بحث</button>
-                </div>
+    <div class="filter-chip" onclick="toggleDrop('drop-price', this, event)">
+        <div class="filter-ring"><div class="filter-inner">💰</div></div>
+        <span class="filter-label" data-ar="السعر" data-fr="Prix">السعر</span>
+        <div class="dropdown-panel" id="drop-price">
+            <span class="dp-label" data-ar="نطاق السعر" data-fr="Plage de prix">نطاق السعر</span>
+            <div class="dp-price-row">
+                <input type="number" id="inp-minPrice" placeholder="Min" onclick="event.stopPropagation()" onchange="onFilterChange()">
+                <span class="dp-price-sep">—</span>
+                <input type="number" id="inp-maxPrice" placeholder="Max" onclick="event.stopPropagation()" onchange="onFilterChange()">
             </div>
-            
-            <!-- تبديل العرض -->
-            <div class="view-toggle">
-                <button class="view-btn active" data-view="list" data-ar="📋 عرض القائمة" data-fr="📋 Vue liste">📋 عرض القائمة</button>
-                <button class="view-btn" data-view="map" data-ar="🗺️ عرض الخريطة" data-fr="🗺️ Vue carte">🗺️ عرض الخريطة</button>
-            </div>
-            
-            <!-- قائمة النتائج -->
-            <div id="listView" class="results-list active">
-                <div class="loading-results">
-                    <div class="spinner"></div>
-                    <p data-ar="جاري تحميل بائعات المنتجات..." data-fr="Chargement des vendeuses de produits...">جاري تحميل بائعات المنتجات...</p>
-                </div>
-            </div>
-            
-            <!-- عرض الخريطة -->
-            <div id="mapView" class="map-view"></div>
         </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-sort', this, event)">
+        <div class="filter-ring"><div class="filter-inner">📊</div></div>
+        <span class="filter-label" data-ar="ترتيب" data-fr="Trier">ترتيب</span>
+        <div class="dropdown-panel" id="drop-sort">
+            <span class="dp-label" data-ar="ترتيب حسب" data-fr="Trier par">ترتيب حسب</span>
+            <select id="sel-sort" onchange="onFilterChange()" onclick="event.stopPropagation()">
+                <option value="rating"    data-ar="⭐ الأعلى تقييماً"  data-fr="⭐ Les mieux notés">⭐ الأعلى تقييماً</option>
+                <option value="followers" data-ar="👥 الأكثر متابعة"   data-fr="👥 Les plus suivis">👥 الأكثر متابعة</option>
+                <option value="nearest"   data-ar="📍 الأقرب إليك"     data-fr="📍 Les plus proches">📍 الأقرب إليك</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-online', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🟢</div></div>
+        <span class="filter-label" data-ar="متاحة الآن" data-fr="Disponible">متاحة الآن</span>
+        <div class="dropdown-panel" id="drop-online">
+            <div class="online-row">
+                <span class="online-dot"></span>
+                <label data-ar="متاحة الآن فقط" data-fr="Disponibles seulement">متاحة الآن فقط</label>
+                <div class="toggle-sm" id="onlineToggle"
+                     onclick="this.classList.toggle('on'); onFilterChange(); event.stopPropagation();">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ── شريط العرض ── -->
+<div class="view-bar">
+    <button class="view-btn active" onclick="setView('list', this)">
+        <div class="view-btn-ring"><div class="view-btn-inner">📋</div></div>
+        <span class="view-btn-lbl" data-ar="قائمة" data-fr="Liste">قائمة</span>
+    </button>
+    <button class="view-btn" onclick="setView('map', this)">
+        <div class="view-btn-ring"><div class="view-btn-inner">🗺️</div></div>
+        <span class="view-btn-lbl" data-ar="خريطة" data-fr="Carte">خريطة</span>
+    </button>
+</div>
+
+<!-- ── النتائج ── -->
+<div class="results-area" id="resultsArea">
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p data-ar="جارٍ تحميل بائعات المنتجات..." data-fr="Chargement des vendeuses de produits...">جارٍ تحميل بائعات المنتجات...</p>
     </div>
 </div>
 
-<!-- ===== مودال التواصل مع المطورة ===== -->
-<div id="devModal" class="dev-modal">
-    <div class="dev-card">
-        <div class="dev-card-deco"></div>
-        <div class="dev-avatar">
-            <div class="avatar-ring"></div>
-            <img src="../assets/images/developer.jpg" alt="المطورة" onerror="this.src='https://via.placeholder.com/120?text=Dev'">
-        </div>
-        <div class="dev-info">
-            <h3 data-ar="اسم المطورة" data-fr="Nom de la développeuse">اسم المطورة</h3>
-            <p data-ar="مطورة تطبيقات | الجزائر" data-fr="Développeuse d'applications | Algérie">مطورة تطبيقات | الجزائر</p>
-            <div class="dev-contacts">
-                <a href="mailto:dev@lila.dz" class="dev-contact-btn">📧 البريد الإلكتروني</a>
-                <a href="https://t.me/lila_app" class="dev-contact-btn">✈️ Telegram</a>
-            </div>
-        </div>
-        <button id="closeModalBtn">
-            <span>✕</span>
-            <span data-ar="إغلاق" data-fr="Fermer">إغلاق</span>
-        </button>
-    </div>
-</div>
+<!-- ── الخريطة ── -->
+<div id="mapView"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -453,536 +493,368 @@
 <script src="../js/supabase.js"></script>
 <script src="../js/auth.js"></script>
 <script src="../js/utils.js"></script>
-<script src="../js/lang.js"></script>
-<script src="../js/particles.js"></script>
-<script src="../js/dark-mode.js"></script>
 
 <script>
-    // ========================================
-    // المتغيرات العامة
-    // ========================================
-    let map = null;
-    let markers = [];
-    let results = [];
-    let userLocation = null;
-    let wilayasList = [];
-    
-    // ========================================
-    // تحميل قائمة الولايات من ملف JSON
-    // ========================================
-    async function loadWilayas() {
-        try {
-            const response = await fetch('../assets/data/wilayas.json');
-            if (!response.ok) {
-                throw new Error('Failed to load wilayas.json');
-            }
-            wilayasList = await response.json();
-            
-            const select = document.getElementById('filterWilaya');
-            select.innerHTML = '<option value="" data-ar="جميع الولايات" data-fr="Toutes les wilayas">جميع الولايات</option>';
-            
-            const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
-            wilayasList.forEach(wilaya => {
-                const option = document.createElement('option');
-                option.value = wilaya.code;
-                option.textContent = currentLang === 'fr' ? wilaya.name_fr : wilaya.name_ar;
-                option.setAttribute('data-ar', wilaya.name_ar);
-                option.setAttribute('data-fr', wilaya.name_fr);
-                select.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading wilayas:', error);
-        }
+/* =============================================
+   products.html — logic
+   نفس منطق search.html المصحح: لا اعتماد على
+   window.parent.lang، اللغة/الثيم من localStorage فقط.
+   ============================================= */
+
+let allResults    = [];
+let wilayasData   = [];
+let userLocation  = null;
+let map           = null;
+let mapMarkers    = [];
+
+const CATEGORY_LABELS = {
+    ar: {
+        cosmetics:   '💄 مستحضرات تجميل',
+        perfumes:    '🌸 عطور',
+        supplements: '💊 مكملات غذائية',
+        tools:       '✂️ أدوات عناية',
+        other:       '📋 أخرى',
+    },
+    fr: {
+        cosmetics:   '💄 Cosmétiques',
+        perfumes:    '🌸 Parfums',
+        supplements: '💊 Compléments alimentaires',
+        tools:       '✂️ Outils de soin',
+        other:       '📋 Autres',
     }
-    
-    // ========================================
-    // تحديث النصوص عند تغيير اللغة
-    // ========================================
-    function updateLanguageForSelects() {
-        const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
-        
-        // تحديث خيارات الولاية
-        const wilayaSelect = document.getElementById('filterWilaya');
-        Array.from(wilayaSelect.options).forEach(option => {
-            if (option.value === '') {
-                option.textContent = currentLang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات';
-            } else {
-                const arText = option.getAttribute('data-ar');
-                const frText = option.getAttribute('data-fr');
-                if (arText && frText) {
-                    option.textContent = currentLang === 'fr' ? frText : arText;
-                }
-            }
+};
+
+/* ── اللغة والثيم: نفس حل search.html ── */
+function getLang() {
+    return localStorage.getItem('lila_lang') || 'ar';
+}
+function syncTheme() {
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+    const b = document.body;
+    const themes = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
+    themes.forEach(t => b.classList.remove(t));
+    b.classList.add(theme);
+    b.classList.toggle('dark-mode',  mode === 'dark');
+    b.classList.toggle('light-mode', mode !== 'dark');
+}
+function applyLang() {
+    const lang = getLang();
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+
+    document.querySelectorAll('[data-ar]').forEach(el => {
+        if (el.tagName === 'OPTION') return;
+        el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.fr;
+    });
+    document.querySelectorAll('option[data-ar]').forEach(opt => {
+        opt.textContent = lang === 'ar' ? opt.dataset.ar : opt.dataset.fr;
+    });
+
+    const wSel = document.getElementById('sel-wilaya');
+    Array.from(wSel.options).forEach(opt => {
+        if (!opt.value && !opt.dataset.ar) {
+            opt.textContent = lang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات';
+        } else if (opt.dataset.ar) {
+            opt.textContent = lang === 'ar' ? opt.dataset.ar : opt.dataset.fr;
+        }
+    });
+
+    const backArrow = document.getElementById('backArrow');
+    if (backArrow) backArrow.textContent = lang === 'ar' ? '←' : '→';
+}
+
+/* ── تحميل الولايات ── */
+async function loadWilayas() {
+    try {
+        const res = await fetch('../assets/data/wilayas.json');
+        if (!res.ok) throw new Error('wilayas.json not found');
+        wilayasData = await res.json();
+        const lang = getLang();
+        const sel  = document.getElementById('sel-wilaya');
+        sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les wilayas' : 'جميع الولايات'}</option>`;
+        wilayasData.forEach(w => {
+            const opt = document.createElement('option');
+            opt.value      = w.code;
+            opt.dataset.ar = w.name_ar;
+            opt.dataset.fr = w.name_fr || w.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
         });
-        
-        // تحديث خيارات الفئة
-        const categorySelect = document.getElementById('filterCategory');
-        Array.from(categorySelect.options).forEach(option => {
-            const arText = option.getAttribute('data-ar');
-            const frText = option.getAttribute('data-fr');
-            if (arText && frText) {
-                option.textContent = currentLang === 'fr' ? frText : arText;
-            }
-        });
-        
-        // تحديث خيارات الترتيب
-        const sortSelect = document.getElementById('filterSort');
-        Array.from(sortSelect.options).forEach(option => {
-            const arText = option.getAttribute('data-ar');
-            const frText = option.getAttribute('data-fr');
-            if (arText && frText) {
-                option.textContent = currentLang === 'fr' ? frText : arText;
-            }
-        });
-        
-        // تحديث placeholder لحقول السعر
-        const minPrice = document.getElementById('minPrice');
-        const maxPrice = document.getElementById('maxPrice');
-        minPrice.placeholder = currentLang === 'fr' ? 'Min' : 'الحد الأدنى';
-        maxPrice.placeholder = currentLang === 'fr' ? 'Max' : 'الحد الأعلى';
+    } catch(e) {
+        console.error('[Products] Error loading wilayas:', e);
     }
-    
-    // ========================================
-    // الحصول على موقع المستخدم الحالي
-    // ========================================
-    function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    console.log('User location obtained:', userLocation);
-                },
-                (error) => {
-                    console.log('Geolocation error:', error.message);
-                }
-            );
-        }
-    }
-    
-    // ========================================
-    // حساب المسافة بين نقطتين (Haversine formula)
-    // ========================================
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
-    
-    // ========================================
-    // البحث عن بائعات المنتجات
-    // ========================================
-    async function performSearch() {
-        // إظهار مؤشر التحميل
-        const listContainer = document.getElementById('listView');
-        listContainer.innerHTML = `
-            <div class="loading-results">
-                <div class="spinner"></div>
-                <p data-ar="جاري البحث عن بائعات المنتجات..." data-fr="Recherche de vendeuses de produits...">جاري البحث عن بائعات المنتجات...</p>
-            </div>
-        `;
-        if (window.lang) window.lang.updateAllTranslations();
-        
-        // الحصول على قيم الفلاتر
-        const wilaya = document.getElementById('filterWilaya').value;
-        const category = document.getElementById('filterCategory').value;
-        const minPrice = document.getElementById('minPrice').value;
-        const maxPrice = document.getElementById('maxPrice').value;
-        const onlineOnly = document.getElementById('filterOnline').checked;
-        const sortBy = document.getElementById('filterSort').value;
-        
-        // بناء كائن الفلاتر - فقط بائعات المنتجات
-        let filters = { services: ['product_seller'] };
-        if (wilaya) filters.wilaya_code = parseInt(wilaya);
-        if (onlineOnly) filters.is_online = true;
-        
-        try {
-            // محاولة جلب البيانات من Supabase
-            if (window.lilaAPI && typeof window.lilaAPI.getBusinessProfiles === 'function') {
-                results = await window.lilaAPI.getBusinessProfiles(filters, 100, 0);
-            } else {
-                // بيانات تجريبية في حالة عدم وجود Supabase
-                console.warn('lilaAPI not available, using mock data');
-                results = getMockData();
-                if (wilaya) results = results.filter(r => r.wilaya_code == wilaya);
-            }
-            
-            // ترتيب النتائج
-            if (sortBy === 'rating') {
-                results.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0));
-            } else if (sortBy === 'followers') {
-                results.sort((a, b) => (b.followers_count || 0) - (a.followers_count || 0));
-            } else if (sortBy === 'nearest' && userLocation) {
-                results.forEach(r => {
-                    if (r.latitude && r.longitude) {
-                        r.distance = calculateDistance(userLocation.lat, userLocation.lng, r.latitude, r.longitude);
-                    } else {
-                        r.distance = Infinity;
-                    }
-                });
-                results.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
-            }
-            
-            // عرض النتائج
-            renderListView();
-            renderMapView();
-            
-        } catch (error) {
-            console.error('Search error:', error);
-            listContainer.innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">⚠️</div>
-                    <h3 data-ar="حدث خطأ" data-fr="Une erreur est survenue">حدث خطأ</h3>
-                    <p data-ar="فشل الاتصال بقاعدة البيانات. يرجى المحاولة مرة أخرى." data-fr="Échec de connexion à la base de données. Veuillez réessayer.">فشل الاتصال بقاعدة البيانات. يرجى المحاولة مرة أخرى.</p>
-                </div>
-            `;
-            if (window.lang) window.lang.updateAllTranslations();
-        }
-    }
-    
-    // ========================================
-    // بيانات تجريبية لبائعات المنتجات
-    // ========================================
-    function getMockData() {
-        return [
-            {
-                id: 'product1',
-                business_name: 'متجر نسمة للتجميل',
-                username: 'nesma_beauty',
-                logo_url: null,
-                avg_rating: 4.9,
-                reviews_count: 156,
-                followers_count: 890,
-                services: ['product_seller'],
-                wilaya_code: 16,
-                wilaya_name: 'الجزائر',
-                is_online: true,
-                has_gold_badge: true,
-                latitude: 36.7538,
-                longitude: 3.0588,
-                product_categories: ['cosmetics', 'perfumes']
-            },
-            {
-                id: 'product2',
-                business_name: 'عطور مريم',
-                username: 'maria_perfumes',
-                logo_url: null,
-                avg_rating: 4.7,
-                reviews_count: 98,
-                followers_count: 450,
-                services: ['product_seller'],
-                wilaya_code: 31,
-                wilaya_name: 'وهران',
-                is_online: true,
-                has_gold_badge: false,
-                latitude: 35.6969,
-                longitude: -0.6331,
-                product_categories: ['perfumes']
-            },
-            {
-                id: 'product3',
-                business_name: 'مكملات صحية - سارة',
-                username: 'sara_supplements',
-                logo_url: null,
-                avg_rating: 4.5,
-                reviews_count: 67,
-                followers_count: 230,
-                services: ['product_seller'],
-                wilaya_code: 25,
-                wilaya_name: 'قسنطينة',
-                is_online: false,
-                has_gold_badge: false,
-                latitude: 36.3650,
-                longitude: 6.6147,
-                product_categories: ['supplements']
-            },
-            {
-                id: 'product4',
-                business_name: 'أدوات العناية - ليلى',
-                username: 'lila_tools',
-                logo_url: null,
-                avg_rating: 4.8,
-                reviews_count: 123,
-                followers_count: 560,
-                services: ['product_seller'],
-                wilaya_code: 16,
-                wilaya_name: 'الجزائر',
-                is_online: true,
-                has_gold_badge: true,
-                latitude: 36.7638,
-                longitude: 3.0688,
-                product_categories: ['tools']
-            },
-            {
-                id: 'product5',
-                business_name: 'الجميلة - مستحضرات تجميل',
-                username: 'el_djamilah',
-                logo_url: null,
-                avg_rating: 4.6,
-                reviews_count: 89,
-                followers_count: 340,
-                services: ['product_seller'],
-                wilaya_code: 16,
-                wilaya_name: 'الجزائر',
-                is_online: true,
-                has_gold_badge: false,
-                latitude: 36.7438,
-                longitude: 3.0488,
-                product_categories: ['cosmetics']
-            }
-        ];
-    }
-    
-    // ========================================
-    // عرض قائمة النتائج
-    // ========================================
-    function renderListView() {
-        const container = document.getElementById('listView');
-        const currentLang = window.lang ? window.lang.getCurrentLang() : 'ar';
-        
-        if (!results || results.length === 0) {
-            container.innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">🛍️</div>
-                    <h3 data-ar="لا توجد نتائج" data-fr="Aucun résultat">لا توجد نتائج</h3>
-                    <p data-ar="لم نعثر على بائعات منتجات في هذه المنطقة" data-fr="Aucune vendeuse de produits dans cette région">لم نعثر على بائعات منتجات في هذه المنطقة</p>
-                    <button onclick="document.getElementById('searchBtn').click()" style="margin-top:15px;padding:8px 20px;background:var(--accent-orange);border:none;border-radius:8px;color:white;cursor:pointer;" data-ar="بحث جديد" data-fr="Nouvelle recherche">بحث جديد</button>
-                </div>
-            `;
-            if (window.lang) window.lang.updateAllTranslations();
-            return;
-        }
-        
-        const categoryNames = {
-            ar: {
-                cosmetics: '💄 مستحضرات تجميل',
-                perfumes: '🌸 عطور',
-                supplements: '💊 مكملات غذائية',
-                tools: '✂️ أدوات عناية'
-            },
-            fr: {
-                cosmetics: '💄 Cosmétiques',
-                perfumes: '🌸 Parfums',
-                supplements: '💊 Compléments alimentaires',
-                tools: '✂️ Outils de soin'
-            }
-        };
-        
-        container.innerHTML = results.map(business => {
-            const ratingStars = '★'.repeat(Math.floor(business.avg_rating || 0)) + '☆'.repeat(5 - Math.floor(business.avg_rating || 0));
-            const langCategoryNames = currentLang === 'fr' ? categoryNames.fr : categoryNames.ar;
-            
-            return `
-                <div class="product-card" onclick="window.location.href='business-profile.html?id=${business.id}'">
-                    <img class="product-image" src="${business.logo_url || '../assets/images/default-business.png'}" onerror="this.src='https://via.placeholder.com/300x180?text=Produits'" alt="${business.business_name}">
-                    <div class="product-name">
-                        ${DOMPurify.sanitize(business.business_name)}
-                        ${business.has_gold_badge ? '<span class="gold-badge">⭐ ' + (currentLang === 'fr' ? 'Certifié' : 'موثوق') + '</span>' : ''}
-                        ${business.is_online ? '<span class="online-badge">🟢 ' + (currentLang === 'fr' ? 'Disponible' : 'متاحة الآن') + '</span>' : ''}
-                    </div>
-                    <div class="product-rating">
-                        <span class="stars">${ratingStars}</span>
-                        <span>(${business.reviews_count || 0})</span>
-                    </div>
-                    <div class="product-category">
-                        ${(business.product_categories || ['cosmetics']).slice(0, 2).map(c => `<span class="category-tag">${langCategoryNames[c] || c}</span>`).join('')}
-                    </div>
-                    <div class="product-location">📍 ${business.wilaya_name || (currentLang === 'fr' ? 'Wilaya non spécifiée' : 'ولاية غير محددة')}</div>
-                    <div class="product-followers">👥 ${business.followers_count || 0} ${currentLang === 'fr' ? 'abonné(e)s' : 'متابع'}</div>
-                    ${business.distance ? `<div class="product-distance">📍 ${business.distance.toFixed(1)} ${currentLang === 'fr' ? 'km' : 'كم'}</div>` : ''}
-                </div>
-            `;
-        }).join('');
-    }
-    
-    // ========================================
-    // عرض الخريطة
-    // ========================================
-    function renderMapView() {
-        const mapContainer = document.getElementById('mapView');
-        
-        if (!mapContainer) return;
-        
-        // تهيئة الخريطة إذا لم تكن موجودة
-        if (!map) {
-            map = L.map('mapView').setView([36.7538, 3.0588], 6);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-                subdomains: 'abcd'
-            }).addTo(map);
-        }
-        
-        // إزالة العلامات القديمة
-        markers.forEach(marker => map.removeLayer(marker));
-        markers = [];
-        
-        // إضافة علامات جديدة
-        let bounds = null;
-        
-        results.forEach(business => {
-            if (business.latitude && business.longitude) {
-                // أيقونة مخصصة لبائعات المنتجات (وردية)
-                const productIcon = L.divIcon({
-                    html: `<div style="background: #f472b6; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                    iconSize: [14, 14],
-                    className: 'product-marker'
-                });
-                
-                const marker = L.marker([business.latitude, business.longitude], { icon: productIcon })
-                    .bindPopup(`
-                        <div style="text-align: center; min-width: 180px;">
-                            <img src="${business.logo_url || '../assets/images/default-business.png'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;" onerror="this.src='https://via.placeholder.com/50'">
-                            <h4 style="margin: 5px 0;">${DOMPurify.sanitize(business.business_name)}</h4>
-                            <div style="color: gold;">⭐ ${business.avg_rating || 0}</div>
-                            <div style="font-size: 0.8rem;">🛍️ ${window.lang && window.lang.getCurrentLang() === 'fr' ? 'Vendeuse de produits' : 'بائعة منتجات'}</div>
-                            <a href="business-profile.html?id=${business.id}" style="display: inline-block; margin-top: 8px; color: #ff8c00; text-decoration: none;">${window.lang && window.lang.getCurrentLang() === 'fr' ? 'Voir détails →' : 'عرض التفاصيل →'}</a>
-                        </div>
-                    `)
-                    .addTo(map);
-                markers.push(marker);
-                
-                if (!bounds) {
-                    bounds = L.latLngBounds([business.latitude, business.longitude]);
-                } else {
-                    bounds.extend([business.latitude, business.longitude]);
-                }
-            }
-        });
-        
-        // توسيع الخريطة لتناسب جميع العلامات
-        if (bounds && markers.length > 0) {
-            map.fitBounds(bounds.pad(0.1));
-        } else if (userLocation) {
-            map.setView([userLocation.lat, userLocation.lng], 10);
+}
+
+/* ── البحث ── */
+async function performSearch() {
+    showLoading();
+
+    const category = document.getElementById('sel-category').value;
+    const wilaya   = document.getElementById('sel-wilaya').value;
+    const minPrice = document.getElementById('inp-minPrice').value;
+    const maxPrice = document.getElementById('inp-maxPrice').value;
+    const online   = document.getElementById('onlineToggle').classList.contains('on');
+    const sortBy   = document.getElementById('sel-sort').value;
+
+    // فقط بائعات المنتجات
+    const filters = { services: ['product_seller'] };
+    if (wilaya)  filters.wilaya_code = parseInt(wilaya);
+    if (online)  filters.is_online   = true;
+
+    console.log('[Products] Performing search with filters:', filters);
+
+    try {
+        if (window.lilaAPI && typeof window.lilaAPI.getBusinessProfiles === 'function') {
+            allResults = await window.lilaAPI.getBusinessProfiles(filters, 100, 0);
         } else {
-            map.setView([36.7538, 3.0588], 6);
+            console.warn('[Products] lilaAPI not available');
+            allResults = [];
         }
-    }
-    
-    // ========================================
-    // تبديل عرض القائمة / الخريطة
-    // ========================================
-    function initViewToggle() {
-        const listView = document.getElementById('listView');
-        const mapView = document.getElementById('mapView');
-        
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const view = btn.getAttribute('data-view');
-                
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                if (view === 'list') {
-                    listView.classList.add('active');
-                    mapView.classList.remove('active');
-                } else {
-                    listView.classList.remove('active');
-                    mapView.classList.add('active');
-                    setTimeout(() => {
-                        if (map) map.invalidateSize();
-                    }, 100);
-                }
+
+        // فلترة محلية حسب الفئة والسعر (إن وُجدت بيانات منتجات مرتبطة)
+        if (category) {
+            allResults = allResults.filter(r => (r.product_categories || []).includes(category));
+        }
+        if (minPrice) {
+            allResults = allResults.filter(r => (r.min_price == null) || r.min_price >= parseFloat(minPrice));
+        }
+        if (maxPrice) {
+            allResults = allResults.filter(r => (r.max_price == null) || r.max_price <= parseFloat(maxPrice));
+        }
+
+        // ترتيب
+        if (sortBy === 'rating') {
+            allResults.sort((a,b) => (b.avg_rating||0) - (a.avg_rating||0));
+        } else if (sortBy === 'followers') {
+            allResults.sort((a,b) => (b.followers_count||0) - (a.followers_count||0));
+        } else if (sortBy === 'nearest' && userLocation) {
+            allResults.forEach(r => {
+                r._dist = (r.latitude && r.longitude)
+                    ? calcDist(userLocation.lat, userLocation.lng, r.latitude, r.longitude)
+                    : Infinity;
             });
+            allResults.sort((a,b) => a._dist - b._dist);
+        }
+
+        renderListView();
+        if (map) renderMapView();
+
+    } catch(e) {
+        console.error('[Products] Search error:', e);
+        const lang = getLang();
+        document.getElementById('resultsArea').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <p>${lang === 'fr' ? 'Erreur de connexion. Réessayez.' : 'فشل الاتصال بقاعدة البيانات. حاول مرة أخرى.'}</p>
+            </div>`;
+    }
+}
+
+function calcDist(la1,lo1,la2,lo2) {
+    const R=6371, dL=(la2-la1)*Math.PI/180, dO=(lo2-lo1)*Math.PI/180;
+    const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+/* ── عرض القائمة (بنفس طريقة بطاقات search.html: صفوف أفقية متمركزة) ── */
+function renderListView() {
+    const lang = getLang();
+    const area = document.getElementById('resultsArea');
+
+    if (!allResults || !allResults.length) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🛍️</div>
+                <p>${lang === 'fr' ? 'Aucun résultat trouvé' : 'لا توجد نتائج'}</p>
+            </div>`;
+        return;
+    }
+
+    // تجميع حسب أول فئة منتج (مطابقة لمنطق التجميع حسب الخدمة في search)
+    const groups = {};
+    allResults.forEach(b => {
+        const cat = (b.product_categories && b.product_categories[0]) || 'other';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(b);
+    });
+
+    let html = '';
+    Object.entries(groups).forEach(([cat, items]) => {
+        const title = (CATEGORY_LABELS[lang] || CATEGORY_LABELS.ar)[cat]
+                   || (lang === 'fr' ? 'Autres' : 'أخرى');
+        html += `<div class="row-title">${title}</div><div class="cards-row">`;
+        items.forEach(b => { html += buildCard(b, lang); });
+        html += `</div>`;
+    });
+
+    area.innerHTML = html;
+}
+
+function buildCard(b, lang) {
+    const name = DOMPurify.sanitize(b.business_name || b.username || '—');
+    const stars = '★'.repeat(Math.floor(b.avg_rating||0)) + '☆'.repeat(5-Math.floor(b.avg_rating||0));
+    const badgeG = b.has_gold_badge
+        ? `<span class="badge-gold">⭐ ${lang==='fr'?'Certifié':'موثوق'}</span>` : '';
+    const badgeO = b.is_online
+        ? `<span class="badge-online">🟢 ${lang==='fr'?'Dispo':'متاحة'}</span>` : '';
+    const imgSrc = b.logo_url ? DOMPurify.sanitize(b.logo_url) : '';
+    const imgEl  = imgSrc
+        ? `<img src="${imgSrc}" alt="${name}"
+               onload="this.style.display='block';this.nextElementSibling.style.display='none'"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+               style="display:block">`
+        : '';
+    const fallback = `<span style="display:${imgSrc?'none':'flex'};align-items:center;justify-content:center;
+        width:100%;height:100%;font-size:1.5rem">🛍️</span>`;
+
+    const langCategoryNames = CATEGORY_LABELS[lang] || CATEGORY_LABELS.ar;
+    const categoriesHtml = (b.product_categories || []).slice(0, 2)
+        .map(c => `<span class="category-tag">${langCategoryNames[c] || c}</span>`).join('');
+
+    const location = b.wilaya_name
+        ? `<div class="card-location">📍 ${DOMPurify.sanitize(b.wilaya_name)}</div>`
+        : '';
+    const followers = b.followers_count
+        ? `<div class="card-followers">👥 ${b.followers_count} ${lang==='fr'?'abonné(e)s':'متابع'}</div>` : '';
+    const distance = (b._dist != null && isFinite(b._dist))
+        ? `<div class="card-distance">📍 ${b._dist.toFixed(1)} ${lang==='fr'?'km':'كم'}</div>` : '';
+
+    return `
+    <div class="product-card" onclick="window.location.href='business-profile.html?id=${b.id}'">
+        <div class="card-avatar-wrap">
+            <div class="card-avatar-ring">
+                <div class="card-avatar-inner">${imgEl}${fallback}</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="card-name">${name}</div>
+            <div class="card-badges">${badgeG}${badgeO}</div>
+            <div class="card-rating">${stars} (${b.reviews_count||0})</div>
+            ${categoriesHtml ? `<div class="card-categories">${categoriesHtml}</div>` : ''}
+            ${location}
+            ${followers}
+            ${distance}
+        </div>
+    </div>`;
+}
+
+function showLoading() {
+    const lang = getLang();
+    document.getElementById('resultsArea').innerHTML = `
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>${lang==='fr'?'Recherche en cours...':'جارٍ البحث عن بائعات المنتجات...'}</p>
+        </div>`;
+}
+
+/* ── الخريطة ── */
+function renderMapView() {
+    const lang = getLang();
+    if (!map) {
+        map = L.map('mapView').setView([36.75, 3.06], 6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OSM', subdomains: 'abcd'
+        }).addTo(map);
+    }
+    mapMarkers.forEach(m => map.removeLayer(m));
+    mapMarkers = [];
+    let bounds = null;
+    allResults.forEach(b => {
+        if (!b.latitude || !b.longitude) return;
+        const productIcon = L.divIcon({
+            html: `<div style="background:#f472b6;width:14px;height:14px;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>`,
+            iconSize: [14, 14],
+            className: 'product-marker'
         });
+        const m = L.marker([b.latitude, b.longitude], { icon: productIcon })
+            .bindPopup(`
+                <div style="text-align:center;min-width:160px">
+                    <b>${DOMPurify.sanitize(b.business_name||'')}</b><br>
+                    <span style="color:gold">⭐ ${b.avg_rating||0}</span><br>
+                    <a href="business-profile.html?id=${b.id}" style="color:#32CD32">
+                        ${lang==='fr'?'Voir →':'عرض التفاصيل →'}
+                    </a>
+                </div>`)
+            .addTo(map);
+        mapMarkers.push(m);
+        bounds = bounds ? bounds.extend([b.latitude,b.longitude])
+                        : L.latLngBounds([[b.latitude,b.longitude]]);
+    });
+    if (bounds && mapMarkers.length) map.fitBounds(bounds.pad(0.1));
+    else if (userLocation) map.setView([userLocation.lat,userLocation.lng],10);
+    setTimeout(() => map.invalidateSize(), 150);
+}
+
+/* ── تبديل العرض ── */
+function setView(v, btn) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const area  = document.getElementById('resultsArea');
+    const mapEl = document.getElementById('mapView');
+    if (v === 'list') {
+        area.style.display = '';
+        mapEl.classList.remove('active');
+    } else {
+        area.style.display = 'none';
+        mapEl.classList.add('active');
+        renderMapView();
     }
-    
-    // ========================================
-    // مودال المطور
-    // ========================================
-    function initDevModal() {
-        const devModal = document.getElementById('devModal');
-        const openBtn = document.getElementById('openDevBtn');
-        const closeBtn = document.getElementById('closeModalBtn');
-        
-        if (openBtn) openBtn.addEventListener('click', () => devModal.classList.add('show'));
-        if (closeBtn) closeBtn.addEventListener('click', () => devModal.classList.remove('show'));
-        if (devModal) devModal.addEventListener('click', e => { if (e.target === devModal) devModal.classList.remove('show'); });
+}
+
+/* ── Dropdowns ── */
+function toggleDrop(id, chip, evt) {
+    evt.stopPropagation();
+    const panel  = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    closeAllDrops();
+    if (!isOpen) {
+        const rect = chip.getBoundingClientRect();
+        const panelWidth = Math.min(window.innerWidth - 16, 360);
+        let left = rect.left + rect.width / 2 - panelWidth / 2;
+        left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
+        panel.style.top   = (rect.bottom + 6) + 'px';
+        panel.style.left  = left + 'px';
+        panel.style.right = 'auto';
+        panel.style.width = panelWidth + 'px';
+        panel.classList.add('open');
+        chip.classList.add('active');
     }
-    
-    // ========================================
-    // موسيقى الخلفية
-    // ========================================
-    function initMusicToggle() {
-        const musicBtn = document.getElementById('musicToggleBtn');
-        let audio = null;
-        let playing = false;
-        
-        if (musicBtn) {
-            musicBtn.addEventListener('click', () => {
-                if (!audio) {
-                    audio = new Audio('../assets/music/bg.mp3');
-                    audio.loop = true;
-                    audio.volume = 0.3;
-                }
-                if (playing) {
-                    audio.pause();
-                    musicBtn.textContent = '🔇';
-                } else {
-                    audio.play().catch(() => {});
-                    musicBtn.textContent = '🔊';
-                }
-                playing = !playing;
-            });
-        }
-    }
-    
-    // ========================================
-    // التهيئة عند تحميل الصفحة
-    // ========================================
-    async function initPage() {
-        // تحميل قائمة الولايات
-        await loadWilayas();
-        
-        // الحصول على موقع المستخدم
-        getUserLocation();
-        
-        // تهيئة أزرار التبديل
-        initViewToggle();
-        
-        // تهيئة مودال المطور
-        initDevModal();
-        
-        // تهيئة زر الموسيقى
-        initMusicToggle();
-        
-        // تهيئة زر البحث
-        document.getElementById('searchBtn').addEventListener('click', performSearch);
-        
-        // الاستماع لتغيير اللغة
-        if (window.lang) {
-            window.lang.addLangListener(() => {
-                updateLanguageForSelects();
-                renderListView();
-                if (window.lang.updateAllTranslations) window.lang.updateAllTranslations();
-            });
-        }
-        
-        // تنفيذ بحث أولي
-        await performSearch();
-        
-        // تحديث الترجمة
-        if (window.lang) {
-            window.lang.updateAllTranslations();
-        }
-        
-        // تهيئة الجسيمات
-        if (window.particles && typeof window.particles.init === 'function') {
-            window.particles.init();
-        }
-        
-        console.log('[Products] Page initialized successfully');
-    }
-    
-    // تشغيل التهيئة عند تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', initPage);
+}
+function closeAllDrops() {
+    document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+}
+document.addEventListener('click', e => {
+    if (!e.target.closest('.filter-chip') && !e.target.closest('.dropdown-panel')) closeAllDrops();
+});
+
+/* ── أحداث الفلاتر ── */
+function onFilterChange() { performSearch(); }
+
+/* ── موقع المستخدم ── */
+function getUserLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        },
+        err => console.log('[Products] Geolocation error:', err.message)
+    );
+}
+
+/* ── Init ── */
+async function initPage() {
+    console.log('[Products] Initializing...');
+    syncTheme();
+    applyLang();
+    getUserLocation();
+    await loadWilayas();
+    await performSearch();
+    console.log('[Products] Page initialized successfully');
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
 </script>
 </body>
 </html>
