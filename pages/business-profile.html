@@ -91,12 +91,9 @@
 
         /* ── HERO ROW (avatar + name + actions) ── */
         .hero{
-    display:flex;align-items:flex-end;gap:14px;
-    padding:0 16px;margin-top:16px;position:relative;z-index:2;
-}
-.cover + .hero{
-    margin-top:-36px;
-}
+            display:flex;align-items:flex-end;gap:14px;
+            padding:0 16px;margin-top:-36px;position:relative;z-index:2;
+        }
         .avatar-ring{
             width:80px;height:80px;border-radius:50%;padding:2.5px;
             background:var(--ig-grad);box-shadow:0 0 20px var(--c-glow);flex-shrink:0;
@@ -597,9 +594,9 @@ function renderProfile() {
         `<span class="svc-tag">${t('خدمات متعددة','Services variés')}</span>`;
 
     /* cover */
-    /*const coverHTML = businessData.cover_photo_url ?
-    `<img src="${businessData.cover_photo_url}" alt="">` :
-    null;*/
+    const coverHTML = businessData.cover_photo_url
+        ? `<img src="${businessData.cover_photo_url}" alt="">`
+        : '';
 
     /* badges */
     const goldB = businessData.has_gold_badge ? `<span class="badge-gold-icon">⭐</span>` : '';
@@ -626,7 +623,8 @@ function renderProfile() {
 
     document.getElementById('pw').innerHTML = `
         ${vacHTML}
-        ${businessData.cover_photo_url ? `<div class="cover"><img src="${businessData.cover_photo_url}" alt=""></div>` : ''}
+        <div class="cover">${coverHTML}</div>
+
         <div class="hero">
             <div class="avatar-ring">
                 <div class="avatar-inner">
