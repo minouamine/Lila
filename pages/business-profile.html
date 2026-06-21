@@ -594,9 +594,10 @@ function renderProfile() {
         `<span class="svc-tag">${t('خدمات متعددة','Services variés')}</span>`;
 
     /* cover */
-    const coverHTML = businessData.cover_photo_url
-        ? `<img src="${businessData.cover_photo_url}" alt="">`
+    const coverWrap = businessData.cover_photo_url
+        ? `<div class="cover"><img src="${businessData.cover_photo_url}" alt=""></div>`
         : '';
+    const heroMargin = businessData.cover_photo_url ? '-36px' : '16px';
 
     /* badges */
     const goldB = businessData.has_gold_badge ? `<span class="badge-gold-icon">⭐</span>` : '';
@@ -623,9 +624,9 @@ function renderProfile() {
 
     document.getElementById('pw').innerHTML = `
         ${vacHTML}
-        <div class="cover">${coverHTML}</div>
+        ${coverWrap}
 
-        <div class="hero">
+        <div class="hero" style="margin-top:${heroMargin}">
             <div class="avatar-ring">
                 <div class="avatar-inner">
                     <img src="${businessData.logo_url||'../assets/images/default-business.png'}"
