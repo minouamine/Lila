@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,25 +6,20 @@
     <title>الملف التجاري</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-
     <style>
         /* =============================================
-           LILA — business_profile.html
-           Inherits theme from index via localStorage
+           LILA — business-profile.html v2
+           Reads theme/mode/lang from localStorage
            ============================================= */
 
-        /* ===== CSS VARIABLES (mirrored from main.css) ===== */
         :root {
             --c-primary:       #32CD32;
             --c-primary-light: #7FFF00;
             --c-primary-dark:  #228B22;
             --c-glow:          rgba(50,205,50,0.32);
             --c-glow-soft:     rgba(50,205,50,0.10);
-
-            --ig-a: #f09433; --ig-b: #e6683c; --ig-c: #dc2743;
-            --ig-d: #cc2366; --ig-e: #bc1888;
-            --ig-grad: linear-gradient(45deg, var(--ig-a), var(--ig-b), var(--ig-c), var(--ig-d), var(--ig-e));
-
+            --ig-a:#f09433;--ig-b:#e6683c;--ig-c:#dc2743;--ig-d:#cc2366;--ig-e:#bc1888;
+            --ig-grad: linear-gradient(45deg,var(--ig-a),var(--ig-b),var(--ig-c),var(--ig-d),var(--ig-e));
             --c-bg:         #040810;
             --c-surface:    #080f1c;
             --c-card:       #0d1628;
@@ -35,573 +29,302 @@
             --c-text:       #d8e4f0;
             --c-text-2:     #7a9ab8;
             --c-text-3:     #3d5a78;
-
-            --c-red:  #ef4444;
-            --c-blue: #3b82f6;
-            --c-gold: gold;
-
-            --ease-snap:   cubic-bezier(0.34,1.56,0.64,1);
-            --ease-smooth: cubic-bezier(0.4,0,0.2,1);
-            --t:           0.26s var(--ease-smooth);
+            --c-red:        #ef4444;
+            --c-blue:       #3b82f6;
+            --ease-snap:    cubic-bezier(0.34,1.56,0.64,1);
+            --ease-smooth:  cubic-bezier(0.4,0,0.2,1);
+            --t:            0.26s var(--ease-smooth);
         }
-
-        /* ===== LIGHT MODE ===== */
         .light-mode {
-            --c-bg:         #f0f4f0;
-            --c-surface:    #ffffff;
-            --c-card:       #e8f5e8;
-            --c-card-h:     #d4edd4;
-            --c-border:     rgba(34,139,34,0.15);
-            --c-border-act: rgba(34,139,34,0.45);
-            --c-text:       #000000;
-            --c-text-2:     #1a4a1a;
-            --c-text-3:     #5a8a5a;
+            --c-bg:#f0f4f0;--c-surface:#ffffff;--c-card:#e8f5e8;--c-card-h:#d4edd4;
+            --c-border:rgba(34,139,34,0.15);--c-border-act:rgba(34,139,34,0.45);
+            --c-text:#000000;--c-text-2:#1a4a1a;--c-text-3:#5a8a5a;
         }
+        .theme-lime    {--c-primary:#32CD32;--c-primary-light:#7FFF00;--c-primary-dark:#228B22;--c-glow:rgba(50,205,50,0.32);--c-glow-soft:rgba(50,205,50,0.10);--c-border:rgba(50,205,50,0.12);--c-border-act:rgba(50,205,50,0.50);}
+        .theme-magenta {--c-primary:#CC00CC;--c-primary-light:#FF00FF;--c-primary-dark:#8800AA;--c-glow:rgba(204,0,204,0.30);--c-glow-soft:rgba(204,0,204,0.10);--c-border:rgba(204,0,204,0.12);--c-border-act:rgba(204,0,204,0.50);}
+        .theme-rose    {--c-primary:#E11D78;--c-primary-light:#FB7185;--c-primary-dark:#9D174D;--c-glow:rgba(225,29,120,0.30);--c-glow-soft:rgba(225,29,120,0.10);--c-border:rgba(225,29,120,0.12);--c-border-act:rgba(225,29,120,0.50);}
+        .theme-violet  {--c-primary:#7C3AED;--c-primary-light:#A78BFA;--c-primary-dark:#4C1D95;--c-glow:rgba(124,58,237,0.30);--c-glow-soft:rgba(124,58,237,0.10);--c-border:rgba(124,58,237,0.12);--c-border-act:rgba(124,58,237,0.50);}
+        .theme-teal    {--c-primary:#0D9488;--c-primary-light:#2DD4BF;--c-primary-dark:#115E59;--c-glow:rgba(13,148,136,0.30);--c-glow-soft:rgba(13,148,136,0.10);--c-border:rgba(13,148,136,0.12);--c-border-act:rgba(13,148,136,0.50);}
+        .theme-gold    {--c-primary:#B45309;--c-primary-light:#F59E0B;--c-primary-dark:#78350F;--c-glow:rgba(180,83,9,0.30);--c-glow-soft:rgba(180,83,9,0.10);--c-border:rgba(180,83,9,0.12);--c-border-act:rgba(180,83,9,0.50);}
 
-        /* ===== COLOR THEMES ===== */
-        .theme-lime    { --c-primary:#32CD32; --c-primary-light:#7FFF00; --c-primary-dark:#228B22; --c-glow:rgba(50,205,50,0.32); --c-glow-soft:rgba(50,205,50,0.10); --c-border:rgba(50,205,50,0.12); --c-border-act:rgba(50,205,50,0.50); }
-        .theme-magenta { --c-primary:#CC00CC; --c-primary-light:#FF00FF; --c-primary-dark:#8800AA; --c-glow:rgba(204,0,204,0.30); --c-glow-soft:rgba(204,0,204,0.10); --c-border:rgba(204,0,204,0.12); --c-border-act:rgba(204,0,204,0.50); }
-        .theme-rose    { --c-primary:#E11D78; --c-primary-light:#FB7185; --c-primary-dark:#9D174D; --c-glow:rgba(225,29,120,0.30); --c-glow-soft:rgba(225,29,120,0.10); --c-border:rgba(225,29,120,0.12); --c-border-act:rgba(225,29,120,0.50); }
-        .theme-violet  { --c-primary:#7C3AED; --c-primary-light:#A78BFA; --c-primary-dark:#4C1D95; --c-glow:rgba(124,58,237,0.30); --c-glow-soft:rgba(124,58,237,0.10); --c-border:rgba(124,58,237,0.12); --c-border-act:rgba(124,58,237,0.50); }
-        .theme-teal    { --c-primary:#0D9488; --c-primary-light:#2DD4BF; --c-primary-dark:#115E59; --c-glow:rgba(13,148,136,0.30); --c-glow-soft:rgba(13,148,136,0.10); --c-border:rgba(13,148,136,0.12); --c-border-act:rgba(13,148,136,0.50); }
-        .theme-gold    { --c-primary:#B45309; --c-primary-light:#F59E0B; --c-primary-dark:#78350F; --c-glow:rgba(180,83,9,0.30); --c-glow-soft:rgba(180,83,9,0.10); --c-border:rgba(180,83,9,0.12); --c-border-act:rgba(180,83,9,0.50); }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        button{cursor:pointer;font-family:inherit;border:none;outline:none;}
+        a{text-decoration:none;color:inherit;}
 
-        /* ===== RESET ===== */
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        button { cursor:pointer; font-family:inherit; border:none; outline:none; }
-        a { text-decoration:none; color:inherit; }
-
-        /* ===== BODY — fills iframe fully ===== */
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
+        html,body{width:100%;height:100%;overflow-x:hidden;}
+        body{
+            font-family:'Cairo',sans-serif;
+            background:var(--c-bg);
+            color:var(--c-text);
+            min-height:100%;
+            transition:background var(--t),color var(--t);
+            position:relative;
         }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: var(--c-bg);
-            color: var(--c-text);
-            min-height: 100%;
-            transition: background var(--t), color var(--t);
-            position: relative;
-        }
-
-        /* ambient glow */
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            pointer-events: none; z-index: 0;
+        body::before{
+            content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
             background:
-                radial-gradient(ellipse 70% 40% at 50% 0%, var(--c-glow-soft) 0%, transparent 65%),
-                radial-gradient(ellipse 40% 25% at 90% 80%, var(--c-glow-soft) 0%, transparent 55%);
-            transition: background var(--t);
+                radial-gradient(ellipse 70% 40% at 50% 0%,var(--c-glow-soft) 0%,transparent 65%),
+                radial-gradient(ellipse 40% 25% at 90% 80%,var(--c-glow-soft) 0%,transparent 55%);
+        }
+        .scanline-overlay{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            z-index:0;pointer-events:none;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+            animation:scanlineScroll 8s linear infinite;
+        }
+        @keyframes scanlineScroll{0%{background-position:0 0}100%{background-position:0 100px}}
+
+        /* ── WRAPPER ── */
+        .pw{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 0 32px;}
+
+        /* ── VACATION ── */
+        .vacation-banner{
+            background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);
+            border-radius:10px;padding:10px 14px;margin:12px 12px 0;
+            color:#fca5a5;font-size:0.82rem;font-weight:600;text-align:center;
         }
 
-        /* scanline */
-        .scanline-overlay {
-            position: fixed; top:0; left:0;
-            width:100%; height:100%;
-            z-index:0; pointer-events:none;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
-            animation: scanlineScroll 8s linear infinite;
+        /* ── COVER ── */
+        .cover{width:100%;height:160px;overflow:hidden;background:linear-gradient(135deg,var(--c-card),var(--c-card-h));position:relative;}
+        .cover img{width:100%;height:100%;object-fit:cover;display:block;}
+        .cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;opacity:0.2;}
+
+        /* ── HERO ROW (avatar + name + actions) ── */
+        .hero{
+            display:flex;align-items:flex-end;gap:14px;
+            padding:0 16px;margin-top:-36px;position:relative;z-index:2;
         }
-        @keyframes scanlineScroll {
-            0%   { background-position: 0 0; }
-            100% { background-position: 0 100px; }
+        .avatar-ring{
+            width:80px;height:80px;border-radius:50%;padding:2.5px;
+            background:var(--ig-grad);box-shadow:0 0 20px var(--c-glow);flex-shrink:0;
+        }
+        .avatar-inner{
+            width:100%;height:100%;border-radius:50%;overflow:hidden;
+            background:var(--c-card);border:3px solid var(--c-bg);
+        }
+        .avatar-inner img{width:100%;height:100%;object-fit:cover;}
+
+        .hero-info{flex:1;padding-bottom:4px;}
+        .hero-name{
+            font-size:1.1rem;font-weight:800;color:var(--c-text);
+            display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+        }
+        .badge-gold-icon{color:gold;font-size:0.95rem;}
+        .badge-warn{display:inline-block;background:var(--c-red);color:#fff;padding:2px 8px;border-radius:20px;font-size:0.60rem;font-weight:700;}
+        .badge-new {display:inline-block;background:var(--c-blue);color:#fff;padding:2px 8px;border-radius:20px;font-size:0.60rem;font-weight:700;}
+        .hero-user{font-size:0.75rem;color:var(--c-text-2);margin-top:2px;}
+
+        .hero-actions{display:flex;gap:8px;padding-bottom:4px;flex-shrink:0;}
+        .btn{
+            padding:7px 16px;border-radius:30px;font-size:0.75rem;font-weight:700;
+            font-family:'Cairo',sans-serif;transition:all var(--t);cursor:pointer;border:none;
+            white-space:nowrap;
+        }
+        .btn-follow{background:var(--c-primary);color:#fff;box-shadow:0 4px 14px var(--c-glow);}
+        .btn-follow:hover{filter:brightness(1.12);transform:translateY(-1px);}
+        .btn-follow.following{background:transparent;border:1.5px solid var(--c-primary);color:var(--c-primary);}
+        .btn-fav{background:transparent;border:1.5px solid var(--c-border-act);color:var(--c-text-2);}
+        .btn-fav:hover{border-color:gold;color:gold;}
+        .btn-fav.favorited{border-color:gold;color:gold;}
+        .btn-book{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,0.35);}
+        .btn-book:hover{filter:brightness(1.1);transform:translateY(-1px);}
+
+        /* ── STATS ROW ── */
+        .stats-row{
+            display:flex;gap:0;margin:14px 12px 0;
+            background:var(--c-card);border:1px solid var(--c-border);border-radius:12px;overflow:hidden;
+        }
+        .stat-item{
+            flex:1;padding:10px 6px;text-align:center;
+            border-left:1px solid var(--c-border);
+        }
+        .stat-item:last-child{border-left:none;}
+        [dir="ltr"] .stat-item{border-left:none;border-right:1px solid var(--c-border);}
+        [dir="ltr"] .stat-item:last-child{border-right:none;}
+        .stat-val{font-size:1rem;font-weight:800;color:var(--c-primary);}
+        .stat-lbl{font-size:0.58rem;color:var(--c-text-3);margin-top:2px;}
+        .stars-val{font-size:0.85rem;color:gold;}
+
+        /* ── SERVICES STRIP ── */
+        .services-strip{
+            display:flex;flex-wrap:wrap;gap:6px;padding:12px 12px 0;
+        }
+        .svc-tag{
+            background:var(--c-glow-soft);border:1px solid var(--c-border-act);
+            color:var(--c-primary);padding:4px 12px;border-radius:20px;
+            font-size:0.72rem;font-weight:600;
         }
 
-        /* ===== WRAPPER ===== */
-        .profile-wrapper {
-            position: relative;
-            z-index: 1;
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 16px 12px 32px;
+        /* ── SECTION CARD ── */
+        .section{
+            background:var(--c-card);border:1px solid var(--c-border);
+            border-radius:14px;margin:12px 12px 0;padding:14px;
+            transition:background var(--t);
         }
+        .section-title{
+            color:var(--c-primary);font-size:0.88rem;font-weight:700;
+            margin-bottom:10px;display:flex;align-items:center;gap:6px;
+        }
+        .section p{color:var(--c-text);font-size:0.83rem;line-height:1.7;}
 
-        /* ===== VACATION BANNER ===== */
-        .vacation-banner {
-            background: rgba(239,68,68,0.15);
-            border: 1px solid rgba(239,68,68,0.4);
-            border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            color: #fca5a5;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-align: center;
+        /* ── INFO GRID (2 columns) ── */
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .info-cell{
+            background:var(--c-surface);border:1px solid var(--c-border);
+            border-radius:10px;padding:10px 12px;
         }
+        .info-cell-lbl{font-size:0.62rem;color:var(--c-text-3);margin-bottom:3px;}
+        .info-cell-val{font-size:0.80rem;color:var(--c-text);font-weight:600;}
+        .info-cell-val a{color:var(--c-primary);}
+        .info-cell.full{grid-column:1/-1;}
 
-        /* ===== COVER ===== */
-        .profile-cover {
-            width: 100%;
-            height: 160px;
-            border-radius: 18px 18px 0 0;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--c-card), var(--c-card-h));
-            position: relative;
+        /* ── CONTACT ICONS ROW ── */
+        .contact-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+        .contact-btn{
+            display:flex;align-items:center;gap:6px;
+            background:var(--c-surface);border:1px solid var(--c-border-act);
+            border-radius:10px;padding:8px 14px;font-size:0.78rem;font-weight:600;
+            color:var(--c-text);cursor:pointer;text-decoration:none;
+            transition:all var(--t);flex:1;min-width:120px;justify-content:center;
         }
-        .profile-cover img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
-        .cover-placeholder {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; opacity: 0.3;
-        }
+        .contact-btn:hover{background:var(--c-glow-soft);border-color:var(--c-primary);color:var(--c-primary);}
+        .contact-btn .cicon{font-size:1.1rem;}
 
-        /* ===== AVATAR ===== */
-        .avatar-wrap {
-            display: flex;
-            justify-content: center;
-            margin-top: -48px;
-            position: relative;
-            z-index: 2;
+        /* social icons */
+        .social-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+        .social-btn{
+            display:flex;align-items:center;gap:6px;
+            border-radius:10px;padding:8px 14px;font-size:0.75rem;font-weight:700;
+            cursor:pointer;text-decoration:none;transition:all var(--t);
+            border:1px solid var(--c-border);color:#fff;
         }
-        .avatar-ring {
-            width: 96px; height: 96px;
-            border-radius: 50%;
-            padding: 3px;
-            background: var(--ig-grad);
-            box-shadow: 0 0 20px var(--c-glow);
-        }
-        .avatar-inner {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
-            background: var(--c-card);
-            border: 3px solid var(--c-bg);
-        }
-        .avatar-inner img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
+        .social-btn.instagram{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);}
+        .social-btn.tiktok   {background:#010101;border-color:#69C9D0;}
+        .social-btn.facebook {background:#1877F2;}
+        .social-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.4);}
 
-        /* ===== IDENTITY ===== */
-        .profile-name {
-            text-align: center;
-            font-size: 1.35rem;
-            font-weight: 800;
-            margin: 12px 0 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        /* ── MAP BUTTON ── */
+        .map-btn{
+            display:flex;align-items:center;gap:8px;
+            background:linear-gradient(135deg,#10b981,#059669);
+            color:#fff;border-radius:10px;padding:10px 16px;
+            font-size:0.80rem;font-weight:700;cursor:pointer;
+            text-decoration:none;transition:all var(--t);margin-top:10px;
+            width:fit-content;
         }
-        .badge-gold { color: gold; font-size: 1rem; }
-        .badge-warning {
-            display: inline-block;
-            background: var(--c-red);
-            color: #fff;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 700;
-        }
-        .badge-new {
-            display: inline-block;
-            background: var(--c-blue);
-            color: #fff;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 700;
-        }
-        .profile-username {
-            text-align: center;
-            color: var(--c-text-2);
-            font-size: 0.82rem;
-            margin-bottom: 6px;
-        }
+        .map-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
 
-        /* ===== RATING ===== */
-        .rating-block {
-            text-align: center;
-            margin: 10px 0 16px;
+        /* ── VIDEO ── */
+        .video-wrap{
+            width:100%;border-radius:12px;overflow:hidden;
+            background:#000;border:1px solid var(--c-border);
         }
-        .stars {
-            font-size: 1.25rem;
-            letter-spacing: 2px;
-        }
-        .stars-gold    { color: gold; text-shadow: 0 0 8px gold; animation: starPulse 1.5s ease-in-out infinite; }
-        .stars-green   { color: #00c87a; }
-        .stars-red     { color: var(--c-red); }
-        .stars-default { color: var(--c-text-3); }
-        @keyframes starPulse {
-            0%,100% { text-shadow: 0 0 4px gold; }
-            50%      { text-shadow: 0 0 14px gold; }
-        }
-        .rating-meta {
-            font-size: 0.78rem;
-            color: var(--c-text-2);
-            margin-top: 4px;
-        }
-        .followers-count {
-            font-size: 0.75rem;
-            color: var(--c-text-3);
-            margin-top: 3px;
-        }
+        .video-wrap video{width:100%;max-height:320px;object-fit:cover;display:block;}
+        .video-lbl{text-align:center;font-size:0.65rem;color:var(--c-text-3);padding:6px;}
 
-        /* ===== ACTION BUTTONS ===== */
-        .action-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 14px 0;
-            flex-wrap: wrap;
+        /* ── TABS ── */
+        .tabs-bar{
+            display:flex;border-bottom:1px solid var(--c-border);
+            margin:14px 12px 0;overflow-x:auto;scrollbar-width:none;
         }
-        .btn {
-            padding: 9px 22px;
-            border-radius: 30px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            font-family: 'Cairo', sans-serif;
-            transition: all var(--t);
-            cursor: pointer;
-            border: none;
+        .tabs-bar::-webkit-scrollbar{display:none;}
+        .tab-btn{
+            flex-shrink:0;padding:10px 14px;font-size:0.75rem;font-weight:700;
+            font-family:'Cairo',sans-serif;background:transparent;border:none;
+            border-bottom:2px solid transparent;color:var(--c-text-2);
+            cursor:pointer;transition:all var(--t);white-space:nowrap;
         }
-        .btn-primary {
-            background: var(--c-primary);
-            color: #fff;
-            box-shadow: 0 4px 14px var(--c-glow);
-        }
-        .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--c-border-act);
-            color: var(--c-text-2);
-        }
-        .btn-outline:hover { border-color: var(--c-primary); color: var(--c-primary); }
-        .btn-outline.active-follow {
-            border-color: var(--c-primary);
-            color: var(--c-primary);
-        }
-        .btn-outline.active-fav {
-            border-color: gold;
-            color: gold;
-        }
-        .btn-book {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
-        }
-        .btn-book:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .tab-btn.active{color:var(--c-primary);border-bottom-color:var(--c-primary);}
+        .tab-btn:hover:not(.active){color:var(--c-text);}
 
-        /* ===== CARDS / SECTIONS ===== */
-        .card {
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 14px;
-            transition: background var(--t), border-color var(--t);
-        }
-        .card-title {
-            color: var(--c-primary);
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .card p {
-            color: var(--c-text);
-            font-size: 0.85rem;
-            line-height: 1.7;
-        }
+        #tabContent{padding:0 12px;}
 
-        /* ===== SERVICES TAGS ===== */
-        .services-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        /* post card */
+        .post-card{
+            background:var(--c-card);border:1px solid var(--c-border);
+            border-radius:12px;padding:14px;margin-top:10px;
         }
-        .service-tag {
-            background: var(--c-glow-soft);
-            border: 1px solid var(--c-border-act);
-            color: var(--c-primary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
+        .post-date{font-size:0.68rem;color:var(--c-text-3);margin-bottom:8px;}
+        .post-text{font-size:0.83rem;line-height:1.7;color:var(--c-text);}
+        .post-imgs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+        .post-imgs img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--c-border);}
 
-        /* ===== TABS ===== */
-        .tabs-bar {
-            display: flex;
-            gap: 0;
-            border-bottom: 1px solid var(--c-border);
-            margin-bottom: 14px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .tabs-bar::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            flex-shrink: 0;
-            padding: 10px 16px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            font-family: 'Cairo', sans-serif;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--c-text-2);
-            cursor: pointer;
-            transition: all var(--t);
-            white-space: nowrap;
-        }
-        .tab-btn.active {
-            color: var(--c-primary);
-            border-bottom-color: var(--c-primary);
-        }
-        .tab-btn:hover:not(.active) { color: var(--c-text); }
+        /* gallery */
+        .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+        .gallery-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid var(--c-border);transition:transform 0.2s var(--ease-snap);}
+        .gallery-grid img:hover{transform:scale(1.04);}
 
-        /* ===== TAB CONTENT ===== */
-        #tabContent { min-height: 200px; }
+        /* review */
+        .review-card{background:var(--c-card);border:1px solid var(--c-border);border-radius:12px;padding:14px;margin-top:10px;}
+        .review-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+        .review-author{font-weight:700;font-size:0.85rem;}
+        .review-stars{font-size:0.95rem;color:gold;}
+        .review-sub{font-size:0.68rem;color:var(--c-text-3);margin-bottom:8px;}
+        .review-text{font-size:0.82rem;line-height:1.65;}
+        .review-reply{margin-top:10px;background:var(--c-glow-soft);border-right:3px solid var(--c-primary);border-radius:8px;padding:10px 12px;font-size:0.78rem;color:var(--c-text-2);}
+        [dir="ltr"] .review-reply{border-right:none;border-left:3px solid var(--c-primary);}
+        .review-reply strong{display:block;color:var(--c-primary);font-size:0.72rem;margin-bottom:4px;}
 
-        /* Post card */
-        .post-card {
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            transition: background var(--t);
-        }
-        .post-date {
-            font-size: 0.70rem;
-            color: var(--c-text-3);
-            margin-bottom: 8px;
-        }
-        .post-text {
-            font-size: 0.85rem;
-            line-height: 1.7;
-            color: var(--c-text);
-        }
-        .post-images {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .post-images img {
-            width: 76px; height: 76px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 1px solid var(--c-border);
-            transition: transform 0.2s var(--ease-snap);
-        }
-        .post-images img:hover { transform: scale(1.06); }
+        /* hours */
+        .hours-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px;}
+        .hour-cell{background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px;padding:8px 10px;}
+        .hour-day{font-size:0.68rem;color:var(--c-text-3);margin-bottom:2px;}
+        .hour-val{font-size:0.78rem;font-weight:700;}
+        .hour-open{color:var(--c-primary);}
+        .hour-closed{color:var(--c-red);}
 
-        /* Gallery */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        .gallery-grid img {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 1px solid var(--c-border);
-            transition: transform 0.2s var(--ease-snap), box-shadow 0.2s;
-        }
-        .gallery-grid img:hover {
-            transform: scale(1.04);
-            box-shadow: 0 4px 16px var(--c-glow);
-        }
+        /* empty / loading */
+        .empty-state{text-align:center;padding:40px 20px;color:var(--c-text-3);font-size:0.85rem;}
+        .empty-icon{font-size:2.5rem;margin-bottom:10px;}
+        .loading-state{text-align:center;padding:60px 20px;color:var(--c-text-3);}
+        .spinner{width:36px;height:36px;border:3px solid var(--c-border);border-top-color:var(--c-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .error-state{text-align:center;padding:60px 20px;color:var(--c-red);font-size:0.88rem;}
 
-        /* Review card */
-        .review-card {
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            transition: background var(--t);
+        /* toast */
+        .toast{
+            position:fixed;bottom:20px;left:50%;
+            transform:translateX(-50%) translateY(20px);
+            background:var(--c-card);border:1px solid var(--c-border-act);
+            border-radius:30px;padding:10px 22px;font-size:0.80rem;font-weight:600;
+            color:var(--c-text);box-shadow:0 8px 30px rgba(0,0,0,0.4);
+            z-index:999;opacity:0;transition:all 0.3s var(--ease-smooth);white-space:nowrap;
         }
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
-        }
-        .review-author { font-weight: 700; font-size: 0.88rem; }
-        .review-stars  { font-size: 1rem; color: gold; }
-        .review-sub {
-            font-size: 0.70rem;
-            color: var(--c-text-3);
-            margin-bottom: 8px;
-        }
-        .review-text { font-size: 0.84rem; line-height: 1.65; }
-        .review-reply {
-            margin-top: 10px;
-            background: var(--c-glow-soft);
-            border-right: 3px solid var(--c-primary);
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 0.80rem;
-            color: var(--c-text-2);
-        }
-        .review-reply strong {
-            display: block;
-            color: var(--c-primary);
-            font-size: 0.75rem;
-            margin-bottom: 4px;
-        }
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+        .toast.success{border-color:var(--c-primary);color:var(--c-primary);}
+        .toast.info   {border-color:var(--c-blue);color:var(--c-blue);}
+        .toast.error  {border-color:var(--c-red);color:var(--c-red);}
 
-        /* Info tab */
-        .info-row {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--c-border);
-            font-size: 0.83rem;
-        }
-        .info-row:last-child { border-bottom: none; }
-        .info-label {
-            color: var(--c-text-3);
-            min-width: 90px;
-            font-size: 0.76rem;
-            padding-top: 2px;
-        }
-        .info-value { color: var(--c-text); }
-        .info-value a { color: var(--c-primary); }
-        .info-value a:hover { text-decoration: underline; }
+        /* scrollbar */
+        ::-webkit-scrollbar{width:4px;height:4px;}
+        ::-webkit-scrollbar-track{background:rgba(4,8,16,0.5);}
+        ::-webkit-scrollbar-thumb{background:var(--c-primary);border-radius:4px;}
 
-        /* Video */
-        .video-wrap {
-            width: 100%;
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 14px;
-            background: #000;
-            border: 1px solid var(--c-border);
-        }
-        .video-wrap video {
-            width: 100%;
-            max-height: 360px;
-            object-fit: cover;
-            display: block;
-        }
-        .video-label {
-            text-align: center;
-            font-size: 0.68rem;
-            color: var(--c-text-3);
-            padding: 6px;
-        }
-
-        /* Working hours table */
-        .hours-table { width: 100%; font-size: 0.80rem; }
-        .hours-table td { padding: 4px 0; }
-        .hours-table td:first-child { color: var(--c-text-2); width: 110px; }
-        .hours-table .closed { color: var(--c-red); }
-        .hours-table .open   { color: var(--c-primary); }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--c-text-3);
-            font-size: 0.88rem;
-        }
-        .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
-
-        /* Loading */
-        .loading-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--c-text-3);
-        }
-        .spinner {
-            width: 36px; height: 36px;
-            border: 3px solid var(--c-border);
-            border-top-color: var(--c-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 14px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Error state */
-        .error-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--c-red);
-            font-size: 0.9rem;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--c-card);
-            border: 1px solid var(--c-border-act);
-            border-radius: 30px;
-            padding: 10px 22px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--c-text);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-            z-index: 999;
-            opacity: 0;
-            transition: all 0.3s var(--ease-smooth);
-            white-space: nowrap;
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .toast.success { border-color: var(--c-primary); color: var(--c-primary); }
-        .toast.info    { border-color: var(--c-blue); color: var(--c-blue); }
-        .toast.error   { border-color: var(--c-red); color: var(--c-red); }
-
-        /* ===== DIVIDER ===== */
-        .divider {
-            height: 1px;
-            background: var(--c-border);
-            margin: 16px 0;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 480px) {
-            .profile-cover { height: 130px; }
-            .avatar-ring { width: 80px; height: 80px; }
-            .avatar-wrap { margin-top: -40px; }
-            .profile-name { font-size: 1.15rem; }
-            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-            .btn { padding: 8px 16px; font-size: 0.78rem; }
-            .tab-btn { padding: 10px 12px; font-size: 0.73rem; }
+        @media(max-width:480px){
+            .cover{height:120px;}
+            .avatar-ring{width:68px;height:68px;}
+            .hero{margin-top:-30px;gap:10px;}
+            .hero-name{font-size:0.95rem;}
+            .gallery-grid{grid-template-columns:repeat(2,1fr);}
+            .info-grid{grid-template-columns:1fr;}
+            .info-cell.full{grid-column:1;}
+            .hero-actions{flex-wrap:wrap;}
+            .btn{padding:6px 12px;font-size:0.70rem;}
         }
     </style>
 </head>
-
 <body id="bodyEl" class="dark-mode theme-lime">
-
 <div class="scanline-overlay"></div>
 
-<!-- ===== MAIN PROFILE WRAPPER ===== -->
-<div class="profile-wrapper">
-    <div id="profileContainer">
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <div>جاري تحميل الملف التجاري...</div>
-        </div>
+<div class="pw" id="pw">
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <div>جاري تحميل الملف التجاري...</div>
     </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toastEl"></div>
 
-<!-- ===== SCRIPTS ===== -->
 <script src="../js/debug.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -613,591 +336,544 @@
 <script>
 'use strict';
 
-/* ============================================================
-   1. APPLY THEME / MODE / LANG FROM localStorage (index settings)
-   ============================================================ */
-(function applyStoredPreferences() {
-    console.log('[THEME] Applying stored preferences from localStorage...');
-
-    const body    = document.getElementById('bodyEl');
-    const lang    = localStorage.getItem('lila_lang')  || 'ar';
-    const mode    = localStorage.getItem('lila_mode')  || 'dark';
-    const theme   = localStorage.getItem('lila_theme') || 'theme-lime';
-
-    // Mode
+/* ── 1. THEME / MODE / LANG from localStorage ── */
+(function applyPrefs() {
+    const body  = document.getElementById('bodyEl');
+    const lang  = localStorage.getItem('lila_lang')  || 'ar';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
     const isDark = mode === 'dark';
     body.classList.toggle('dark-mode',  isDark);
     body.classList.toggle('light-mode', !isDark);
-    console.log('[THEME] Mode:', mode);
-
-    // Theme
-    const allThemes = ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold'];
-    allThemes.forEach(t => body.classList.remove(t));
+    ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold']
+        .forEach(t => body.classList.remove(t));
     body.classList.add(theme);
-    console.log('[THEME] Theme:', theme);
-
-    // Lang
     document.documentElement.lang = lang;
     document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
-    console.log('[LANG] Language:', lang);
+    console.log('[PREFS] mode:', mode, '| theme:', theme, '| lang:', lang);
 })();
 
-/* ============================================================
-   2. STATE
-   ============================================================ */
-let businessId          = null;
-let businessData        = null;
-let currentUserProfile  = null;
-let userIsFollowing     = false;
-let isFavorited         = false;
-let activeTab           = 'posts';
+/* listen for lang/theme changes from parent index */
+window.addEventListener('storage', e => {
+    if (!['lila_lang','lila_mode','lila_theme'].includes(e.key)) return;
+    console.log('[PREFS] localStorage changed:', e.key, e.newValue);
+    const body  = document.getElementById('bodyEl');
+    const lang  = localStorage.getItem('lila_lang')  || 'ar';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
+    body.classList.toggle('dark-mode',  mode==='dark');
+    body.classList.toggle('light-mode', mode!=='dark');
+    ['theme-lime','theme-magenta','theme-rose','theme-violet','theme-teal','theme-gold']
+        .forEach(t => body.classList.remove(t));
+    body.classList.add(theme);
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+    if (businessData) renderProfile(); /* re-render with new lang */
+});
 
-const lang = localStorage.getItem('lila_lang') || 'ar';
+/* ── 2. STATE ── */
+let businessId         = null;
+let businessData       = null;
+let currentUserProfile = null;
+let userIsFollowing    = false;
+let userIsFavorited    = false;
+let activeTab          = 'posts';
 
-/* ============================================================
-   3. HELPERS
-   ============================================================ */
-function t(ar, fr) {
-    return lang === 'ar' ? ar : fr;
-}
+function getLang() { return localStorage.getItem('lila_lang') || 'ar'; }
+function t(ar, fr) { return getLang() === 'ar' ? ar : fr; }
 
-function showToast(msg, type = 'info') {
+/* ── 3. TOAST ── */
+function showToast(msg, type='info') {
     const el = document.getElementById('toastEl');
     el.textContent = msg;
-    el.className   = `toast ${type} show`;
-    setTimeout(() => { el.classList.remove('show'); }, 2800);
+    el.className = `toast ${type} show`;
+    setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-function getRatingClass(avg, count) {
-    if (count === 0)   return 'stars-default';
-    if (avg >= 4.5)    return 'stars-gold';
-    if (avg >= 3)      return 'stars-green';
-    return 'stars-red';
+/* ── 4. RATING COLOR ── */
+function ratingClass(avg, cnt) {
+    if (!cnt)    return 'default';
+    if (avg>=4.5) return 'gold';
+    if (avg>=3)   return 'green';
+    return 'red';
+}
+function starsHTML(n) {
+    return '★'.repeat(Math.floor(n)) + '☆'.repeat(5-Math.floor(n));
 }
 
-function starsHTML(n, cls) {
-    const full  = Math.floor(n);
-    const empty = 5 - full;
-    return `<span class="stars ${cls}">${'★'.repeat(full)}${'☆'.repeat(empty)}</span>`;
-}
+/* ── 5. SERVICES MAP ── */
+const SVC = {
+    salon_hair:     { ar:'💇 صالون حلاقة',   fr:'💇 Salon coiffure' },
+    salon_beauty:   { ar:'💅 صالون تجميل',   fr:'💅 Salon beauté' },
+    home_hair:      { ar:'🏠 حلاقة منزلية',  fr:'🏠 Coiffure domicile' },
+    mobile_hair:    { ar:'🚗 حلاقة متنقلة',  fr:'🚗 Coiffure mobile' },
+    product_seller: { ar:'🛍️ بائعة منتجات',  fr:'🛍️ Vente produits' },
+    dress_rental:   { ar:'👗 تأجير أزياء',   fr:'👗 Location robes' },
+    home_service:   { ar:'🏠 خدمات منزلية',  fr:'🏠 Services domicile' },
+};
+function svcLabel(s) { return SVC[s] ? SVC[s][getLang()] : s; }
 
-function sanitize(html) {
-    if (typeof DOMPurify !== 'undefined') return DOMPurify.sanitize(html);
-    return html; // fallback (DOMPurify not loaded yet)
-}
-
-/* ============================================================
-   4. GET BUSINESS ID FROM URL
-   ============================================================ */
-function getBusinessIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    console.log('[URL] businessId from query param:', id);
-    return id;
-}
-
-/* ============================================================
-   5. LOAD BUSINESS PROFILE
-   ============================================================ */
+/* ── 6. LOAD ── */
 async function loadBusinessProfile() {
-    console.log('[LOAD] Starting loadBusinessProfile()...');
-
-    businessId = getBusinessIdFromUrl();
+    console.log('[LOAD] Starting...');
+    const params = new URLSearchParams(window.location.search);
+    businessId = params.get('id');
+    console.log('[LOAD] businessId:', businessId);
 
     if (!businessId) {
-        console.error('[LOAD] No businessId in URL params.');
-        renderError(t('❌ لم يتم تحديد الحساب', '❌ Aucun compte spécifié'));
+        renderError(t('❌ لم يتم تحديد الحساب','❌ Aucun compte spécifié'));
         return;
     }
 
     try {
-        console.log('[LOAD] Calling lilaAPI.getBusinessProfileById with id:', businessId);
-        const data = await lilaAPI.getBusinessProfileById(businessId);
-        console.log('[LOAD] API response:', data);
-
-        if (!data) {
-            console.warn('[LOAD] No data returned — account not found or not activated.');
-            renderError(t('❌ الحساب غير موجود أو لم يتم تفعيله بعد', '❌ Compte introuvable ou non activé'));
-            return;
-        }
-
-        businessData = data;
-        console.log('[LOAD] businessData set:', businessData);
-
-    } catch (err) {
-        console.error('[LOAD] Exception in getBusinessProfileById:', err);
-        renderError(t('❌ حدث خطأ أثناء تحميل البيانات', '❌ Erreur lors du chargement'));
+        console.log('[LOAD] Fetching business profile...');
+        businessData = await lilaAPI.getBusinessProfileById(businessId);
+        console.log('[LOAD] businessData:', businessData);
+        if (!businessData) { renderError(t('❌ الحساب غير موجود','❌ Compte introuvable')); return; }
+    } catch(err) {
+        console.error('[LOAD] Error:', err);
+        renderError(t('❌ خطأ في تحميل البيانات','❌ Erreur de chargement'));
         return;
     }
 
-    // Current user session
     try {
-        console.log('[AUTH] Fetching current session...');
+        console.log('[AUTH] Getting session...');
         await window.auth.getCurrentSession();
         currentUserProfile = window.auth.getCurrentProfile();
-        console.log('[AUTH] currentUserProfile:', currentUserProfile);
-    } catch (err) {
-        console.warn('[AUTH] Could not get session:', err);
+        console.log('[AUTH] profile:', currentUserProfile);
+    } catch(err) {
+        console.warn('[AUTH] Error:', err);
         currentUserProfile = null;
     }
 
-    // Follow & favorite status
-    if (currentUserProfile && currentUserProfile.user_type === 'customer') {
+    if (currentUserProfile?.user_type === 'customer') {
         try {
-            console.log('[FOLLOW] Checking follow status...');
-            isFollowing = await lilaAPI.isFollowing(currentUserProfile.id, businessId);
-            console.log('[FOLLOW] isFollowing:', isFollowing);
-        } catch (err) {
-            console.warn('[FOLLOW] Error checking follow status:', err);
-            isFollowing = false;
-        }
+            userIsFollowing = await lilaAPI.isFollowing(currentUserProfile.id, businessId);
+            console.log('[FOLLOW] isFollowing:', userIsFollowing);
+        } catch(err) { console.warn('[FOLLOW] Error:', err); }
 
         try {
-            console.log('[FAV] Checking favorite status...');
-            const { data: favData, error: favErr } = await supabaseClient
-                .from('favorites')
-                .select('id')
+            const { data: fav, error: favErr } = await supabaseClient
+                .from('favorites').select('id')
                 .eq('customer_id', currentUserProfile.id)
-                .eq('business_id', businessId)
-                .single();
-
-            if (favErr) {
-                console.warn('[FAV] Favorite check error (may be normal if not favorited):', favErr.message);
-                isFavorited = false;
-            } else {
-                isFavorited = !!favData;
-                console.log('[FAV] isFavorited:', isFavorited);
-            }
-        } catch (err) {
-            console.warn('[FAV] Exception checking favorites:', err);
-            isFavorited = false;
-        }
+                .eq('business_id', businessId).single();
+            if (favErr && favErr.code !== 'PGRST116') console.warn('[FAV] Error:', favErr);
+            userIsFavorited = !!fav;
+            console.log('[FAV] isFavorited:', userIsFavorited);
+        } catch(err) { console.warn('[FAV] Error:', err); }
     }
+
+    /* fetch gallery from business_gallery table */
+    try {
+        console.log('[GALLERY] Fetching from business_gallery...');
+        const { data: galleryRows, error: gErr } = await supabaseClient
+            .from('business_gallery')
+            .select('image_url, caption, sort_order')
+            .eq('business_id', businessId)
+            .order('sort_order', { ascending: true });
+        if (gErr) console.warn('[GALLERY] DB error:', gErr);
+        businessData._gallery = galleryRows || [];
+        /* fallback: gallery_urls column */
+        if (!businessData._gallery.length && businessData.gallery_urls?.length) {
+            businessData._gallery = businessData.gallery_urls.map(u => ({ image_url: u }));
+            console.log('[GALLERY] Using gallery_urls fallback, count:', businessData._gallery.length);
+        }
+        console.log('[GALLERY] Total images:', businessData._gallery.length);
+    } catch(err) { console.warn('[GALLERY] Error:', err); businessData._gallery = []; }
+
+    /* fetch video from business_videos table */
+    try {
+        console.log('[VIDEO] Fetching from business_videos...');
+        const { data: videos, error: vErr } = await supabaseClient
+            .from('business_videos')
+            .select('video_url, thumbnail_url')
+            .eq('business_id', businessId)
+            .limit(1).single();
+        if (vErr && vErr.code !== 'PGRST116') console.warn('[VIDEO] DB error:', vErr);
+        businessData._video = videos || null;
+        /* fallback: video_url column */
+        if (!businessData._video && businessData.video_url) {
+            businessData._video = { video_url: businessData.video_url, thumbnail_url: null };
+        }
+        console.log('[VIDEO] video:', businessData._video);
+    } catch(err) { console.warn('[VIDEO] Error:', err); businessData._video = null; }
 
     renderProfile();
 }
 
-/* ============================================================
-   6. RENDER ERROR
-   ============================================================ */
+/* ── 7. RENDER ERROR ── */
 function renderError(msg) {
-    document.getElementById('profileContainer').innerHTML = `
-        <div class="error-state">
-            <div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>
-            <div>${msg}</div>
-        </div>
-    `;
+    document.getElementById('pw').innerHTML =
+        `<div class="error-state"><div style="font-size:2.5rem;margin-bottom:12px">⚠️</div><div>${msg}</div></div>`;
 }
 
-/* ============================================================
-   7. RENDER PROFILE
-   ============================================================ */
+/* ── 8. RENDER PROFILE ── */
 function renderProfile() {
     console.log('[RENDER] Rendering profile...');
-    const container  = document.getElementById('profileContainer');
-    const avg        = businessData.avg_rating   || 0;
-    const cnt        = businessData.reviews_count || 0;
-    const warnings   = businessData.warnings_count || 0;
-    const onVacation = businessData.is_on_vacation;
-    const ratingCls  = getRatingClass(avg, cnt);
-
+    const lang      = getLang();
+    const avg       = businessData.avg_rating    || 0;
+    const cnt       = businessData.reviews_count || 0;
+    const warn      = businessData.warnings_count || 0;
     const isCustomer = currentUserProfile?.user_type === 'customer';
-    const notLoggedIn = !currentUserProfile;
+    const notLogged  = !currentUserProfile;
 
-    /* ---- action buttons ---- */
+    /* action buttons */
     let actionBtns = '';
     if (isCustomer) {
         actionBtns = `
-            <button class="btn btn-outline ${isFollowing ? 'active-follow' : ''}" onclick="toggleFollow()">
-                ${isFollowing ? '✅ ' + t('متابعة','Suivi') : '➕ ' + t('متابعة','Suivre')}
+            <button class="btn btn-follow ${userIsFollowing?'following':''}" onclick="toggleFollow()">
+                ${userIsFollowing ? '✅ '+t('متابعة','Suivi') : '➕ '+t('متابعة','Suivre')}
             </button>
-            <button class="btn btn-outline ${isFavorited ? 'active-fav' : ''}" onclick="toggleFavorite()">
-                ${isFavorited ? '⭐ ' + t('مفضلة','Favori') : '☆ ' + t('إضافة للمفضلة','Ajouter')}
-            </button>
-        `;
-    } else if (notLoggedIn) {
-        actionBtns = `
-            <button class="btn btn-outline" onclick="window.auth.signInWithGoogle()">
-                🔑 ${t('سجلي للمتابعة','Connectez-vous')}
-            </button>
-        `;
+            <button class="btn btn-fav ${userIsFavorited?'favorited':''}" onclick="toggleFavorite()">
+                ${userIsFavorited ? '⭐' : '☆'}
+            </button>`;
+    } else if (notLogged) {
+        actionBtns = `<button class="btn btn-follow" onclick="window.auth.signInWithGoogle()">🔑 ${t('دخول','Connexion')}</button>`;
     }
-    actionBtns += `
-        <button class="btn btn-book" onclick="bookNow()">
-            📅 ${t('احجزي الآن','Réserver')}
-        </button>
-    `;
+    actionBtns += `<button class="btn btn-book" onclick="bookNow()">📅 ${t('احجزي الآن','Réserver')}</button>`;
 
-    /* ---- vacation banner ---- */
-    const vacationHTML = onVacation ? `
-        <div class="vacation-banner">
-            🚫 ${t('هذا الحساب في إجازة مؤقتة حتى','Ce compte est en vacances jusqu\'au')}
-            ${businessData.vacation_until ? new Date(businessData.vacation_until).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'fr-DZ') : ''}
-        </div>
-    ` : '';
+    /* star color */
+    const rc = ratingClass(avg, cnt);
+    const starColor = rc==='gold'?'gold': rc==='green'?'#00c87a': rc==='red'?'#ef4444':'#7a9ab8';
 
-    /* ---- cover ---- */
+    /* services */
+    const svcsHTML = (businessData.services||[]).map(s=>`<span class="svc-tag">${svcLabel(s)}</span>`).join('') ||
+        `<span class="svc-tag">${t('خدمات متعددة','Services variés')}</span>`;
+
+    /* cover */
     const coverHTML = businessData.cover_photo_url
-        ? `<img src="${businessData.cover_photo_url}" alt="${t('غلاف','Couverture')}">`
+        ? `<img src="${businessData.cover_photo_url}" alt="">`
         : `<div class="cover-placeholder">🏪</div>`;
 
-    /* ---- badges ---- */
-    const goldBadge    = businessData.has_gold_badge ? `<span class="badge-gold">⭐</span>` : '';
-    const warnBadge    = warnings >= 3 ? `<span class="badge-warning">⚠️ ${t('تحذير','Avert.')}</span>` : '';
-    const newBadge     = cnt === 0 ? `<span class="badge-new">🆕 ${t('جديد','Nouveau')}</span>` : '';
+    /* badges */
+    const goldB = businessData.has_gold_badge ? `<span class="badge-gold-icon">⭐</span>` : '';
+    const warnB = warn>=3 ? `<span class="badge-warn">⚠️ ${t('تحذير','Avert.')}</span>` : '';
+    const newB  = cnt===0 ? `<span class="badge-new">🆕 ${t('جديد','Nouveau')}</span>` : '';
 
-    /* ---- inject HTML ---- */
-    container.innerHTML = sanitize(`
-        ${vacationHTML}
+    /* vacation */
+    const vacHTML = businessData.is_on_vacation ? `
+        <div class="vacation-banner">
+            🚫 ${t('في إجازة مؤقتة حتى','En vacances jusqu\'au')}
+            ${businessData.vacation_until ? new Date(businessData.vacation_until).toLocaleDateString(lang==='ar'?'ar-DZ':'fr-DZ') : ''}
+        </div>` : '';
 
-        <div class="profile-cover">${coverHTML}</div>
+    /* video */
+    const vidHTML = businessData._video ? `
+        <div class="section">
+            <div class="section-title">🎬 ${t('الفيديو التعريفي','Vidéo de présentation')}</div>
+            <div class="video-wrap">
+                <video src="${businessData._video.video_url}" controls
+                    ${businessData._video.thumbnail_url?`poster="${businessData._video.thumbnail_url}"`:''}></video>
+                <div class="video-lbl">${t('فيديو تعريفي','Vidéo de présentation')}</div>
+            </div>
+        </div>` : '';
 
-        <div class="avatar-wrap">
+    document.getElementById('pw').innerHTML = `
+        ${vacHTML}
+        <div class="cover">${coverHTML}</div>
+
+        <div class="hero">
             <div class="avatar-ring">
                 <div class="avatar-inner">
-                    <img src="${businessData.logo_url || '../assets/images/default-business.png'}"
-                         alt="${businessData.business_name || ''}"
-                         onerror="this.src='../assets/images/default-business.png'">
+                    <img src="${businessData.logo_url||'../assets/images/default-business.png'}"
+                         alt="" onerror="this.src='../assets/images/default-business.png'">
                 </div>
             </div>
-        </div>
-
-        <div class="profile-name">
-            ${businessData.business_name || t('حساب تجاري','Compte commercial')}
-            ${goldBadge}${warnBadge}${newBadge}
-        </div>
-        <div class="profile-username">@${businessData.username || ''}</div>
-
-        <div class="rating-block">
-            ${starsHTML(avg, ratingCls)}
-            <div class="rating-meta">
-                ${avg.toFixed(1)} / 5 &nbsp;·&nbsp; ${cnt} ${t('تقييم','avis')}
+            <div class="hero-info">
+                <div class="hero-name">
+                    ${DOMPurify.sanitize(businessData.business_name||'')}
+                    ${goldB}${warnB}${newB}
+                </div>
+                <div class="hero-user">@${businessData.username||''}</div>
             </div>
-            <div class="followers-count">
-                👥 ${businessData.followers_count || 0} ${t('متابِع','abonné(e)s')}
+            <div class="hero-actions">${actionBtns}</div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-val" style="color:${starColor}">${starsHTML(avg)}</div>
+                <div class="stat-lbl">${avg.toFixed(1)} / 5</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">${cnt}</div>
+                <div class="stat-lbl">${t('تقييم','Avis')}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">${businessData.followers_count||0}</div>
+                <div class="stat-lbl">${t('متابع','Abonné')}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">${businessData.subscription_tier==='gold'?'⭐':'🔹'}</div>
+                <div class="stat-lbl">${businessData.subscription_tier||'—'}</div>
             </div>
         </div>
 
-        <div class="action-row">${actionBtns}</div>
+        <div class="services-strip">${svcsHTML}</div>
 
-        <div class="divider"></div>
-
-        <div class="card">
-            <div class="card-title">📝 ${t('نبذة عني','À propos')}</div>
-            <p>${businessData.bio || t('لا يوجد وصف','Aucune description')}</p>
+        <div class="section">
+            <div class="section-title">📝 ${t('نبذة عني','À propos')}</div>
+            <p>${DOMPurify.sanitize(businessData.bio||t('لا يوجد وصف','Aucune description'))}</p>
         </div>
 
-        <div class="card">
-            <div class="card-title">✨ ${t('الخدمات المقدمة','Services')}</div>
-            <div class="services-tags">${getServicesTags(businessData.services)}</div>
-        </div>
-
-        ${businessData.short_video_url ? `
-            <div class="video-wrap">
-                <video src="${businessData.short_video_url}" controls
-                    poster="${businessData.video_thumbnail_url || ''}"></video>
-                <div class="video-label">🎬 ${t('فيديو تعريفي','Vidéo de présentation')}</div>
-            </div>
-        ` : ''}
+        ${vidHTML}
 
         <div class="tabs-bar" id="tabsBar">
             <button class="tab-btn active" data-tab="posts">📝 ${t('منشورات','Posts')}</button>
-            <button class="tab-btn" data-tab="gallery">📸 ${t('ألبوم الصور','Galerie')}</button>
-            <button class="tab-btn" data-tab="reviews">⭐ ${t('التقييمات','Avis')}</button>
+            <button class="tab-btn" data-tab="gallery">📸 ${t('ألبوم','Galerie')}</button>
+            <button class="tab-btn" data-tab="reviews">⭐ ${t('تقييمات','Avis')}</button>
             <button class="tab-btn" data-tab="info">ℹ️ ${t('معلومات','Infos')}</button>
         </div>
-
         <div id="tabContent"></div>
-    `);
+    `;
 
-    // tab listeners
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             activeTab = btn.dataset.tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
             btn.classList.add('active');
             renderTabContent();
         });
     });
 
     renderTabContent();
-    console.log('[RENDER] Profile rendered successfully.');
+    console.log('[RENDER] Done.');
 }
 
-/* ============================================================
-   8. SERVICES TAGS
-   ============================================================ */
-function getServicesTags(services) {
-    if (!services || !services.length) {
-        return `<span class="service-tag">${t('خدمات متعددة','Services variés')}</span>`;
-    }
-    const map = {
-        salon_hair:     t('💇 صالون حلاقة',   '💇 Salon coiffure'),
-        salon_beauty:   t('💅 صالون تجميل',   '💅 Salon beauté'),
-        home_hair:      t('🏠 حلاقة في المنزل','🏠 Coiffure domicile'),
-        mobile_hair:    t('🚗 حلاقة متنقلة',   '🚗 Coiffure mobile'),
-        product_seller: t('🛍️ بائعة منتجات',   '🛍️ Vente produits'),
-        dress_rental:   t('👗 تأجير أزياء',    '👗 Location robes'),
-        home_service:   t('🏠 خدمات منزلية',   '🏠 Services domicile'),
-    };
-    return services.map(s => `<span class="service-tag">${map[s] || s}</span>`).join('');
-}
-
-/* ============================================================
-   9. RENDER TAB CONTENT
-   ============================================================ */
+/* ── 9. TAB CONTENT ── */
 async function renderTabContent() {
     const container = document.getElementById('tabContent');
     if (!container) return;
-
-    container.innerHTML = `<div class="loading-state"><div class="spinner"></div></div>`;
-    console.log('[TAB] Loading tab:', activeTab);
+    container.innerHTML = `<div class="loading-state" style="padding:30px 0"><div class="spinner"></div></div>`;
+    console.log('[TAB] Loading:', activeTab);
 
     try {
-        if (activeTab === 'posts') {
-            await renderPostsTab(container);
-        } else if (activeTab === 'gallery') {
-            await renderGalleryTab(container);
-        } else if (activeTab === 'reviews') {
-            await renderReviewsTab(container);
-        } else if (activeTab === 'info') {
-            renderInfoTab(container);
-        }
-    } catch (err) {
-        console.error('[TAB] Error rendering tab', activeTab, ':', err);
-        container.innerHTML = `<div class="error-state">❌ ${t('حدث خطأ أثناء التحميل','Erreur de chargement')}</div>`;
+        if      (activeTab==='posts')   await renderPosts(container);
+        else if (activeTab==='gallery') renderGallery(container);
+        else if (activeTab==='reviews') await renderReviews(container);
+        else if (activeTab==='info')    renderInfo(container);
+    } catch(err) {
+        console.error('[TAB] Error in tab', activeTab, ':', err);
+        container.innerHTML = `<div class="error-state">❌ ${t('خطأ في التحميل','Erreur de chargement')}</div>`;
     }
 }
 
-/* ---- Posts ---- */
-async function renderPostsTab(container) {
-    console.log('[TAB:POSTS] Fetching posts for businessId:', businessId);
-    const posts = await lilaAPI.getPostsByBusiness(businessId);
-    console.log('[TAB:POSTS] Posts received:', posts?.length ?? 0);
+/* posts */
+async function renderPosts(c) {
+    console.log('[TAB:POSTS] Fetching...');
+    const { data: posts, error } = await supabaseClient
+        .from('posts').select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false }).limit(30);
+    if (error) console.error('[TAB:POSTS] Error:', error);
+    console.log('[TAB:POSTS] Count:', posts?.length||0);
 
-    if (!posts || !posts.length) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📝</div>
-                ${t('لا توجد منشورات بعد','Aucune publication pour l\'instant')}
-            </div>`;
+    if (!posts?.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div>${t('لا توجد منشورات بعد','Aucune publication')}</div>`;
         return;
     }
-
-    container.innerHTML = posts.map(post => `
+    c.innerHTML = posts.map(p => `
         <div class="post-card">
-            <div class="post-date">📅 ${new Date(post.created_at).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'fr-DZ')}</div>
-            <div class="post-text">${post.content || ''}</div>
-            ${post.image_urls?.length ? `
-                <div class="post-images">
-                    ${post.image_urls.map(url => `
-                        <img src="${url}" alt="" onclick="window.open('${url}', '_blank')" loading="lazy">
-                    `).join('')}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+            <div class="post-date">📅 ${new Date(p.created_at).toLocaleDateString(getLang()==='ar'?'ar-DZ':'fr-DZ')}</div>
+            <div class="post-text">${DOMPurify.sanitize(p.content||'')}</div>
+            ${p.image_urls?.length?`<div class="post-imgs">${p.image_urls.map(u=>`<img src="${u}" onclick="window.open('${u}','_blank')" loading="lazy">`).join('')}</div>`:''}
+        </div>`).join('');
 }
 
-/* ---- Gallery ---- */
-async function renderGalleryTab(container) {
-    console.log('[TAB:GALLERY] Loading gallery for businessId:', businessId);
-    // Fetch gallery images — adapt if lilaAPI has a gallery method
-    let images = [];
-    if (typeof lilaAPI.getGalleryByBusiness === 'function') {
-        try {
-            images = await lilaAPI.getGalleryByBusiness(businessId);
-            console.log('[TAB:GALLERY] Images received:', images?.length ?? 0);
-        } catch (err) {
-            console.warn('[TAB:GALLERY] getGalleryByBusiness error:', err);
-        }
-    } else {
-        console.warn('[TAB:GALLERY] lilaAPI.getGalleryByBusiness is not defined — showing empty state.');
-    }
-
-    if (!images || !images.length) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📸</div>
-                ${t('لا توجد صور في الألبوم بعد','Aucune photo dans la galerie')}
-            </div>`;
+/* gallery */
+function renderGallery(c) {
+    console.log('[TAB:GALLERY] Images:', businessData._gallery?.length);
+    if (!businessData._gallery?.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-icon">📸</div>${t('لا توجد صور في الألبوم','Aucune photo dans la galerie')}</div>`;
         return;
     }
-
-    container.innerHTML = `
-        <div class="gallery-grid">
-            ${images.map(img => `
-                <img src="${img.url || img}" alt="" loading="lazy"
-                     onclick="window.open('${img.url || img}', '_blank')">
-            `).join('')}
-        </div>
-    `;
+    c.innerHTML = `<div class="gallery-grid">
+        ${businessData._gallery.map(img=>`
+            <img src="${img.image_url||img}" alt="${img.caption||''}" loading="lazy"
+                 onclick="window.open('${img.image_url||img}','_blank')">`).join('')}
+    </div>`;
 }
 
-/* ---- Reviews ---- */
-async function renderReviewsTab(container) {
-    console.log('[TAB:REVIEWS] Fetching reviews for businessId:', businessId);
-    const reviews = await lilaAPI.getReviewsByBusiness(businessId);
-    console.log('[TAB:REVIEWS] Reviews received:', reviews?.length ?? 0);
+/* reviews */
+async function renderReviews(c) {
+    console.log('[TAB:REVIEWS] Fetching...');
+    const { data: reviews, error } = await supabaseClient
+        .from('reviews').select('*, profiles(full_name,avatar_url)')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false }).limit(50);
+    if (error) console.error('[TAB:REVIEWS] Error:', error);
+    console.log('[TAB:REVIEWS] Count:', reviews?.length||0);
 
-    if (!reviews || !reviews.length) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">⭐</div>
-                ${t('لا توجد تقييمات بعد — كوني أول من يقيّم!','Aucun avis — soyez la première à noter !')}
-            </div>`;
+    if (!reviews?.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-icon">⭐</div>${t('لا توجد تقييمات بعد','Aucun avis pour l\'instant')}</div>`;
         return;
     }
-
-    container.innerHTML = reviews.map(r => `
+    c.innerHTML = reviews.map(r => `
         <div class="review-card">
-            <div class="review-header">
-                <span class="review-author">${r.profiles?.full_name || t('مستخدمة','Utilisatrice')}</span>
-                <span class="review-stars">${'★'.repeat(r.rating_overall || 0)}${'☆'.repeat(5 - (r.rating_overall || 0))}</span>
+            <div class="review-top">
+                <span class="review-author">${r.profiles?.full_name||t('مستخدمة','Utilisatrice')}</span>
+                <span class="review-stars">${starsHTML(r.rating_overall||0)}</span>
             </div>
             <div class="review-sub">
-                ${t('جودة','Qualité')}: ${'★'.repeat(r.rating_quality||0)} &nbsp;
-                ${t('سعر','Prix')}: ${'★'.repeat(r.rating_price||0)} &nbsp;
-                ${t('معاملة','Accueil')}: ${'★'.repeat(r.rating_manners||0)}
+                ${t('جودة','Qual.')}: ${starsHTML(r.rating_quality||0)} &nbsp;
+                ${t('سعر','Prix')}: ${starsHTML(r.rating_price||0)} &nbsp;
+                ${t('معاملة','Accueil')}: ${starsHTML(r.rating_manners||0)}
             </div>
-            <div class="review-text">${r.comment || ''}</div>
-            ${r.reply_from_business ? `
+            <div class="review-text">${DOMPurify.sanitize(r.comment||'')}</div>
+            ${r.reply_from_business?`
                 <div class="review-reply">
-                    <strong>↩️ ${t('رد صاحبة الحساب','Réponse du compte')}</strong>
-                    ${r.reply_from_business}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+                    <strong>↩️ ${t('رد صاحبة الحساب','Réponse')}</strong>
+                    ${DOMPurify.sanitize(r.reply_from_business)}
+                </div>`:''}
+        </div>`).join('');
 }
 
-/* ---- Info ---- */
-function renderInfoTab(container) {
-    console.log('[TAB:INFO] Rendering info tab.');
+/* info */
+function renderInfo(c) {
+    console.log('[TAB:INFO] Rendering...');
+    const d = businessData;
+    const lang = getLang();
 
-    // Working hours
-    let hoursHTML = t('غير محدد','Non défini');
-    if (businessData.working_hours && typeof businessData.working_hours === 'object') {
-        const dayNames = {
-            ar: ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],
-            fr: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-        };
-        const days = dayNames[lang] || dayNames.ar;
-        const wh = businessData.working_hours;
-        hoursHTML = `<table class="hours-table">` +
-            Object.entries(wh).map(([day, val]) => {
-                const dayLabel = days[parseInt(day)] || day;
-                const isOpen   = val && val.open;
-                return `<tr>
-                    <td>${dayLabel}</td>
-                    <td class="${isOpen ? 'open' : 'closed'}">
-                        ${isOpen ? `${val.from || ''} - ${val.to || ''}` : t('مغلق','Fermé')}
-                    </td>
-                </tr>`;
-            }).join('') + `</table>`;
+    /* working hours */
+    const DAY_NAMES = {
+        ar:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],
+        fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']
+    };
+    let hoursHTML = '';
+    if (d.working_hours && typeof d.working_hours==='object') {
+        const days = DAY_NAMES[lang]||DAY_NAMES.ar;
+        hoursHTML = `<div class="hours-grid">` +
+            Object.entries(d.working_hours).map(([k,v]) => {
+                const dayLbl = days[parseInt(k)]||k;
+                const isOpen = v && v.open;
+                return `<div class="hour-cell">
+                    <div class="hour-day">${dayLbl}</div>
+                    <div class="hour-val ${isOpen?'hour-open':'hour-closed'}">
+                        ${isOpen ? `${v.from||''}–${v.to||''}` : t('مغلق','Fermé')}
+                    </div>
+                </div>`;
+            }).join('') + `</div>`;
+    } else {
+        hoursHTML = `<span style="color:var(--c-text-3);font-size:0.80rem">${t('غير محدد','Non défini')}</span>`;
     }
 
-    container.innerHTML = `
-        <div class="card">
-            <div class="card-title">📍 ${t('العنوان','Adresse')}</div>
-            <div class="info-row"><span class="info-label">${t('الولاية','Wilaya')}</span><span class="info-value">${businessData.wilaya_name || t('غير محدد','Non défini')}</span></div>
-            <div class="info-row"><span class="info-label">${t('البلدية','Commune')}</span><span class="info-value">${businessData.baladiyah_name || t('غير محدد','Non défini')}</span></div>
-            <div class="info-row"><span class="info-label">${t('الوصف','Description')}</span><span class="info-value">${businessData.address_description || t('لا يوجد','Aucune')}</span></div>
+    /* map button */
+    const mapBtn = d.map_location
+        ? `<a class="map-btn" href="${d.map_location}" target="_blank">🗺️ ${t('عرض على الخريطة','Voir sur la carte')}</a>`
+        : (d.latitude && d.longitude
+            ? `<a class="map-btn" href="https://www.google.com/maps?q=${d.latitude},${d.longitude}" target="_blank">🗺️ ${t('عرض على الخريطة','Voir sur la carte')}</a>`
+            : '');
+
+    /* social */
+    const socialBtns = [
+        d.instagram ? `<a class="social-btn instagram" href="${d.instagram}" target="_blank">📷 Instagram</a>` : '',
+        d.tiktok    ? `<a class="social-btn tiktok"    href="${d.tiktok}"    target="_blank">🎵 TikTok</a>` : '',
+        d.facebook  ? `<a class="social-btn facebook"  href="${d.facebook}"  target="_blank">📘 Facebook</a>` : '',
+    ].filter(Boolean).join('');
+
+    c.innerHTML = `
+        <div class="section">
+            <div class="section-title">📍 ${t('الموقع','Localisation')}</div>
+            <div class="info-grid">
+                <div class="info-cell">
+                    <div class="info-cell-lbl">${t('الولاية','Wilaya')}</div>
+                    <div class="info-cell-val">${d.wilaya_name||'—'}</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-lbl">${t('الدائرة','Daïra')}</div>
+                    <div class="info-cell-val">${d.daira_name||'—'}</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-lbl">${t('البلدية','Commune')}</div>
+                    <div class="info-cell-val">${d.baladiyah_name||'—'}</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-lbl">${t('الوصف','Description')}</div>
+                    <div class="info-cell-val">${d.address_description||'—'}</div>
+                </div>
+            </div>
+            ${mapBtn}
         </div>
 
-        <div class="card">
-            <div class="card-title">📞 ${t('التواصل','Contact')}</div>
-            ${businessData.phone ? `<div class="info-row"><span class="info-label">📱 ${t('الهاتف','Téléphone')}</span><span class="info-value">${businessData.phone}</span></div>` : ''}
-            ${businessData.whatsapp ? `<div class="info-row"><span class="info-label">💬 WhatsApp</span><span class="info-value">${businessData.whatsapp}</span></div>` : ''}
-            ${businessData.instagram ? `<div class="info-row"><span class="info-label">📷 Instagram</span><span class="info-value"><a href="${businessData.instagram}" target="_blank">${t('عرض الصفحة','Voir la page')}</a></span></div>` : ''}
-            ${businessData.tiktok ? `<div class="info-row"><span class="info-label">🎵 TikTok</span><span class="info-value"><a href="${businessData.tiktok}" target="_blank">${t('عرض الصفحة','Voir la page')}</a></span></div>` : ''}
-            ${!businessData.phone && !businessData.whatsapp && !businessData.instagram && !businessData.tiktok ? `<div style="color:var(--c-text-3); font-size:0.82rem;">${t('لا توجد معلومات تواصل','Aucune info de contact')}</div>` : ''}
+        <div class="section">
+            <div class="section-title">📞 ${t('التواصل','Contact')}</div>
+            <div class="contact-row">
+                ${d.phone    ? `<a class="contact-btn" href="tel:${d.phone}"><span class="cicon">📱</span>${d.phone}</a>` : ''}
+                ${d.whatsapp ? `<a class="contact-btn" href="https://wa.me/${d.whatsapp.replace(/\D/g,'')}" target="_blank"><span class="cicon">💬</span>${d.whatsapp}</a>` : ''}
+            </div>
+            ${socialBtns ? `<div class="social-row">${socialBtns}</div>` : ''}
+            ${!d.phone && !d.whatsapp && !socialBtns
+                ? `<span style="color:var(--c-text-3);font-size:0.80rem">${t('لا توجد معلومات تواصل','Aucune info de contact')}</span>`
+                : ''}
         </div>
 
-        <div class="card">
-            <div class="card-title">⏰ ${t('مواعيد العمل','Horaires')}</div>
+        <div class="section">
+            <div class="section-title">⏰ ${t('مواعيد العمل','Horaires')}</div>
             ${hoursHTML}
         </div>
     `;
 }
 
-/* ============================================================
-   10. FOLLOW / FAVORITE / BOOK
-   ============================================================ */
-window.toggleFollow = async function () {
-    if (!currentUserProfile) {
-        console.warn('[FOLLOW] User not logged in, redirecting to sign in.');
-        window.auth.signInWithGoogle();
-        return;
-    }
+/* ── 10. FOLLOW / FAV / BOOK ── */
+window.toggleFollow = async function() {
+    if (!currentUserProfile) { window.auth.signInWithGoogle(); return; }
     try {
-        if (isFollowing) {
-            console.log('[FOLLOW] Unfollowing businessId:', businessId);
+        if (userIsFollowing) {
+            console.log('[FOLLOW] Unfollowing...');
             await lilaAPI.unfollowBusiness(currentUserProfile.id, businessId);
-            isFollowing = false;
+            userIsFollowing = false;
             showToast(t('تم إلغاء المتابعة','Désabonné(e)'), 'info');
-            console.log('[FOLLOW] Unfollowed successfully.');
         } else {
-            console.log('[FOLLOW] Following businessId:', businessId);
+            console.log('[FOLLOW] Following...');
             await lilaAPI.followBusiness(currentUserProfile.id, businessId);
-            isFollowing = true;
-            showToast(t('تمت المتابعة بنجاح','Abonné(e) avec succès'), 'success');
-            console.log('[FOLLOW] Followed successfully.');
+            userIsFollowing = true;
+            showToast(t('تمت المتابعة','Abonné(e)'), 'success');
         }
         renderProfile();
-    } catch (err) {
-        console.error('[FOLLOW] Error toggling follow:', err);
-        showToast(t('حدث خطأ، حاولي مجدداً','Erreur, réessayez'), 'error');
+    } catch(err) {
+        console.error('[FOLLOW] Error:', err);
+        showToast(t('حدث خطأ','Erreur'), 'error');
     }
 };
 
-window.toggleFavorite = async function () {
-    if (!currentUserProfile) {
-        console.warn('[FAV] User not logged in, redirecting to sign in.');
-        window.auth.signInWithGoogle();
-        return;
-    }
+window.toggleFavorite = async function() {
+    if (!currentUserProfile) { window.auth.signInWithGoogle(); return; }
     try {
-        if (isFavorited) {
-            console.log('[FAV] Removing from favorites, businessId:', businessId);
+        if (userIsFavorited) {
+            console.log('[FAV] Removing...');
             await lilaAPI.removeFromFavorites(currentUserProfile.id, businessId);
-            isFavorited = false;
+            userIsFavorited = false;
             showToast(t('تمت الإزالة من المفضلة','Retiré des favoris'), 'info');
-            console.log('[FAV] Removed from favorites.');
         } else {
-            console.log('[FAV] Adding to favorites, businessId:', businessId);
+            console.log('[FAV] Adding...');
             await lilaAPI.addToFavorites(currentUserProfile.id, businessId);
-            isFavorited = true;
-            showToast(t('تمت الإضافة إلى المفضلة','Ajouté aux favoris'), 'success');
-            console.log('[FAV] Added to favorites.');
+            userIsFavorited = true;
+            showToast(t('تمت الإضافة للمفضلة','Ajouté aux favoris'), 'success');
         }
         renderProfile();
-    } catch (err) {
-        console.error('[FAV] Error toggling favorite:', err);
-        showToast(t('حدث خطأ، حاولي مجدداً','Erreur, réessayez'), 'error');
+    } catch(err) {
+        console.error('[FAV] Error:', err);
+        showToast(t('حدث خطأ','Erreur'), 'error');
     }
 };
 
-window.bookNow = function () {
-    console.log('[BOOK] bookNow() called. currentUserProfile:', currentUserProfile);
+window.bookNow = function() {
+    console.log('[BOOK] bookNow, user:', currentUserProfile?.user_type);
     if (!currentUserProfile) {
-        if (confirm(t('للحجز، يرجى تسجيل الدخول أولاً. هل تريدين تسجيل الدخول الآن؟',
-                      'Pour réserver, veuillez vous connecter. Voulez-vous vous connecter ?'))) {
+        if (confirm(t('للحجز يجب تسجيل الدخول. هل تريدين تسجيل الدخول الآن؟',
+                      'Pour réserver, connectez-vous. Voulez-vous vous connecter ?'))) {
             window.auth.signInWithGoogle();
         }
         return;
     }
-    console.log('[BOOK] Redirecting to booking page for businessId:', businessId);
+    console.log('[BOOK] Redirecting to booking.html...');
     window.location.href = `booking.html?business=${businessId}`;
 };
 
-/* ============================================================
-   11. INIT
-   ============================================================ */
+/* ── 11. INIT ── */
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('[INIT] DOMContentLoaded — starting init...');
+    console.log('[INIT] DOMContentLoaded...');
     await loadBusinessProfile();
-    console.log('[INIT] Init complete.');
+    console.log('[INIT] Done.');
 });
 </script>
 </body>
