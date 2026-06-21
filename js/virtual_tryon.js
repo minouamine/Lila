@@ -784,7 +784,7 @@
 
                     console.log("[VTO] البرومبت المُرسل إلى Mistral:\n", prompt);
 
-                    setStep("🤖 إرسال الطلب إلى Mistral AI...");
+                    setStep("🤖 إرسال الطلب إلى LILA AI...");
                     const result = await runMistralWithRotation(prompt, agentInstructions);
 
                     setStep("📸 استخراج الصورة الناتجة...");

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lila – التجربة الافتراضية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===================== TOKENS ===================== */
+    :root {
+      --bg:        #0d0d0f;
+      --surface:   #16161a;
+      --surface2:  #1e1e24;
+      --border:    #2a2a32;
+      --accent:    #c084fc;
+      --accent2:   #818cf8;
+      --text:      #f1f0f5;
+      --muted:     #8b8a9b;
+      --success:   #4ade80;
+      --danger:    #f87171;
+      --radius:    14px;
+      --radius-sm: 8px;
+      --font:      'Cairo', sans-serif;
+    }
+
+    /* ===================== RESET ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* ===================== LAYOUT ===================== */
+    .vto-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ===================== HEADER ===================== */
+    .vto-header {
+      text-align: center;
+    }
+    .vto-header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    .vto-header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ===================== UPLOAD ===================== */
+    .vto-upload-zone {
+      background: var(--surface);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .vto-upload-zone.dragging {
+      border-color: var(--accent);
+    }
+
+    #vto-upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 20px;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    #vto-upload-btn:hover { opacity: 0.85; }
+    #vto-upload-btn svg { flex-shrink: 0; }
+
+    .vto-upload-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    #vto-preview-container {
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+    #vto-preview-img {
+      max-height: 200px;
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+
+    /* ===================== TABS ===================== */
+    .vto-tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 6px;
+    }
+    .vto-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 10px 6px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      text-align: center;
+    }
+    .vto-tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .vto-tab:hover:not(.active) {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    /* ===================== SECTIONS ===================== */
+    .vto-section { display: none; }
+
+    .vto-section-title {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===================== GALLERY (scroll horizontal) ===================== */
+    .vto-gallery {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .vto-gallery::-webkit-scrollbar { height: 4px; }
+    .vto-gallery::-webkit-scrollbar-track { background: var(--surface2); border-radius: 4px; }
+    .vto-gallery::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .vto-card {
+      flex: 0 0 110px;
+      scroll-snap-align: start;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      cursor: pointer;
+      transition: border-color 0.18s, transform 0.15s;
+      text-align: center;
+    }
+    .vto-card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+    .vto-card.selected { border-color: var(--accent); background: #1f1630; }
+
+    .vto-card-img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .vto-card-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+      margin-bottom: 6px;
+      padding-top: 8px;
+    }
+    .vto-card-name {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .vto-card.selected .vto-card-name { color: var(--accent); }
+
+    /* ===================== RUN BUTTON ===================== */
+    .vto-run-wrap {
+      text-align: center;
+    }
+    #vto-btn-run {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 40px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      letter-spacing: 0.2px;
+    }
+    #vto-btn-run:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    #vto-btn-run:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ===================== STATUS / STEP ===================== */
+    .vto-feedback {
+      text-align: center;
+      min-height: 20px;
+    }
+    #vto-status {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--success);
+      display: block;
+    }
+    #vto-step-log {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* spinner */
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===================== RESULTS ===================== */
+    #vto-result-container {
+      display: none;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .vto-result-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    #vto-result-img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      object-fit: contain;
+      max-height: 360px;
+      display: none;
+    }
+
+    .vto-download-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+    #vto-download-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    #vto-download-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* before/after */
+    .vto-ba-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 16px 0 10px;
+    }
+    #vto-before-after-img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+    #vto-before-after-error {
+      display: none;
+      font-size: 0.8rem;
+      color: var(--danger);
+      text-align: center;
+      padding: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="vto-wrapper">
+
+    <!-- HEADER -->
+    <div class="vto-header">
+      <h1>✨ Lila Virtual Try-On</h1>
+      <p>ارفع صورتك واكتشف إطلالتك الجديدة بالذكاء الاصطناعي</p>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="vto-upload-zone" id="vto-upload-area">
+      <input type="file" id="vto-file-input" accept="image/*" style="display:none;" />
+      <button id="vto-upload-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        ارفع صورتك
+      </button>
+      <span class="vto-upload-hint">أو اسحب وأفلت الصورة هنا · JPG / PNG / WEBP</span>
+      <div id="vto-preview-container">
+        <img id="vto-preview-img" alt="صورتك الشخصية" />
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="vto-tabs">
+      <button class="vto-tab active" data-tab="hair">💇 تسريحة الشعر</button>
+      <button class="vto-tab" data-tab="clothes">👗 الملابس</button>
+      <button class="vto-tab" data-tab="cosmetic">💉 تجميل</button>
+    </div>
+
+    <!-- SECTION: HAIR -->
+    <div class="vto-section" id="vto-section-hair">
+      <p class="vto-section-title">اختر تسريحة الشعر</p>
+      <div class="vto-gallery" id="vto-gallery-hair"></div>
+    </div>
+
+    <!-- SECTION: CLOTHES -->
+    <div class="vto-section" id="vto-section-clothes">
+      <p class="vto-section-title">اختر قطعة الملابس</p>
+      <div class="vto-gallery" id="vto-gallery-clothes"></div>
+    </div>
+
+    <!-- SECTION: COSMETIC -->
+    <div class="vto-section" id="vto-section-cosmetic">
+      <p class="vto-section-title">اختر الإجراء التجميلي</p>
+      <div class="vto-gallery" id="vto-gallery-cosmetic"></div>
+    </div>
+
+    <!-- RUN -->
+    <div class="vto-run-wrap">
+      <button id="vto-btn-run">✦ ابدأ التحويل</button>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="vto-feedback">
+      <span id="vto-status"></span>
+      <span id="vto-step-log"></span>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="vto-result-container">
+      <p class="vto-result-label">الصورة الناتجة</p>
+      <img id="vto-result-img" alt="النتيجة" />
+      <div class="vto-download-wrap">
+        <button id="vto-download-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          تحميل الصورة
+        </button>
+      </div>
+      <p class="vto-ba-label">قبل / بعد</p>
+      <img id="vto-before-after-img" alt="مقارنة قبل وبعد" />
+      <p id="vto-before-after-error"></p>
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS: api_keys أولاً ثم virtual_tryon -->
+  <script src="../js/debug.js"></script>
+  <script src="../js/api_keys.js"></script>
+  <script src="../js/virtual_tryon.js" defer></script>
+</body>
+</html>
