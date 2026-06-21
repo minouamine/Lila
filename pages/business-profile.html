@@ -626,8 +626,7 @@ function renderProfile() {
 
     document.getElementById('pw').innerHTML = `
         ${vacHTML}
-        ${coverHTML ? `<div class="cover">${coverHTML}</div>` : ''}
-
+        ${businessData.cover_photo_url ? `<div class="cover"><img src="${businessData.cover_photo_url}" alt=""></div>` : ''}
         <div class="hero">
             <div class="avatar-ring">
                 <div class="avatar-inner">
