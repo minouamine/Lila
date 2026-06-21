@@ -91,9 +91,12 @@
 
         /* ── HERO ROW (avatar + name + actions) ── */
         .hero{
-            display:flex;align-items:flex-end;gap:14px;
-            padding:0 16px;margin-top:-36px;position:relative;z-index:2;
-        }
+    display:flex;align-items:flex-end;gap:14px;
+    padding:0 16px;margin-top:16px;position:relative;z-index:2;
+}
+.cover + .hero{
+    margin-top:-36px;
+}
         .avatar-ring{
             width:80px;height:80px;border-radius:50%;padding:2.5px;
             background:var(--ig-grad);box-shadow:0 0 20px var(--c-glow);flex-shrink:0;
