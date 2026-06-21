@@ -85,9 +85,9 @@
         }
 
         /* ── COVER ── */
-        .cover{width:100%;height:160px;overflow:hidden;background:linear-gradient(135deg,var(--c-card),var(--c-card-h));position:relative;}
-        .cover img{width:100%;height:100%;object-fit:cover;display:block;}
-        .cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;opacity:0.2;}
+        .cover{width:100%;overflow:hidden;background:linear-gradient(135deg,var(--c-card),var(--c-card-h));position:relative;}
+        .cover:empty{display:none;}
+        .cover img{width:100%;height:160px;object-fit:cover;display:block;}
 
         /* ── HERO ROW (avatar + name + actions) ── */
         .hero{
@@ -311,6 +311,48 @@
             .hero-actions{flex-wrap:wrap;}
             .btn{padding:6px 12px;font-size:0.70rem;}
         }
+
+        /* ── إخفاء debug widget ── */
+        #debugConsole, #debugToggle, [id^="debug"], .debug-console,
+        div[style*="position: fixed"][style*="bottom"]:not(.toast) {
+            display: none !important;
+        }
+
+        /* ── LIGHTBOX ── */
+        .lightbox{
+            display:none;position:fixed;inset:0;z-index:9999;
+            background:rgba(0,0,0,0.92);
+            align-items:center;justify-content:center;
+            flex-direction:column;gap:12px;
+        }
+        .lightbox.open{display:flex;}
+        .lightbox img{
+            max-width:92vw;max-height:78vh;
+            object-fit:contain;border-radius:10px;
+            box-shadow:0 0 40px rgba(0,0,0,0.8);
+            transition:opacity 0.2s;
+        }
+        .lb-close{
+            position:absolute;top:16px;left:16px;
+            background:rgba(255,255,255,0.15);border:none;
+            color:#fff;font-size:1.4rem;width:40px;height:40px;
+            border-radius:50%;cursor:pointer;display:flex;
+            align-items:center;justify-content:center;
+            transition:background 0.2s;
+        }
+        .lb-close:hover{background:rgba(255,255,255,0.3);}
+        .lb-nav{
+            display:flex;gap:16px;align-items:center;
+        }
+        .lb-btn{
+            background:rgba(255,255,255,0.15);border:none;
+            color:#fff;font-size:1.2rem;width:44px;height:44px;
+            border-radius:50%;cursor:pointer;display:flex;
+            align-items:center;justify-content:center;
+            transition:background 0.2s;
+        }
+        .lb-btn:hover{background:rgba(255,255,255,0.3);}
+        .lb-counter{color:rgba(255,255,255,0.7);font-size:0.80rem;min-width:60px;text-align:center;}
     </style>
 </head>
 <body id="bodyEl" class="dark-mode theme-lime">
@@ -324,6 +366,17 @@
 </div>
 
 <div class="toast" id="toastEl"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="lbClose(event)">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-nav">
+        <button class="lb-btn" onclick="lbNav(-1)">&#8249;</button>
+        <span class="lb-counter" id="lbCounter"></span>
+        <button class="lb-btn" onclick="lbNav(1)">&#8250;</button>
+    </div>
+</div>
 
 <script src="../js/debug.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
@@ -543,7 +596,7 @@ function renderProfile() {
     /* cover */
     const coverHTML = businessData.cover_photo_url
         ? `<img src="${businessData.cover_photo_url}" alt="">`
-        : `<div class="cover-placeholder">🏪</div>`;
+        : '';
 
     /* badges */
     const goldB = businessData.has_gold_badge ? `<span class="badge-gold-icon">⭐</span>` : '';
@@ -680,17 +733,59 @@ async function renderPosts(c) {
 }
 
 /* gallery */
+let lbImages = [];
+let lbIndex  = 0;
+
+function openLightbox(imgs, idx) {
+    lbImages = imgs;
+    lbIndex  = idx;
+    document.getElementById('lbImg').src = lbImages[lbIndex];
+    document.getElementById('lbCounter').textContent = `${lbIndex+1} / ${lbImages.length}`;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+window.lbNav = function(dir) {
+    lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+    const img = document.getElementById('lbImg');
+    img.style.opacity = '0';
+    setTimeout(() => {
+        img.src = lbImages[lbIndex];
+        img.style.opacity = '1';
+        document.getElementById('lbCounter').textContent = `${lbIndex+1} / ${lbImages.length}`;
+    }, 150);
+};
+window.closeLightbox = function() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+};
+window.lbClose = function(e) {
+    if (e.target === document.getElementById('lightbox')) closeLightbox();
+};
+
+/* keyboard nav */
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key==='ArrowLeft'||e.key==='ArrowUp')   lbNav(-1);
+    if (e.key==='ArrowRight'||e.key==='ArrowDown') lbNav(1);
+    if (e.key==='Escape') closeLightbox();
+});
+
 function renderGallery(c) {
     console.log('[TAB:GALLERY] Images:', businessData._gallery?.length);
     if (!businessData._gallery?.length) {
         c.innerHTML = `<div class="empty-state"><div class="empty-icon">📸</div>${t('لا توجد صور في الألبوم','Aucune photo dans la galerie')}</div>`;
         return;
     }
+    const urls = businessData._gallery.map(img => img.image_url||img);
     c.innerHTML = `<div class="gallery-grid">
-        ${businessData._gallery.map(img=>`
-            <img src="${img.image_url||img}" alt="${img.caption||''}" loading="lazy"
-                 onclick="window.open('${img.image_url||img}','_blank')">`).join('')}
+        ${urls.map((url, i) => `
+            <img src="${url}" alt="" loading="lazy"
+                 data-index="${i}"
+                 style="cursor:zoom-in">`).join('')}
     </div>`;
+    c.querySelectorAll('.gallery-grid img').forEach((img, i) => {
+        img.addEventListener('click', () => openLightbox(urls, i));
+    });
 }
 
 /* reviews */
