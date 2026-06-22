@@ -44,7 +44,7 @@ body {
     scrollbar-width: none;
     box-sizing: border-box;
     position: sticky;
-    top: 40px;
+    top: 0;
     z-index: 10;
     transition: background var(--t), border-color var(--t);
 }
@@ -185,33 +185,6 @@ body {
     transition: right .22s var(--ease-snap);
 }
 .toggle-sm.on .knob { right: calc(100% - 15px); }
-
-/* ── أيقونة رجوع (بدل زر العودة للرئيسية) ── */
-.top-bar {
-    display: flex;
-    align-items: center;
-    padding: 6px 12px;
-    flex-shrink: 0;
-    background: var(--c-bg);
-    transition: background var(--t);
-    position: sticky;
-    top: 0;
-    z-index: 11;
-    height: 40px;
-    box-sizing: border-box;
-}
-.back-arrow {
-    font-size: 1.3rem;
-    color: var(--c-primary);
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 4px 8px;
-    line-height: 1;
-    transition: transform .2s var(--ease-snap);
-}
-.back-arrow:hover { transform: translateX(3px); }
-[dir="ltr"] .back-arrow:hover { transform: translateX(-3px); }
 
 /* ── شريط عرض القائمة/الخريطة ── */
 .view-bar {
@@ -387,11 +360,6 @@ body {
 </head>
 <body>
 
-<!-- ── شريط علوي: سهم رجوع فقط ── -->
-<div class="top-bar">
-    <button class="back-arrow" id="backArrow" onclick="window.location.href='my-account.html'">←</button>
-</div>
-
 <!-- ── شريط الفلاتر ── -->
 <div class="filters-strip" id="filtersStrip">
 
@@ -415,7 +383,29 @@ body {
         <span class="filter-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
         <div class="dropdown-panel" id="drop-wilaya">
             <span class="dp-label" data-ar="الولاية" data-fr="Wilaya">الولاية</span>
-            <select id="sel-wilaya" onchange="onFilterChange()" onclick="event.stopPropagation()">
+            <select id="sel-wilaya" onchange="onWilayaChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-daira', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🏘️</div></div>
+        <span class="filter-label" data-ar="الدائرة" data-fr="Daïra">الدائرة</span>
+        <div class="dropdown-panel" id="drop-daira">
+            <span class="dp-label" data-ar="الدائرة" data-fr="Daïra">الدائرة</span>
+            <select id="sel-daira" onchange="onDairaChange()" onclick="event.stopPropagation()">
+                <option value="">—</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-chip" onclick="toggleDrop('drop-baladiya', this, event)">
+        <div class="filter-ring"><div class="filter-inner">🏙️</div></div>
+        <span class="filter-label" data-ar="البلدية" data-fr="Commune">البلدية</span>
+        <div class="dropdown-panel" id="drop-baladiya">
+            <span class="dp-label" data-ar="البلدية" data-fr="Commune">البلدية</span>
+            <select id="sel-baladiya" onchange="onFilterChange()" onclick="event.stopPropagation()">
                 <option value="">—</option>
             </select>
         </div>
@@ -503,6 +493,8 @@ body {
 
 let allResults    = [];
 let wilayasData   = [];
+let dairasData    = [];
+let baladiyasData = [];
 let userLocation  = null;
 let map           = null;
 let mapMarkers    = [];
@@ -559,9 +551,6 @@ function applyLang() {
             opt.textContent = lang === 'ar' ? opt.dataset.ar : opt.dataset.fr;
         }
     });
-
-    const backArrow = document.getElementById('backArrow');
-    if (backArrow) backArrow.textContent = lang === 'ar' ? '←' : '→';
 }
 
 /* ── تحميل الولايات ── */
@@ -829,6 +818,95 @@ document.addEventListener('click', e => {
     if (!e.target.closest('.filter-chip') && !e.target.closest('.dropdown-panel')) closeAllDrops();
 });
 
+/* ── تحميل الدوائر ── */
+async function loadDairas(wilayaCode) {
+    const lang = getLang();
+    const sel  = document.getElementById('sel-daira');
+    sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les daïras' : 'جميع الدوائر'}</option>`;
+    document.getElementById('sel-baladiya').innerHTML =
+        `<option value="">${lang === 'fr' ? 'Toutes les communes' : 'جميع البلديات'}</option>`;
+    if (!wilayaCode) return;
+    try {
+        if (!dairasData.length) {
+            const res = await fetch('../assets/data/dairas.json');
+            if (!res.ok) throw new Error('dairas.json not found');
+            dairasData = await res.json();
+        }
+        const filtered = dairasData.filter(d => String(d.wilaya_code) === String(wilayaCode));
+        filtered.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value      = d.code || d.id || d.name_ar;
+            opt.dataset.ar = d.name_ar;
+            opt.dataset.fr = d.name_fr || d.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
+        });
+    } catch(e) { console.error('[Products] Error loading dairas:', e); }
+}
+
+/* ── تحميل البلديات ── */
+async function loadBaladiyahs(dairaCode) {
+    const lang = getLang();
+    const sel  = document.getElementById('sel-baladiya');
+    sel.innerHTML = `<option value="">${lang === 'fr' ? 'Toutes les communes' : 'جميع البلديات'}</option>`;
+    if (!dairaCode) return;
+    try {
+        if (!baladiyasData.length) {
+            const res = await fetch('../assets/data/baladiyahs.json');
+            if (!res.ok) throw new Error('baladiyahs.json not found');
+            baladiyasData = await res.json();
+        }
+        const filtered = baladiyasData.filter(b => String(b.daira_code) === String(dairaCode));
+        filtered.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value      = b.code || b.id || b.name_ar;
+            opt.dataset.ar = b.name_ar;
+            opt.dataset.fr = b.name_fr || b.name_ar;
+            opt.textContent = lang === 'fr' ? opt.dataset.fr : opt.dataset.ar;
+            sel.appendChild(opt);
+        });
+    } catch(e) { console.error('[Products] Error loading baladiyahs:', e); }
+}
+
+/* ── أحداث الفلاتر المتسلسلة ── */
+async function onWilayaChange() {
+    await loadDairas(document.getElementById('sel-wilaya').value);
+    onFilterChange();
+}
+async function onDairaChange() {
+    await loadBaladiyahs(document.getElementById('sel-daira').value);
+    onFilterChange();
+}
+
+/* ── مراقبة فورية لتغييرات الإعدادات في index.html ──
+   index.html يكتب في localStorage مباشرة عند تغيير اللغة/الثيم/الوضع.
+   لأن storage event لا يُطلق داخل نفس التبويب، نستخدم setInterval
+   بفترة قصيرة (300ms) لمقارنة القيم الحالية مع آخر قيم معروفة،
+   وعند اكتشاف أي تغيير نطبّق الإعدادات الجديدة فوراً بدون reload. ── */
+let _lastLang  = null;
+let _lastTheme = null;
+let _lastMode  = null;
+
+function watchSettings() {
+    const lang  = localStorage.getItem('lila_lang')  || 'ar';
+    const theme = localStorage.getItem('lila_theme') || 'theme-lime';
+    const mode  = localStorage.getItem('lila_mode')  || 'dark';
+
+    let changed = false;
+
+    if (lang !== _lastLang) {
+        _lastLang = lang;
+        applyLang();
+        changed = true;
+    }
+    if (theme !== _lastTheme || mode !== _lastMode) {
+        _lastTheme = theme;
+        _lastMode  = mode;
+        syncTheme();
+        changed = true;
+    }
+}
+
 /* ── أحداث الفلاتر ── */
 function onFilterChange() { performSearch(); }
 
@@ -848,6 +926,15 @@ async function initPage() {
     console.log('[Products] Initializing...');
     syncTheme();
     applyLang();
+
+    /* تهيئة القيم الأولية للمراقبة */
+    _lastLang  = localStorage.getItem('lila_lang')  || 'ar';
+    _lastTheme = localStorage.getItem('lila_theme') || 'theme-lime';
+    _lastMode  = localStorage.getItem('lila_mode')  || 'dark';
+
+    /* مراقبة تغييرات الإعدادات كل 300ms */
+    setInterval(watchSettings, 300);
+
     getUserLocation();
     await loadWilayas();
     await performSearch();
